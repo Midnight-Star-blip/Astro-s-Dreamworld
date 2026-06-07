@@ -423,16 +423,35 @@ task.spawn(function()
 end)
 
 
+
 local GameContext = nil
 pcall(function()
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
 end)
 
-local function forzarEspacioLegitimo()
+
+local function forzarEspacioLegitimo(guiObjetivo)
 	pcall(function()
-		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-		task.wait(0.01)
-		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+		
+		if guiObjetivo and guiObjetivo:FindFirstChildOfClass("TextButton") then
+			local btn = guiObjetivo:FindFirstChildOfClass("TextButton")
+			if btn.Visible then
+				
+				local x, y = btn.AbsolutePosition.X + (btn.AbsoluteSize.X/2), btn.AbsolutePosition.Y + (btn.AbsoluteSize.Y/2)
+				pcall(function()
+					
+					game:GetService("VirtualUser"):ClickButton1(Vector2.new(x, y))
+				end)
+			end
+		end
+		
+		
+		if GameContext and GameContext.PlayerState then
+			
+			if GameContext.PlayerState.CompleteSkillCheck then
+				GameContext.PlayerState:CompleteSkillCheck(true) 
+			end
+		end
 	end)
 end
 
@@ -447,11 +466,9 @@ task.spawn(function()
 				
 				local interfacesAInterpretar = {}
 				
-				
 				for _, g in ipairs(playerGui:GetChildren()) do
 					if g:IsA("ScreenGui") then table.insert(interfacesAInterpretar, g) end
 				end
-				
 				
 				local room = workspace:FindFirstChild("CurrentRoom")
 				if room then
@@ -462,11 +479,8 @@ task.spawn(function()
 					end
 				end
 				
-				
 				for _, gui in ipairs(interfacesAInterpretar) do
 					if gui.Enabled or (gui:IsA("SurfaceGui") and gui.Adornee ~= nil) then
-						
-						
 						local framesActivos = {}
 						for _, objeto in ipairs(gui:GetDescendants()) do
 							if objeto:IsA("ImageLabel") or objeto:IsA("Frame") then
@@ -476,29 +490,24 @@ task.spawn(function()
 							end
 						end
 						
-						
 						if #framesActivos >= 2 then
 							local circuloRojoMarcador = nil
 							local anilloFijoZona = nil
 							
 							for _, f in ipairs(framesActivos) do
-								
 								local tamanoInicial = f.AbsoluteSize.X
 								task.wait(0.002)
 								local tamanoFinal = f.AbsoluteSize.X
 								
-								
 								if tamanoInicial ~= tamanoFinal then
 									circuloRojoMarcador = f
 								else
-									
 									local nombreMinuscula = f.Name:lower()
 									if nombreMinuscula:find("area") or nombreMinuscula:find("zone") or nombreMinuscula:find("gray") or nombreMinuscula:find("gold") or nombreMinuscula:find("required") then
 										anilloFijoZona = f
 									end
 								end
 							end
-							
 							
 							if circuloRojoMarcador and not anilloFijoZona then
 								for _, f in ipairs(framesActivos) do
@@ -509,18 +518,16 @@ task.spawn(function()
 								end
 							end
 							
-							
 							if circuloRojoMarcador and anilloFijoZona then
 								local diametroMarcador = circuloRojoMarcador.AbsoluteSize.X
 								local diametroObjetivo = anilloFijoZona.AbsoluteSize.X
 								
-								
 								local toleranciaDePixeles = 16
 								
-								
 								if math.abs(diametroMarcador - diametroObjetivo) <= toleranciaDePixeles then
-									forzarEspacioLegitimo()
-									task.wait(0.5) 
+									
+									forzarEspacioLegitimo(gui)
+									task.wait(0.5)
 								end
 							end
 						end
@@ -540,7 +547,7 @@ task.spawn(function()
 						local zoneEnd = zoneStart + goldArea.Size.X.Scale
 						
 						if markerScale >= zoneStart and markerScale <= zoneEnd then
-							forzarEspacioLegitimo()
+							forzarEspacioLegitimo(skillFrame.Parent)
 							task.wait(0.4) 
 						end
 					end
@@ -551,7 +558,7 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						forzarEspacioLegitimo()
+						forzarEspacioLegitimo(treadmillGui)
 						task.wait(0.02)
 					end
 				end
@@ -574,11 +581,6 @@ local Ventana = AstroUI.CreateWindow({
 
 local PlayerTab = Ventana:CreateTab("Player")
 PlayerTab:CreateSection("Movement")
-
-PlayerTab:CreateButton("Testear Tecla Espacio", function()
-    forzarEspacioLegitimo()
-end)
-
 
 local VisualsTab = Ventana:CreateTab("Visuals")
 VisualsTab:CreateSection("All ESPs")
