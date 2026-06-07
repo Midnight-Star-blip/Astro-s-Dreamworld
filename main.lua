@@ -424,18 +424,24 @@ end)
 
 
 
+
 local GameContext = nil
 pcall(function()
+	
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
 end)
 
 
-local function forzarEspacioLegitimo()
+local function forzarExitoNativo()
 	pcall(function()
-		
-		game:GetService("VirtualUser"):Button1Down(Vector2.new(0, 0))
-		task.wait(0.01)
-		game:GetService("VirtualUser"):Button1Up(Vector2.new(0, 0))
+		if GameContext and GameContext.PlayerState then
+			
+			if GameContext.PlayerState.CompleteSkillCheck then
+				GameContext.PlayerState:CompleteSkillCheck(true)
+			elseif GameContext.PlayerState.SkillCheckComplete then
+				GameContext.PlayerState:SkillCheckComplete(true)
+			end
+		end
 	end)
 end
 
@@ -450,38 +456,26 @@ task.spawn(function()
 				
 				local room = workspace:FindFirstChild("CurrentRoom")
 				if room then
+					
 					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
 					if circleMinigame then
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
 						
 						if circleGui and circleGui.Enabled then
+							
+							forzarExitoNativo()
+							
+							
+							
 							local mainFrame = circleGui:FindFirstChildOfClass("Frame") or circleGui:FindFirstChild("CircleBackgroundFrame")
-							if mainFrame then
+							if mainFrame and getconnections then
 								
-								local goldZone = mainFrame:FindFirstChild("GoldArea") or mainFrame:FindFirstChild("YellowZone")
-								local greyZone = mainFrame:FindFirstChild("GreyArea") or mainFrame:FindFirstChild("RequiredArea")
-								
-								
-								
-								if goldZone and goldZone.Visible then
-									goldZone.Size = UDim2.fromScale(1, 1)
-									goldZone.Position = UDim2.fromScale(0, 0)
-								elseif greyZone and greyZone.Visible then
-									greyZone.Size = UDim2.fromScale(1, 1)
-									greyZone.Position = UDim2.fromScale(0, 0)
+								for _, conexion in ipairs(getconnections(mainFrame.InputBegan)) do
+									conexion:Fire()
 								end
-								
-								
-								forzarEspacioLegitimo()
-								
-								
-								if GameContext and GameContext.PlayerState and GameContext.PlayerState.CompleteSkillCheck then
-									GameContext.PlayerState:CompleteSkillCheck(true)
-								end
-								
-								task.wait(0.3) 
 							end
+							task.wait(0.5) 
 						end
 					end
 				end
@@ -498,14 +492,9 @@ task.spawn(function()
 							
 							if marker and goldArea and marker.Visible then
 								
-								goldArea.Size = UDim2.new(1, 0, goldArea.Size.Y.Scale, goldArea.Size.Y.Offset)
-								goldArea.Position = UDim2.new(0, 0, goldArea.Position.Y.Scale, goldArea.Position.Y.Offset)
-								
-								forzarEspacioLegitimo()
-								if GameContext and GameContext.PlayerState and GameContext.PlayerState.CompleteSkillCheck then
-									GameContext.PlayerState:CompleteSkillCheck(true)
-								end
-								task.wait(0.3)
+								marker.Position = UDim2.new(goldArea.Position.X.Scale + (goldArea.Size.X.Scale / 2), 0, marker.Position.Y.Scale, 0)
+								forzarExitoNativo()
+								task.wait(0.4)
 							end
 						end
 					end
@@ -516,9 +505,12 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						forzarEspacioLegitimo()
-						if GameContext and GameContext.PlayerState and GameContext.PlayerState.CompleteSkillCheck then
-							GameContext.PlayerState:CompleteSkillCheck(true)
+						forzarExitoNativo()
+						if getconnections then
+							local btn = tapFrame:FindFirstChildOfClass("TextButton")
+							if btn then
+								for _, con in ipairs(getconnections(btn.MouseButton1Click)) do con:Fire() end
+							end
 						end
 						task.wait(0.02)
 					end
