@@ -379,16 +379,65 @@ task.spawn(function()
 	end
 end)
 
+_G.AutoSkillcheck = false 
+
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+
+local function presionarEspacio()
+	pcall(function()
+		
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+		task.wait(0.05)
+		
+		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+	end)
+end
+
+task.spawn(function()
+	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
+	if not playerGui then return end
+
+	while task.wait(0.01) do
+		if _G.AutoSkillcheck then
+			pcall(function()
+				for _, gui in ipairs(playerGui:GetChildren()) do
+					if gui:IsA("ScreenGui") and (string.find(gui.Name, "Action") or string.find(gui.Name, "QTE") or string.find(gui.Name, "Skill")) then
+						local bar = gui:FindFirstChild("Bar", true) or gui:FindFirstChild("Frame", true)
+						local needle = gui:FindFirstChild("Needle", true) or gui:FindFirstChild("Pointer", true)
+						local zone = gui:FindFirstChild("Zone", true) or gui:FindFirstChild("Success", true)
+						
+						if needle and zone and needle.Visible and zone.Visible then
+							local needlePos = needle.AbsolutePosition.X
+							local zoneStart = zone.AbsolutePosition.X
+							local zoneEnd = zoneStart + zone.AbsoluteSize.X
+							
+							if needlePos >= (zoneStart + 2) and needlePos <= (zoneEnd - 2) then
+								presionarEspacio()
+								task.wait(0.5)
+							end
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+
+
 
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴| Dandy's World",
 	ToggleKey = Enum.KeyCode.V
 })
 
-local VisualsTab = Ventana:CreateTab("Visuals")
-VisualsTab:CreateSection("Rastreador de Amenazas y Objetivos")
+local PlayerTab = Ventana:CreateTab("Player")
 
-VisualsTab:CreateToggle("ESP Twisteds (Monstruos)", false, function(state)
+local VisualsTab = Ventana:CreateTab("Visuals")
+VisualsTab:CreateSection("All ESPs")
+
+VisualsTab:CreateToggle("ESP Twisteds", false, function(state)
 	_G.ESPTwisteds = state
 	if not state then clearESP() end
 end)
@@ -401,4 +450,11 @@ end)
 VisualsTab:CreateToggle("ESP Generators & Elevators", false, function(state)
 	_G.ESPGenerators = state
 	if not state then clearESP() end
+end)
+
+local Auto = Ventana:CreateTab("Automation")
+AutoTab:CreateSection("Teleports")
+AutoTab:CreateSection("Player")
+AutoTab:CreateToggle("Auto-Skillcheck", false, function(state)
+  _G.AutoSkillcheck = state 
 end)
