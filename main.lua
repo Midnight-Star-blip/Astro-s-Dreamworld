@@ -383,23 +383,25 @@ _G.AutoSkillcheck = false
 
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
--- Función interna optimizada para enviar la pulsación legítima en PC y móvil
+
+
 local function forzarEspacioLegitimo()
 	pcall(function()
 		local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 		if isMobile then
+			
 			local VirtualUser = game:GetService("VirtualUser")
 			VirtualUser:CaptureController()
 			VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-			task.wait(0.01)
 			VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 		else
+			
 			VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-			task.wait(0.01)
 			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
 		end
 	end)
 end
+
 
 task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
@@ -427,9 +429,10 @@ task.spawn(function()
 									local zoneStart = targetZone.Position.X.Scale
 									local zoneEnd = zoneStart + targetZone.Size.X.Scale
 									
-									if markerScale >= zoneStart and markerScale <= zoneEnd then
+									
+									if markerScale >= (zoneStart + 0.01) and markerScale <= (zoneEnd - 0.01) then
 										forzarEspacioLegitimo()
-										task.wait(0.4)
+										task.wait(0.5) 
 									end
 								end
 							end
@@ -451,7 +454,6 @@ task.spawn(function()
 		end
 	end
 end)
-
 
 
 
