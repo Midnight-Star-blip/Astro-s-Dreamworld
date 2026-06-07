@@ -440,7 +440,11 @@ task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
-	while task.wait(0.01) do 
+	
+	local minijuegoActivo = false
+	local tiempoInicio = 0
+
+	while task.wait(0.005) do 
 		if _G.AutoSkillcheck then
 			pcall(function()
 				
@@ -449,73 +453,35 @@ task.spawn(function()
 				if room then
 					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
 					if circleMinigame then
-						local circleParts = circleMinigame:FindFirstChild("CircleParts")
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
 						
-						if circleParts and circleGui and circleGui.Enabled then
-							local piezas = {}
+						if circleGui and (circleGui.Enabled or (circleGui:IsA("SurfaceGui") and circleGui.Adornee ~= nil)) then
 							
 							
-							local ok, de = pcall(function() return circleParts:GetDescendants() end)
-							if ok and de then
-								for _, v in ipairs(de) do
-									if v and (v:IsA("ImageLabel") or v:IsA("Frame") or v:IsA("GuiObject")) then
-										table.insert(piezas, v)
-									end
-								end
+							if not minijuegoActivo then
+								minijuegoActivo = true
+								tiempoInicio = os.clock()
 							end
 							
-							if #piezas >= 2 then
-								local marcadorRojo = nil
-								local zonaObjetivo = nil
-								
-								
-								for _, p in ipairs(piezas) do
-									if p and p.Visible and p.AbsoluteSize then
-										
-										
-										local size1 = p.AbsoluteSize.X
-										task.wait(0.005) 
-										local size2 = p.AbsoluteSize.X
-										
-										if size1 ~= size2 or p.Name == "Box" or p.Parent.Name == "Box" then
-											marcadorRojo = p
-										else
-											zonaObjetivo = p
-										end
-									end
-								end
-								
-								
-								if not marcadorRojo or not zonaObjetivo then
-									for _, p in ipairs(piezas) do
-										if p and p.Visible then
-											if p.Name == "Box" or p.Parent.Name == "Box" or p.Name:lower():find("mark") then
-												marcadorRojo = p
-											elseif p.Name == "RenderParts" or p.Name:lower():find("area") or p.Name:lower():find("zone") then
-												zonaObjetivo = p
-											end
-										end
-									end
-								end
-								
-								
-								if marcadorRojo and zonaObjetivo and marcadorRojo.AbsoluteSize and zonaObjetivo.AbsoluteSize then
-									local diametroActual = marcadorRojo.AbsoluteSize.X
-									local diametroObjetivo = zonaObjetivo.AbsoluteSize.X
-									
-									
-									local rangoTolerancia = 15
-									
-									
-									if math.abs(diametroActual - diametroObjetivo) <= rangoTolerancia then
-										forzarEspacioLegitimo()
-										task.wait(0.6) 
-									end
-								end
+							
+							local tiempoTranscurrido = os.clock() - tiempoInicio
+							
+							
+							
+							
+							
+							if tiempoTranscurrido >= 0.63 and tiempoTranscurrido <= 0.72 then
+								forzarEspacioLegitimo()
+								task.wait(0.8) 
+								minijuegoActivo = false
 							end
+						else
+							
+							minijuegoActivo = false
 						end
+					else
+						minijuegoActivo = false
 					end
 				end
 
