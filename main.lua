@@ -1,6 +1,5 @@
-return(function(2VuPm, ...)
-local Vx7U7s = {"jRT23a";"XHG26";"T4BaKxK0Xg006";"ezc3";"jI7m24qpZ";"kuGMvSHg";"d6heGEPJUYe";"ERKDYNWMF3JnfBr";"LiLMcMGp";"GWdoab6M7iRoR";"cSLOH4GQDV0";"oEGZ";"ZGrleNUs9M";"Kp7ypLjz"}
-local MU1p6Abd = function(...)
+local 9zNYJ9 = {"tGOspLxX";"ewKqotz3AViGT2QDF";"2BSw";"wD1XK2B";"1wsK01F";"RaUV64";"ILEiAJ3sRN086Nm";"4uqCystbbRR";"jSvI7OpLEQS4M8j";"7MMUUDYXdaBAQSN";"jjoq";"jZ7WVmrqDBlMb"}
+local FNiDF4po = function(...)
 local Players = game:GetService(loadstring(base64decode("UGxheWVycw=="))())
 local TweenService = game:GetService(loadstring(base64decode("VHdlZW5TZXJ2aWNl"))())
 local UserInputService = game:GetService(loadstring(base64decode("VXNlcklucHV0U2VydmljZQ=="))())
@@ -400,5 +399,4 @@ VisualsTab:CreateToggle(loadstring(base64decode("RVNQIEdlbmVyYXRvcnMgJiBFbGV2YXR
 	_G.ESPGenerators = state
 end)
 end
-uLfnBoLV(Kv1vA)
-end)(...)
+FyNLh4Rn(AJht6)
