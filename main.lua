@@ -417,14 +417,19 @@ task.spawn(function()
 		if _G.AutoSkillcheck and GameContext then
 			pcall(function()
 				
-				if GameContext.skillchecking == true or GameContext.currentMinigameType ~= nil then
+					if GameContext.skillchecking == true or GameContext.currentMinigameType ~= nil then
+					
+					task.wait(0.52) 
 					
 					
-					presionarEspacioSeguro()
+					if GameContext.skillchecking == true then
+						presionarEspacioSeguro()
+					end
 					
 					
-					task.wait(0.25)
+					task.wait(0.4)
 				end
+
 				
 				
 				local playerGui = localPlayer:FindFirstChild("PlayerGui")
