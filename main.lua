@@ -465,6 +465,16 @@ task.spawn(function()
 							local goldArea = skillFrame:FindFirstChild("GoldArea")
 							local reqArea = skillFrame:FindFirstChild("RequiredArea")
 							
+							
+							
+							
+							if goldArea and goldArea.Size.X.Scale >= 0.9 then
+								goldArea.Size = UDim2.new(0.075, 0, 1, 0) 
+							end
+							if reqArea and reqArea.Size.X.Scale >= 0.9 then
+								reqArea.Size = UDim2.new(0.1, 0, 1, 0) 
+							end
+							
 							if marker and marker.Visible then
 								local markerScale = marker.Position.X.Scale
 								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
