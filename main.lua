@@ -510,99 +510,109 @@ local function ApplyInstantSkillcheck(state)
 end
 
 
+
 local character = nil
 local rootPart = nil
-local flyBodyVelocity = nil
-local connection = nil
+local humanoid = nil
+local flyVelocity = nil
+local flyConnection = nil
+local noclipConnection = nil
 
-local function setupCharacter()
+local function getCharacter()
     character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-    rootPart = character:WaitForChild("HumanoidRootPart")
-    
-    
-    if flyBodyVelocity then flyBodyVelocity:Destroy() end
+    rootPart = character:WaitForChild("HumanoidRootPart", 3)
+    humanoid = character:WaitForChild("Humanoid", 3)
+    return character
 end
 
-localPlayer.CharacterAdded:Connect(setupCharacter)
-if localPlayer.Character then setupCharacter() end
+localPlayer.CharacterAdded:Connect(getCharacter)
+if localPlayer.Character then getCharacter() end
+
 
 local function ToggleFly(state)
     _G.Fly = state
-    
+
+    if flyVelocity then flyVelocity:Destroy() end
+    if flyConnection then flyConnection:Disconnect() end
+
     if state then
-        if not rootPart then setupCharacter() end
-        
-        flyBodyVelocity = Instance.new("BodyVelocity")
-        flyBodyVelocity.Name = "AstroFly"
-        flyBodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-        flyBodyVelocity.Velocity = Vector3.new(0, 0, 0)
-        flyBodyVelocity.Parent = rootPart
-        
+        getCharacter()
+        if not rootPart then return end
+
+        flyVelocity = Instance.new("BodyVelocity")
+        flyVelocity.Name = "AstroFlyVelocity"
+        flyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
+        flyVelocity.Velocity = Vector3.new(0, 0, 0)
+        flyVelocity.Parent = rootPart
+
         local camera = workspace.CurrentCamera
-        local keys = {W = false, A = false, S = false, D = false, Space = false, LeftShift = false}
-        
-        connection = UserInputService.InputBegan:Connect(function(input, gp)
+        local keys = {W=false, A=false, S=false, D=false, Space=false, LeftShift=false}
+
+        flyConnection = UserInputService.InputBegan:Connect(function(inp, gp)
             if gp then return end
-            local key = input.KeyCode.Name
-            if keys[key] ~= nil then keys[key] = true end
+            local k = inp.KeyCode.Name
+            if keys[k] ~= nil then keys[k] = true end
         end)
-        
-        UserInputService.InputEnded:Connect(function(input)
-            local key = input.KeyCode.Name
-            if keys[key] ~= nil then keys[key] = false end
+
+        UserInputService.InputEnded:Connect(function(inp)
+            local k = inp.KeyCode.Name
+            if keys[k] ~= nil then keys[k] = false end
         end)
-        
+
         task.spawn(function()
             while _G.Fly and task.wait() do
-                if not rootPart or not rootPart.Parent then continue end
-                
-                local moveDirection = Vector3.new(0, 0, 0)
-                local camLook = camera.CFrame.LookVector
-                local camRight = camera.CFrame.RightVector
-                
-                if keys.W then moveDirection = moveDirection + camLook end
-                if keys.S then moveDirection = moveDirection - camLook end
-                if keys.A then moveDirection = moveDirection - camRight end
-                if keys.D then moveDirection = moveDirection + camRight end
-                if keys.Space then moveDirection = moveDirection + Vector3.new(0,1,0) end
-                if keys.LeftShift then moveDirection = moveDirection - Vector3.new(0,1,0) end
-                
-                if moveDirection.Magnitude > 0 then
-                    moveDirection = moveDirection.Unit
-                end
-                
-                flyBodyVelocity.Velocity = moveDirection * _G.FlySpeed
-            end
-        end)
-        
-    else
-        if connection then connection:Disconnect() end
-        if flyBodyVelocity then 
-            flyBodyVelocity:Destroy() 
-            flyBodyVelocity = nil 
-        end
-    end
-end
-
-local function ToggleNoclip(state)
-    _G.Noclip = state
-    
-    if state then
-        task.spawn(function()
-            while _G.Noclip and task.wait(0.1) do
                 pcall(function()
-                    if character then
-                        for _, part in ipairs(character:GetDescendants()) do
-                            if part:IsA("BasePart") and part.CanCollide then
-                                part.CanCollide = false
-                            end
-                        end
+                    if not rootPart or not rootPart.Parent then 
+                        getCharacter()
+                        return 
                     end
+
+                    local move = Vector3.new(0,0,0)
+                    local camLook = camera.CFrame.LookVector
+                    local camRight = camera.CFrame.RightVector
+
+                    if keys.W then move += camLook end
+                    if keys.S then move -= camLook end
+                    if keys.A then move -= camRight end
+                    if keys.D then move += camRight end
+                    if keys.Space then move += Vector3.new(0,1,0) end
+                    if keys.LeftShift then move -= Vector3.new(0,1,0) end
+
+                    if move.Magnitude > 0 then
+                        move = move.Unit * _G.FlySpeed
+                    end
+
+                    flyVelocity.Velocity = move
                 end)
             end
         end)
+
+        
     else
         
+    end
+end
+
+
+local function ToggleNoclip(state)
+    _G.Noclip = state
+
+    if noclipConnection then noclipConnection:Disconnect() end
+
+    if state then
+        noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+            pcall(function()
+                if character and character.Parent then
+                    for _, part in ipairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        end)
+        
+    else
         pcall(function()
             if character then
                 for _, part in ipairs(character:GetDescendants()) do
@@ -612,9 +622,9 @@ local function ToggleNoclip(state)
                 end
             end
         end)
+        
     end
 end
-
 
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
