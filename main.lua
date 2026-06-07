@@ -67,7 +67,7 @@ end
 function AstroUI.CreateWindow(options)
 	options = options or {}
 	local theme = options.Theme or AstroUI.Theme
-
+    
 	local targetParent = game:GetService("CoreGui")
 	local screenGui = create("ScreenGui", {Name = options.Name or "AstroUILibrary", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = targetParent})
 	local self = setmetatable({Theme = theme, ScreenGui = screenGui, Pages = {}, TabButtons = {}, ActiveTab = nil}, Window)
@@ -288,7 +288,7 @@ task.spawn(function()
 							end
 						end
 					end
-
+				end
 				
 				if _G.ESPItems then
 					local itemsFolder = sala:FindFirstChild("Items")
