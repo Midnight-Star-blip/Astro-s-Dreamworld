@@ -575,6 +575,11 @@ local Ventana = AstroUI.CreateWindow({
 local PlayerTab = Ventana:CreateTab("Player")
 PlayerTab:CreateSection("Movement")
 
+PlayerTab:CreateButton("Testear Tecla Espacio", function()
+    forzarEspacioLegitimo()
+end)
+
+
 local VisualsTab = Ventana:CreateTab("Visuals")
 VisualsTab:CreateSection("All ESPs")
 
