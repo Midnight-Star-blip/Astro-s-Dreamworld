@@ -470,7 +470,7 @@ task.spawn(function()
 									
 									if zonaObjetivo and zonaObjetivo.Visible then
 										
-										 
+										
 										local inicioRango = zonaObjetivo.Rotation % 360
 										
 										
@@ -478,14 +478,14 @@ task.spawn(function()
 										local finRango = (inicioRango + anchoRango) % 360
 										
 										
-										local agujaEnZona = false
+										local dentroDeZona = false
 										if inicioRango <= finRango then
-											agujaEnZona = (rotacionActual >= inicioRango and rotacionActual <= finRango)
+											dentroDeZona = (rotacionActual >= inicioRango and rotacionActual <= finRango)
 										else
-											agujaEnZona = (rotacionActual >= inicioRango or rotacionActual <= finRango)
+											dentroDeZona = (rotacionActual >= inicioRango or rotacionActual <= finRango)
 										end
 										
-										if agujaEnZona then
+										if dentroDeZona then
 											forzarEspacioLegitimo()
 											task.wait(0.35) 
 										end
