@@ -423,123 +423,91 @@ task.spawn(function()
 	end
 end)
 
-task.spawn(function()
-    local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
-    if not playerGui then return end
 
-    while task.wait(0.02) do
-        if not _G.AutoSkillcheck then continue end
+local S = { skillcheckOrigCB = nil }
 
-        pcall(function()
-            local circleGui = playerGui:FindFirstChild("CircleSkillCheckGui")
-            
-            if circleGui then
-                
-                
-                if _G.HideCircleMinigame then
-                    
-                    for _, desc in ipairs(circleGui:GetDescendants()) do
-                        if desc:IsA("GuiObject") then
-                            if desc.Name:find("Background") or desc.Name:find("Frame") 
-                               or desc:IsA("ImageLabel") or desc:IsA("ImageButton") then
-                                pcall(function()
-                                    desc:Destroy()
-                                end)
-                            end
-                        end
-                    end
-                    
-                    
-                    local surface = workspace:FindFirstChild("CircleMinigame", true)
-                    if surface then
-                        local sg = surface:FindFirstChildWhichIsA("SurfaceGui")
-                        if sg then 
-                            pcall(function() sg:Destroy() end) 
-                        end
-                    end
-                end
-
-                
-                local mainFrame = circleGui:FindFirstChildWhichIsA("Frame")
-                if mainFrame then
-                    local marker = nil
-                    for _, desc in ipairs(mainFrame:GetDescendants()) do
-                        if (desc:IsA("ImageLabel") or desc:IsA("Frame")) 
-                           and (desc.Name:find("Marker") or desc.Name:find("Needle") 
-                                or desc.Name:find("Arrow") or (desc.Rotation and desc.Rotation ~= 0)) then
-                            marker = desc
-                            break
-                        end
-                    end
-
-                    if marker and (marker.Visible or _G.HideCircleMinigame) then
-                        local currentRot = (marker.Rotation or 0) % 360
-
-                        local targetZone = nil
-                        for _, desc in ipairs(mainFrame:GetDescendants()) do
-                            if desc:IsA("GuiObject") 
-                               and (desc.Name:find("Gold") or desc.Name:find("Yellow") 
-                                    or desc.Name:find("Required") or desc.Name:find("Grey") 
-                                    or desc.Name:find("Area")) then
-                                targetZone = desc
-                                break
-                            end
-                        end
-
-                        if targetZone then
-                            local zoneRot = (targetZone.Rotation or 0) % 360
-                            local zoneWidth = targetZone.Size and targetZone.Size.X.Offset or 48
-                            local zoneEnd = (zoneRot + zoneWidth) % 360
-
-                            local inZone = (zoneRot <= zoneEnd and currentRot >= zoneRot and currentRot <= zoneEnd)
-                                        or (currentRot >= zoneRot or currentRot <= zoneEnd)
-
-                            if inZone then
-                                forzarEspacioLegitimo()
-                                task.wait(math.random(19, 27)/100)
-                            end
-                        end
-                    end
-                end
-            end
-
-            
-            for _, gui in ipairs(playerGui:GetChildren()) do
-                if gui:IsA("ScreenGui") and gui.Enabled then
-                    local frame = gui:FindFirstChild("SkillCheckFrame", true)
-                    if frame and frame.Visible then
-                        local marker = frame:FindFirstChild("Marker", true)
-                        if marker and marker.Visible then
-                            local pos = marker.Position.X.Scale
-                            local gold = frame:FindFirstChild("GoldArea", true)
-                            local req = frame:FindFirstChild("RequiredArea", true)
-                            local zone = (gold and gold.Visible) and gold or req
-                            if zone then
-                                local start = zone.Position.X.Scale
-                                local finish = start + zone.Size.X.Scale
-                                if pos >= start and pos <= finish then
-                                    forzarEspacioLegitimo()
-                                    task.wait(0.28)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-
-            local treadmill = playerGui:FindFirstChild("TreadmillTapSkillCheckGui", true)
-            if treadmill and treadmill.Enabled then
-                local tapFrame = treadmill:FindFirstChild("TapSkillCheckFrame", true)
-                if tapFrame and tapFrame.Visible then
-                    forzarEspacioLegitimo()
-                    task.wait(0.015)
-                end
-            end
-        end)
+local function ApplyInstantSkillcheck(state)
+    local Remote = ReplicatedStorage:FindFirstChild("Events", true) and ReplicatedStorage.Events:FindFirstChild("SkillcheckUpdate")
+    if not Remote then 
+        warn("[Astro] No se encontró SkillcheckUpdate Remote")
+        return 
     end
-end)
 
+    if state then
+        
+        if getcallbackvalue then
+            local ok, orig = pcall(function()
+                return getcallbackvalue(Remote, "OnClientInvoke")
+            end)
+            if ok and orig then
+                S.skillcheckOrigCB = orig
+            end
+        end
 
+        
+        Remote.OnClientInvoke = function(...)
+            task.spawn(function()
+                pcall(function()
+                    local playerGui = localPlayer:WaitForChild("PlayerGui")
+                    
+                    
+                    local skillFrame = playerGui:FindFirstChild("SkillCheckFrame", true)
+                    if skillFrame then skillFrame.Visible = false end
+                    
+                    local circleGui = playerGui:FindFirstChild("CircleSkillCheckGui")
+                    if circleGui then 
+                        circleGui.Enabled = false 
+                        for _, v in ipairs(circleGui:GetDescendants()) do
+                            if v:IsA("GuiObject") then
+                                pcall(function() v.Visible = false end)
+                            end
+                        end
+                    end
+
+                    
+                    local menu = playerGui:FindFirstChild("Menu", true)
+                    if menu then
+                        local msg = menu:FindFirstChild("SkillCheckMessage")
+                        if msg then
+                            msg.Text = "Great Job!"
+                            msg.Visible = true
+                            msg.TextTransparency = 0
+                            pcall(function()
+                                msg.UIGradient.Enabled = false
+                                msg.UIGradientWin.Enabled = true
+                            end)
+                        end
+                    end
+
+                    
+                    pcall(function()
+                        local gui = playerGui:FindFirstChildWhichIsA("ScreenGui")
+                        if gui then
+                            local correct = gui:FindFirstChild("Correct")
+                            if correct then correct:Play() end
+                            local goldHit = gui:FindFirstChild("GoldAreaHit")
+                            if goldHit then goldHit:Play() end
+                        end
+                    end)
+                end)
+            end)
+            return "supercomplete"  
+        end
+
+        
+    else
+        
+        if Remote then
+            if S.skillcheckOrigCB then
+                Remote.OnClientInvoke = S.skillcheckOrigCB
+                S.skillcheckOrigCB = nil
+            else
+                Remote.OnClientInvoke = nil
+            end
+        end
+        
+    end
+end
 
 
 
@@ -576,8 +544,8 @@ VisualsTab:CreateToggle("ESP Elevator", false, function(state)
 end)
 
 local AutoTab = Ventana:CreateTab("Automation")
-AutoTab:CreateSection("Minigames")
+AutoTab:CreateSection("Generator")
 
-AutoTab:CreateToggle("Auto-Skillcheck", false, function(state)
-	_G.AutoSkillcheck = state 
+local instantToggle = AutoTab:CreateToggle("Instant Skillcheck", false, function(state)
+    ApplyInstantSkillcheck(state)
 end)
