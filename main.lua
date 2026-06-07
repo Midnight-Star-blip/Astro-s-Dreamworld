@@ -423,7 +423,6 @@ task.spawn(function()
 end)
 
 
-
 local GameContext = nil
 pcall(function()
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
@@ -450,59 +449,69 @@ task.spawn(function()
 				if room then
 					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
 					if circleMinigame then
-						
+						local circleParts = circleMinigame:FindFirstChild("CircleParts")
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
-						if circleGui and circleGui.Enabled then
-							local mainFrame = circleGui:FindFirstChild("CircleBackgroundFrame") or circleGui:FindFirstChildOfClass("Frame")
+						
+						if circleParts and circleGui and circleGui.Enabled then
+							local piezas = {}
 							
-							if mainFrame then
+							
+							local ok, de = pcall(function() return circleParts:GetDescendants() end)
+							if ok and de then
+								for _, v in ipairs(de) do
+									if v and (v:IsA("ImageLabel") or v:IsA("Frame") or v:IsA("GuiObject")) then
+										table.insert(piezas, v)
+									end
+								end
+							end
+							
+							if #piezas >= 2 then
+								local marcadorRojo = nil
+								local zonaObjetivo = nil
 								
-								local es, elementos = pcall(function() return mainFrame:GetChildren() end)
 								
-								if es and elementos and #elementos > 1 then
-									local ringMarker = nil
-									local targetZone = nil
-									
-									
-									for _, elem in ipairs(elementos) do
-										if elem and elem:IsA("GuiObject") and elem.Visible then
-											
-											if elem.Name == "Marker" or elem.Name == "Box" or elem.Name == "Indicator" then
-												ringMarker = elem
-											elseif elem.Name == "GoldArea" or elem.Name == "GreyArea" or elem.Name == "RequiredArea" then
-												targetZone = elem
+								for _, p in ipairs(piezas) do
+									if p and p.Visible and p.AbsoluteSize then
+										
+										
+										local size1 = p.AbsoluteSize.X
+										task.wait(0.005) 
+										local size2 = p.AbsoluteSize.X
+										
+										if size1 ~= size2 or p.Name == "Box" or p.Parent.Name == "Box" then
+											marcadorRojo = p
+										else
+											zonaObjetivo = p
+										end
+									end
+								end
+								
+								
+								if not marcadorRojo or not zonaObjetivo then
+									for _, p in ipairs(piezas) do
+										if p and p.Visible then
+											if p.Name == "Box" or p.Parent.Name == "Box" or p.Name:lower():find("mark") then
+												marcadorRojo = p
+											elseif p.Name == "RenderParts" or p.Name:lower():find("area") or p.Name:lower():find("zone") then
+												zonaObjetivo = p
 											end
 										end
 									end
+								end
+								
+								
+								if marcadorRojo and zonaObjetivo and marcadorRojo.AbsoluteSize and zonaObjetivo.AbsoluteSize then
+									local diametroActual = marcadorRojo.AbsoluteSize.X
+									local diametroObjetivo = zonaObjetivo.AbsoluteSize.X
 									
 									
-									if not ringMarker or not targetZone then
-										for _, elem in ipairs(elementos) do
-											if elem and elem:IsA("GuiObject") and elem.Visible then
-												
-												if elem.Parent.Name == "CircleParts" or elem.Name == "RenderParts" then
-													ringMarker = elem
-												else
-													targetZone = elem
-												end
-											end
-										end
-									end
+									local rangoTolerancia = 15
 									
 									
-									if ringMarker and targetZone and ringMarker.AbsoluteSize and targetZone.AbsoluteSize then
-										local currentDiameter = ringMarker.AbsoluteSize.X
-										local targetDiameter = targetZone.AbsoluteSize.X
-										
-										
-										local toleranciaPixeles = 14
-										
-										
-										if math.abs(currentDiameter - targetDiameter) <= toleranciaPixeles then
-											forzarEspacioLegitimo()
-											task.wait(0.6) 
-										end
+									if math.abs(diametroActual - diametroObjetivo) <= rangoTolerancia then
+										forzarEspacioLegitimo()
+										task.wait(0.6) 
 									end
 								end
 							end
