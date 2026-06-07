@@ -262,27 +262,40 @@ local function clearESP()
 	table.clear(espTable) 
 end
 
+
+
+local function clearESP() 
+	for _, v in ipairs(espTable) do pcall(function() v:Destroy() end) end 
+	table.clear(espTable) 
+end
+
 task.spawn(function()
 	while task.wait(0.6) do
 		clearESP()
 		local room = workspace:FindFirstChild("CurrentRoom")
 		if room then
 			for _, sala in ipairs(room:GetChildren()) do
+				
+				-- 1. ESP de Twisteds (Corregido y Limpio)
 				if _G.ESPTwisteds then
 					local monFolder = sala:FindFirstChild("Monsters")
 					if monFolder then
-						for _, parte in ipairs(monFolder:GetDescendants()) do
-							if parte:IsA("BasePart") then
-								local carpetaMadre = parte:FindFirstAncestorOfClass("Folder")
-								if carpetaMadre and carpetaMadre.Name ~= "Monsters" then
-									local nombreTwisted = string.gsub(carpetaMadre.Name, "Monster", "")
-									makeESP(parte, "[Twisted] " .. nombreTwisted, Color3.fromRGB(255, 50, 50))
-								end
+						for _, monster in ipairs(monFolder:GetChildren()) do
+							local primaryPart = monster:FindFirstChild("HumanoidRootPart") 
+								or monster:FindFirstChildOfClass("MeshPart") 
+								or monster:FindFirstChildOfClass("Part")
+								or monster
+							
+							if primaryPart then
+								local nombreLimpio = string.gsub(monster.Name, "Monster", "")
+								nombreLimpio = string.gsub(nombreLimpio, "Character", "")
+								makeESP(primaryPart, "[Twisted] " .. nombreLimpio, Color3.fromRGB(255, 50, 50))
 							end
 						end
 					end
 				end
 				
+				-- 2. ESP de Cápsulas de Investigación
 				if _G.ESPItems then
 					local itemsFolder = sala:FindFirstChild("Items")
 					if itemsFolder then
@@ -294,6 +307,7 @@ task.spawn(function()
 					end
 				end
 				
+				-- 3. ESP de Generadores
 				if _G.ESPGenerators then
 					local gensFolder = sala:FindFirstChild("Generators")
 					if gensFolder then
@@ -304,9 +318,25 @@ task.spawn(function()
 						end
 					end
 				end
+				
 			end
 		end
 		
+		-- 4. ESP de Ascensores (Bucle Corregido sin errores)
+		if _G.ESPGenerators then
+			local elevators = workspace:FindFirstChild("Elevators")
+			if elevators then
+				for _, elev in ipairs(elevators:GetChildren()) do
+					if elev.Name == "Elevator" then 
+						makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220)) 
+					end
+				end
+			end
+		end
+		
+	end
+end)
+
 		if _G.ESPGenerators then
 			local elevators = workspace:FindFirstChild("Elevators")
 			if elevators then
