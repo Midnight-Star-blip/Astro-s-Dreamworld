@@ -440,76 +440,108 @@ task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
-	
-	local minijuegoActivo = false
-	local tiempoInicio = 0
-
-	while task.wait(0.005) do 
+	while task.wait(0.01) do 
 		if _G.AutoSkillcheck then
 			pcall(function()
 				
 				
+				local interfacesAInterpretar = {}
+				
+				
+				for _, g in ipairs(playerGui:GetChildren()) do
+					if g:IsA("ScreenGui") then table.insert(interfacesAInterpretar, g) end
+				end
+				
+				
 				local room = workspace:FindFirstChild("CurrentRoom")
 				if room then
-					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
-					if circleMinigame then
-						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
-						
-						
-						if circleGui and (circleGui.Enabled or (circleGui:IsA("SurfaceGui") and circleGui.Adornee ~= nil)) then
-							
-							
-							if not minijuegoActivo then
-								minijuegoActivo = true
-								tiempoInicio = os.clock()
-							end
-							
-							
-							local tiempoTranscurrido = os.clock() - tiempoInicio
-							
-							
-							
-							
-							
-							if tiempoTranscurrido >= 0.63 and tiempoTranscurrido <= 0.72 then
-								forzarEspacioLegitimo()
-								task.wait(0.8) 
-								minijuegoActivo = false
-							end
-						else
-							
-							minijuegoActivo = false
+					for _, d in ipairs(room:GetDescendants()) do
+						if d:IsA("ScreenGui") or d:IsA("SurfaceGui") then
+							table.insert(interfacesAInterpretar, d)
 						end
-					else
-						minijuegoActivo = false
+					end
+				end
+				
+				
+				for _, gui in ipairs(interfacesAInterpretar) do
+					if gui.Enabled or (gui:IsA("SurfaceGui") and gui.Adornee ~= nil) then
+						
+						
+						local framesActivos = {}
+						for _, objeto in ipairs(gui:GetDescendants()) do
+							if objeto:IsA("ImageLabel") or objeto:IsA("Frame") then
+								if objeto.Visible and objeto.AbsoluteSize.X > 0 then
+									table.insert(framesActivos, objeto)
+								end
+							end
+						end
+						
+						
+						if #framesActivos >= 2 then
+							local circuloRojoMarcador = nil
+							local anilloFijoZona = nil
+							
+							for _, f in ipairs(framesActivos) do
+								
+								local tamanoInicial = f.AbsoluteSize.X
+								task.wait(0.002)
+								local tamanoFinal = f.AbsoluteSize.X
+								
+								
+								if tamanoInicial ~= tamanoFinal then
+									circuloRojoMarcador = f
+								else
+									
+									local nombreMinuscula = f.Name:lower()
+									if nombreMinuscula:find("area") or nombreMinuscula:find("zone") or nombreMinuscula:find("gray") or nombreMinuscula:find("gold") or nombreMinuscula:find("required") then
+										anilloFijoZona = f
+									end
+								end
+							end
+							
+							
+							if circuloRojoMarcador and not anilloFijoZona then
+								for _, f in ipairs(framesActivos) do
+									if f ~= circuloRojoMarcador then
+										anilloFijoZona = f
+										break
+									end
+								end
+							end
+							
+							
+							if circuloRojoMarcador and anilloFijoZona then
+								local diametroMarcador = circuloRojoMarcador.AbsoluteSize.X
+								local diametroObjetivo = anilloFijoZona.AbsoluteSize.X
+								
+								
+								local toleranciaDePixeles = 16
+								
+								
+								if math.abs(diametroMarcador - diametroObjetivo) <= toleranciaDePixeles then
+									forzarEspacioLegitimo()
+									task.wait(0.5) 
+								end
+							end
+						end
 					end
 				end
 
 				
-				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui and gui:IsA("ScreenGui") then
-						local menu = gui:FindFirstChild("Menu", true)
-						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
+				local menu = playerGui:FindFirstChild("Menu", true)
+				local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
+				if skillFrame and skillFrame.Visible then
+					local marker = skillFrame:FindFirstChild("Marker")
+					local goldArea = skillFrame:FindFirstChild("GoldArea") or skillFrame:FindFirstChild("RequiredArea")
+					
+					if marker and goldArea and marker.Visible then
+						local markerScale = marker.Position.X.Scale
+						local zoneStart = goldArea.Position.X.Scale
+						local zoneEnd = zoneStart + goldArea.Size.X.Scale
 						
-						if skillFrame and skillFrame.Visible then
-							local marker = skillFrame:FindFirstChild("Marker")
-							local goldArea = skillFrame:FindFirstChild("GoldArea")
-							local reqArea = skillFrame:FindFirstChild("RequiredArea")
-							
-							if marker and marker.Visible then
-								local markerScale = marker.Position.X.Scale
-								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
-								
-								if targetZone then
-									local zoneStart = targetZone.Position.X.Scale
-									local zoneEnd = zoneStart + targetZone.Size.X.Scale
-									
-									if markerScale >= zoneStart and markerScale <= zoneEnd then
-										forzarEspacioLegitimo()
-										task.wait(0.4) 
-									end
-								end
-							end
+						if markerScale >= zoneStart and markerScale <= zoneEnd then
+							forzarEspacioLegitimo()
+							task.wait(0.4) 
 						end
 					end
 				end
