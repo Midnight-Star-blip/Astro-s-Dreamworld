@@ -423,6 +423,8 @@ task.spawn(function()
 end)
 
 
+
+
 local GameContext = nil
 pcall(function()
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
@@ -443,6 +445,46 @@ task.spawn(function()
 	while task.wait(0.01) do 
 		if _G.AutoSkillcheck then
 			pcall(function()
+				
+				
+				local room = workspace:FindFirstChild("CurrentRoom")
+				if room then
+					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
+					if circleMinigame then
+						
+						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
+						
+						if circleGui and circleGui.Enabled then
+							
+							local mainFrame = circleGui:FindFirstChildOfClass("Frame")
+							local marker = mainFrame and (mainFrame:FindFirstChild("Marker") or mainFrame:FindFirstChild("Indicator") or mainFrame:FindFirstChildOfClass("ImageLabel"))
+							
+							
+							local goldZone = mainFrame and (mainFrame:FindFirstChild("GoldArea") or mainFrame:FindFirstChild("YellowZone"))
+							local greyZone = mainFrame and (mainFrame:FindFirstChild("GreyArea") or mainFrame:FindFirstChild("RequiredArea"))
+							local targetZone = (goldZone and goldZone.Visible) and goldZone or greyZone
+							
+							if marker and targetZone and marker.Visible and targetZone.Visible then
+								
+								local markerPos = marker.AbsolutePosition
+								local zonePos = targetZone.AbsolutePosition
+								local zoneSize = targetZone.AbsoluteSize
+								
+								
+								local tolerancia = 12 
+								
+								
+								if markerPos.X >= (zonePos.X - tolerancia) and markerPos.X <= (zonePos.X + zoneSize.X + tolerancia) then
+									if markerPos.Y >= (zonePos.Y - tolerancia) and markerPos.Y <= (zonePos.Y + zoneSize.Y + tolerancia) then
+										forzarEspacioLegitimo()
+										task.wait(0.6)
+									end
+								end
+							end
+						end
+					end
+				end
+
 				
 				for _, gui in ipairs(playerGui:GetChildren()) do
 					if gui:IsA("ScreenGui") then
@@ -471,6 +513,7 @@ task.spawn(function()
 						end
 					end
 				end
+				
 				
 				local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
 				if treadmillGui then
