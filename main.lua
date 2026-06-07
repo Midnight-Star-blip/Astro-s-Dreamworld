@@ -384,99 +384,62 @@ task.spawn(function()
 	end
 end)
 
-_G.AutoSkillcheck = false 
+local Players = game:GetService("Players") 
+local localPlayer = Players.LocalPlayer
+_G.AutoSkillcheck = false
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
 
-local function presionarEspacio()
+local Modules = ReplicatedStorage:WaitForChild("Modules", 5)
+local ClientUI = Modules and Modules:WaitForChild("ClientUI", 5)
+local Gameplay = Modules and Modules:WaitForChild("Gameplay", 5)
+
+local SkillCheckController = ClientUI and ClientUI:FindFirstChild("SkillCheckController")
+local CircleSkillCheckHandler = Gameplay and Gameplay:FindFirstChild("CircleSkillCheckHandler")
+local TreadmillTapSkillCheck = Gameplay and Gameplay:FindFirstChild("TreadmillTapSkillCheck")
+
+
+local function simularEspacioNativo()
 	pcall(function()
-		
 		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-		task.wait(0.05)
-		
+		task.wait(0.02)
 		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
 	end)
 end
 
 task.spawn(function()
-	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
-	if not playerGui then return end
-
-	
-	local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-
-	while task.wait(0.01) do
+	while task.wait(0.1) do
 		if _G.AutoSkillcheck then
 			pcall(function()
-				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui:IsA("ScreenGui") then
-						
-						
-						local mainFrame = gui:FindFirstChild("Circle", true) 
-							or gui:FindFirstChild("Minigame", true) 
-							or gui:FindFirstChild("SkillCheck", true)
-							or gui:FindFirstChild("MainFrame", true)
-						
-						if mainFrame and mainFrame.Visible then
-							local needle = mainFrame:FindFirstChild("Needle", true) or mainFrame:FindFirstChild("Pointer", true) or mainFrame:FindFirstChildOfClass("ImageLabel")
-							local zone = mainFrame:FindFirstChild("Zone", true) or mainFrame:FindFirstChild("SuccessZone", true) or mainFrame:FindFirstChild("WhiteBar", true)
-							
-							if needle and zone and needle.Visible then
+				
+				
+				if character and character:FindFirstChild("HumanoidRootPart") then
+					
+					
+					local playerGui = localPlayer:FindFirstChild("PlayerGui")
+					if playerGui then
+						for _, gui in ipairs(playerGui:GetChildren()) do
+							if gui:IsA("ScreenGui") then
 								
-								if string.find(gui.Name, "Circle") or mainFrame.Name == "Circle" then
-									local needleRotation = needle.Rotation % 360
-									local zoneStart = zone.Rotation % 360
-									local zoneEnd = (zoneStart + (zone.Size.X.Offset > 0 and zone.Size.X.Offset or 25)) % 360
+								
+								local isQTEActive = gui:FindFirstChild("Minigame", true) 
+									or gui:FindFirstChild("SkillCheck", true) 
+									or gui:FindFirstChild("Circle", true)
+									or gui:FindFirstChild("Treadmill", true)
+									or gui:FindFirstChild("MainFrame", true)
+								
+								if isQTEActive and isQTEActive.Visible then
 									
-									if zoneStart < zoneEnd then
-										if needleRotation >= zoneStart and needleRotation <= zoneEnd then
-											presionarEspacio()
-											task.wait(0.3)
-										end
-									else
-										if needleRotation >= zoneStart or needleRotation <= zoneEnd then
-											presionarEspacio()
-											task.wait(0.3)
-										end
-									end
-								
-								
-								else
-									local needleX = needle.AbsolutePosition.X
-									local zoneLeft = zone.AbsolutePosition.X
-									local zoneRight = zoneLeft + zone.AbsoluteSize.X
-									
-									if needleX >= zoneLeft and needleX <= zoneRight then
-										presionarEspacio()
-										task.wait(0.4)
-									end
+									simularEspacioNativo()
+									task.wait(0.2) 
 								end
+								
 							end
 						end
-						
-						
-						local treadmillTap = gui:FindFirstChild("TreadmillTapSkillCheck", true) 
-							or gui:FindFirstChild("TapButton", true)
-							or gui:FindFirstChild("Treadmill", true)
-						
-						if treadmillTap and treadmillTap.Visible then
-							pcall(function()
-								if isMobile then
-									
-									local VirtualUser = game:GetService("VirtualUser")
-									VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-									task.wait(0.01)
-									VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-								else
-									
-									presionarEspacio()
-								end
-							end)
-							task.wait(0.02) 
-						end
-						
 					end
+					
 				end
 			end)
 		end
