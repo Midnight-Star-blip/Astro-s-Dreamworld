@@ -424,23 +424,11 @@ end)
 
 
 
-local GameContext = nil
-pcall(function()
-	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
-end)
-
-
-local function inyectarAciertoBypass()
+local function forzarEspacioLegitimo()
 	pcall(function()
-		
-		if GameContext and GameContext.PlayerState and GameContext.PlayerState.CompleteSkillCheck then
-			GameContext.PlayerState:CompleteSkillCheck(true) 
-		end
-		
-		uea
-		game:GetService("VirtualUser"):Button1Down(Vector2.new(0, 0))
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
 		task.wait(0.01)
-		game:GetService("VirtualUser"):Button1Up(Vector2.new(0, 0))
+		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
 	end)
 end
 
@@ -461,12 +449,33 @@ task.spawn(function()
 						
 						
 						if circleGui and circleGui.Enabled then
+							local circleParts = circleMinigame:FindFirstChild("CircleParts")
+							local mainFrame = circleGui:FindFirstChild("CircleBackgroundFrame") or circleGui:FindFirstChildOfClass("Frame")
 							
-							circleGui.Enabled = false
-							
-							
-							inyectarAciertoBypass()
-							task.wait(0.35) 
+							if circleParts and mainFrame then
+								
+								local marcadorAguja = circleParts:FindFirstChild("Marker") or circleParts:FindFirstChildOfClass("ImageLabel")
+								local zonaOro = mainFrame:FindFirstChild("GoldArea") or mainFrame:FindFirstChild("YellowZone")
+								local zonaGris = mainFrame:FindFirstChild("GreyArea") or mainFrame:FindFirstChild("RequiredArea")
+								
+								if marcadorAguja and marcadorAguja.Visible then
+									local rotacionActual = marcadorAguja.Rotation
+									local zonaObjetivo = (zonaOro and zonaOro.Visible) and zonaOro or zonaGris
+									
+									if zonaObjetivo and zonaObjetivo.Visible then
+										
+										local inicioRango = zonaObjetivo.Rotation
+										
+										local anchoRango = 35
+										local finRango = inicioRango + anchoRango
+										
+										
+										if rotacionActual >= inicioRango and rotacionActual <= finRango then
+											forzarEspacioLegitimo()
+											task.wait(0.5) 
+									end
+								end
+							end
 						end
 					end
 				end
@@ -491,15 +500,7 @@ task.spawn(function()
 									local zoneEnd = zoneStart + targetZone.Size.X.Scale
 									
 									if markerScale >= zoneStart and markerScale <= zoneEnd then
-										
-										if GameContext and GameContext.PlayerState and GameContext.PlayerState.CompleteSkillCheck then
-											GameContext.PlayerState:CompleteSkillCheck(true)
-										end
-										
-										
-										game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-										task.wait(0.01)
-										game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+										forzarEspacioLegitimo()
 										task.wait(0.4) 
 									end
 								end
@@ -513,7 +514,7 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						inyectarAciertoBypass()
+						forzarEspacioLegitimo()
 						task.wait(0.02)
 					end
 				end
