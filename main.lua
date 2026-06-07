@@ -448,9 +448,21 @@ task.spawn(function()
 						end
 						
 						
-						local treadmill = gui:FindFirstChild("TreadmillFrame", true) or gui:FindFirstChild("TreadmillTapSkillCheck", true)
+						local treadmill = gui:FindFirstChild("Treadmill", true) 
+							or gui:FindFirstChild("TreadmillTapSkillCheck", true)
+							or gui:FindFirstChild("TreadmillFrame", true)
+							or gui:FindFirstChild("TapArea", true)
+						
 						if treadmill and treadmill.Visible then
-							forzarEspacioLegitimo()
+							pcall(function()
+								
+								local VirtualUser = game:GetService("VirtualUser")
+								VirtualUser:CaptureController()
+								
+								VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+								task.wait(0.01)
+								VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+							end)
 							task.wait(0.02) 
 						end
 						
