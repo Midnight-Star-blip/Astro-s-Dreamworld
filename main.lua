@@ -384,63 +384,82 @@ task.spawn(function()
 	end
 end)
 
-local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 _G.AutoSkillcheck = false
 
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
-local Modules = ReplicatedStorage:WaitForChild("Modules", 5)
-local ClientUI = Modules and Modules:WaitForChild("ClientUI", 5)
-local Gameplay = Modules and Modules:WaitForChild("Gameplay", 5)
 
-local SkillCheckController = ClientUI and ClientUI:FindFirstChild("SkillCheckController")
-local CircleSkillCheckHandler = Gameplay and Gameplay:FindFirstChild("CircleSkillCheckHandler")
-local TreadmillTapSkillCheck = Gameplay and Gameplay:FindFirstChild("TreadmillTapSkillCheck")
+local GameContext = nil
+pcall(function()
+	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
+end)
+
+
+local function forzarEspacioLegitimo()
+	pcall(function()
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+		task.wait(0.01)
+		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+	end)
+end
 
 
 task.spawn(function()
-	while task.wait(0.05) do
+	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
+	if not playerGui then return end
+
+	while task.wait(0.01) do 
 		if _G.AutoSkillcheck then
 			pcall(function()
-				local playerGui = localPlayer:FindFirstChild("PlayerGui")
-				if playerGui then
-					
-					for _, gui in ipairs(playerGui:GetChildren()) do
-						if gui:IsA("ScreenGui") then
+				
+				for _, gui in ipairs(playerGui:GetChildren()) do
+					if gui:IsA("ScreenGui") then
+						
+						local menu = gui:FindFirstChild("Menu", true)
+						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
+						
+						if skillFrame and skillFrame.Visible then
+							local marker = skillFrame:FindFirstChild("Marker")
+							local goldArea = skillFrame:FindFirstChild("GoldArea")
+							local reqArea = skillFrame:FindFirstChild("RequiredArea")
 							
-							local skillFrame = gui:FindFirstChild("Minigame", true) 
-								or gui:FindFirstChild("SkillCheck", true) 
-								or gui:FindFirstChild("Circle", true)
-								or gui:FindFirstChild("Treadmill", true)
-								or gui:FindFirstChild("MainFrame", true)
 							
-							if skillFrame and skillFrame.Visible then
+							if marker and marker.Visible then
+								local markerScale = marker.Position.X.Scale
 								
-								local interactionRemote = ReplicatedStorage:FindFirstChild("InteractionEvent", true) 
-									or ReplicatedStorage:FindFirstChild("QTERemote", true) 
-									or ReplicatedStorage:FindFirstChild("SkillCheckRemote", true)
 								
-								if interactionRemote and interactionRemote:IsA("RemoteEvent") then
+								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
+								if targetZone then
+									local zoneStart = targetZone.Position.X.Scale
+									local zoneEnd = zoneStart + targetZone.Size.X.Scale
 									
-									interactionRemote:FireServer(true, "Perfect")
-								else
 									
-									local VirtualUser = game:GetService("VirtualUser")
-									VirtualUser:CaptureController()
-									VirtualUser:ClickButton1(Vector2.new(0, 0))
+									if markerScale >= zoneStart and markerScale <= zoneEnd then
+										forzarEspacioLegitimo()
+										task.wait(0.4) 
+									end
 								end
-								task.wait(0.2) 
 							end
 						end
+						
+						
+						local treadmill = gui:FindFirstChild("TreadmillFrame", true) or gui:FindFirstChild("TreadmillTapSkillCheck", true)
+						if treadmill and treadmill.Visible then
+							forzarEspacioLegitimo()
+							task.wait(0.02) 
+						end
+						
 					end
 				end
 			end)
 		end
 	end
 end)
-
 
 
 
