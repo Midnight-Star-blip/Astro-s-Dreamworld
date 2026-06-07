@@ -424,7 +424,6 @@ end)
 
 
 
-
 local GameContext = nil
 pcall(function()
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
@@ -560,6 +559,11 @@ task.spawn(function()
 		end
 	end
 end)
+
+
+
+
+
 
 
 local Ventana = AstroUI.CreateWindow({
