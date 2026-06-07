@@ -253,11 +253,10 @@ local espTable = {}
 
 
 local function makeESP(obj, txt, col)
+	if not obj then return end
 	
-	if not obj or not obj:IsA("BasePart") then return end
 	
-	
-	local targetModel = obj:FindFirstAncestorOfClass("Model") or obj
+	local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or obj
 	if not targetModel then return end
 	
 	
@@ -296,7 +295,6 @@ local function makeESP(obj, txt, col)
 	table.insert(espTable, bb)
 end
 
-
 local function clearESP() 
 	for _, v in ipairs(espTable) do 
 		pcall(function() v:Destroy() end) 
@@ -304,11 +302,10 @@ local function clearESP()
 	table.clear(espTable) 
 end
 
+
 task.spawn(function()
 	while task.wait(0.6) do
 		clearESP()
-		
-		
 		local room = workspace:FindFirstChild("CurrentRoom")
 		if room then
 			for _, sala in ipairs(room:GetChildren()) do
@@ -318,17 +315,14 @@ task.spawn(function()
 					local monFolder = sala:FindFirstChild("Monsters")
 					if monFolder then
 						for _, monster in ipairs(monFolder:GetChildren()) do
-							
 							pcall(function()
 								local rootPart = monster:FindFirstChild("HumanoidRootPart") 
 									or monster:FindFirstChildOfClass("MeshPart") 
 									or monster:FindFirstChildOfClass("Part")
 								
 								if rootPart then
-									
 									local nombreLimpio = string.gsub(monster.Name, "Monster", "")
 									nombreLimpio = string.gsub(nombreLimpio, "Character", "")
-									
 									makeESP(rootPart, "[Twisted] " .. nombreLimpio, Color3.fromRGB(255, 50, 50))
 								end
 							end)
@@ -368,12 +362,12 @@ task.spawn(function()
 		end
 		
 		
-		if _G.ESPGenerators then
+		if _G.ESPElevator then
 			local elevators = workspace:FindFirstChild("Elevators")
 			if elevators then
 				for _, elev in ipairs(elevators:GetChildren()) do
 					pcall(function()
-						if elev.Name == "ElevatorDoor" then 
+						if elev.Name == "Elevator" then 
 							makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220)) 
 						end
 					end)
@@ -385,30 +379,25 @@ task.spawn(function()
 end)
 
 
-
 _G.AutoSkillcheck = false
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
-
-local GameContext = nil
-local CircleHandler = nil
-
-pcall(function()
-	local Modules = ReplicatedStorage:WaitForChild("Modules", 5)
-	if Modules then
-		GameContext = require(Modules:WaitForChild("Core"):WaitForChild("GameContext"))
-		CircleHandler = require(Modules:WaitForChild("Gameplay"):WaitForChild("CircleSkillCheckHandler"))
-	end
-end)
-
-
-local function presionarEspacioSeguro()
+-- Función interna optimizada para enviar la pulsación legítima en PC y móvil
+local function forzarEspacioLegitimo()
 	pcall(function()
-		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-		task.wait(0.01)
-		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+		local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+		if isMobile then
+			local VirtualUser = game:GetService("VirtualUser")
+			VirtualUser:CaptureController()
+			VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+			task.wait(0.01)
+			VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+		else
+			VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+			task.wait(0.01)
+			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+		end
 	end)
 end
 
@@ -416,7 +405,7 @@ task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
-	while task.wait(0.01) do 
+	while task.wait(0.01) do
 		if _G.AutoSkillcheck then
 			pcall(function()
 				
@@ -439,42 +428,11 @@ task.spawn(function()
 									local zoneEnd = zoneStart + targetZone.Size.X.Scale
 									
 									if markerScale >= zoneStart and markerScale <= zoneEnd then
-										presionarEspacioSeguro()
+										forzarEspacioLegitimo()
 										task.wait(0.4)
 									end
 								end
 							end
-						end
-					end
-				end
-
-				
-								
-				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui:IsA("ScreenGui") then
-						
-						local skillCheckFrame = gui:FindFirstChild("SkillCheckFrame", true) 
-							or gui:FindFirstChild("ButtonCircleMinigame", true)
-							or gui:FindFirstChild("Circle", true)
-						
-						
-						if skillCheckFrame and skillCheckFrame.Visible then
-							pcall(function()
-								
-								local VirtualUser = game:GetService("VirtualUser")
-								VirtualUser:CaptureController()
-								
-								VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-								task.wait(0.01)
-								VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-								
-								
-								local VirtualInputManager = game:GetService("VirtualInputManager")
-								VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-								task.wait(0.01)
-								VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-							end)
-							task.wait(0.18) 
 						end
 					end
 				end
@@ -484,19 +442,7 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-						if isMobile then
-							local VirtualUser = game:GetService("VirtualUser")
-							VirtualUser:CaptureController()
-							VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-							task.wait(0.01)
-							VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-						else
-							local VirtualInputManager = game:GetService("VirtualInputManager")
-							VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-							task.wait(0.01)
-							VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-						end
+						forzarEspacioLegitimo()
 						task.wait(0.02)
 					end
 				end
@@ -505,7 +451,6 @@ task.spawn(function()
 		end
 	end
 end)
-
 
 
 
@@ -531,8 +476,13 @@ VisualsTab:CreateToggle("ESP Research Capsules", false, function(state)
 	if not state then clearESP() end
 end)
 
-VisualsTab:CreateToggle("ESP Generators & Elevators", false, function(state)
+VisualsTab:CreateToggle("ESP Generators", false, function(state)
 	_G.ESPGenerators = state
+	if not state then clearESP() end
+end)
+
+VisualsTab:CreateToggle("ESP Elevator", false, function(state)
+	_G.ESPElevator = state
 	if not state then clearESP() end
 end)
 
