@@ -413,23 +413,71 @@ local function presionarEspacioSeguro()
 end
 
 task.spawn(function()
-	while task.wait(0.05) do 
-		if _G.AutoSkillcheck and GameContext then
+	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
+	if not playerGui then return end
+
+	while task.wait(0.01) do 
+		if _G.AutoSkillcheck then
 			pcall(function()
 				
-					if GameContext.skillchecking == true or GameContext.currentMinigameType ~= nil then
-					
-					task.wait(0.52) 
-					
-					
-					if GameContext.skillchecking == true then
-						presionarEspacioSeguro()
+				
+				for _, gui in ipairs(playerGui:GetChildren()) do
+					if gui:IsA("ScreenGui") then
+						local menu = gui:FindFirstChild("Menu", true)
+						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
+						
+						if skillFrame and skillFrame.Visible then
+							local marker = skillFrame:FindFirstChild("Marker")
+							local goldArea = skillFrame:FindFirstChild("GoldArea")
+							local reqArea = skillFrame:FindFirstChild("RequiredArea")
+							
+							if marker and marker.Visible then
+								local markerScale = marker.Position.X.Scale
+								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
+								if targetZone then
+									local zoneStart = targetZone.Position.X.Scale
+									local zoneEnd = zoneStart + targetZone.Size.X.Scale
+									
+									if markerScale >= zoneStart and markerScale <= zoneEnd then
+										presionarEspacioSeguro()
+										task.wait(0.4)
+									end
+								end
+							end
+						end
 					end
-					
-					
-					task.wait(0.4)
 				end
 
+				
+				for _, gui in ipairs(playerGui:GetChildren()) do
+					if gui:IsA("ScreenGui") then
+						
+						local menu = gui:FindFirstChild("Menu", true)
+						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
+						
+						if skillFrame and skillFrame.Visible then
+							local marker = skillFrame:FindFirstChild("Marker")
+							
+							local goldArea = skillFrame:FindFirstChild("GoldArea") or skillFrame:FindFirstChild("RequiredArea")
+							
+							
+							if marker and goldArea and marker.Visible and goldArea.Visible then
+								local markerPos = marker.AbsolutePosition
+								local areaPos = goldArea.AbsolutePosition
+								
+								
+								local distanciaX = math.abs(markerPos.X - areaPos.X)
+								local distanciaY = math.abs(markerPos.Y - areaPos.Y)
+								
+								
+								if distanciaX <= 20 and distanciaY <= 20 then
+									presionarEspacioSeguro()
+									task.wait(0.4) 
+								end
+							end
+						end
+					end
+				end
 				
 				
 				local playerGui = localPlayer:FindFirstChild("PlayerGui")
@@ -441,6 +489,7 @@ task.spawn(function()
 						task.wait(0.02)
 					end
 				end
+				
 			end)
 		end
 	end
