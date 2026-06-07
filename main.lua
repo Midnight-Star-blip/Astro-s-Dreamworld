@@ -429,27 +429,44 @@ pcall(function()
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
 end)
 
-
-local function forzarEspacioLegitimo(guiObjetivo)
+-- Sistema de bypass directo por entorno de memoria interna
+local function simularExitoInterno(interfazJuego)
 	pcall(function()
 		
-		if guiObjetivo and guiObjetivo:FindFirstChildOfClass("TextButton") then
-			local btn = guiObjetivo:FindFirstChildOfClass("TextButton")
-			if btn.Visible then
-				
-				local x, y = btn.AbsolutePosition.X + (btn.AbsoluteSize.X/2), btn.AbsolutePosition.Y + (btn.AbsoluteSize.Y/2)
-				pcall(function()
-					
-					game:GetService("VirtualUser"):ClickButton1(Vector2.new(x, y))
-				end)
+		if GameContext and GameContext.PlayerState then
+			if GameContext.PlayerState.CompleteSkillCheck then
+				GameContext.PlayerState:CompleteSkillCheck(true)
+				return
 			end
 		end
+
 		
-		
-		if GameContext and GameContext.PlayerState then
+		if interfazJuego then
+			local scriptManejador = interfazJuego:FindFirstChildOfClass("LocalScript") or interfazJuego:FindFirstChildOfClass("ModuleScript")
+			if scriptManejador then
+				
+				if getupvalues then
+					for _, upv in ipairs(getupvalues(scriptManejador)) do
+						if type(upv) == "table" and upv.ActiveSkillCheck then
+							pcall(function()
+								upv.ActiveSkillCheck.Success = true
+							end)
+						end
+					end
+				end
+			end
+
 			
-			if GameContext.PlayerState.CompleteSkillCheck then
-				GameContext.PlayerState:CompleteSkillCheck(true) 
+			local background = interfazJuego:FindFirstChild("CircleBackgroundFrame") or interfazJuego:FindFirstChildOfClass("Frame")
+			if background then
+				local marcador = background:FindFirstChild("Marker") or background:FindFirstChild("Box") or background:FindFirstChildOfClass("ImageLabel")
+				local zonaSegura = background:FindFirstChild("GoldArea") or background:FindFirstChild("GreyArea") or background:FindFirstChild("RequiredArea")
+				
+				if marcador and zonaSegura and marcador.Visible then
+					
+					marcador.Size = zonaSegura.Size
+					marcador.Position = zonaSegura.Position
+				end
 			end
 		end
 	end)
@@ -464,91 +481,35 @@ task.spawn(function()
 			pcall(function()
 				
 				
-				local interfacesAInterpretar = {}
-				
-				for _, g in ipairs(playerGui:GetChildren()) do
-					if g:IsA("ScreenGui") then table.insert(interfacesAInterpretar, g) end
-				end
-				
 				local room = workspace:FindFirstChild("CurrentRoom")
 				if room then
-					for _, d in ipairs(room:GetDescendants()) do
-						if d:IsA("ScreenGui") or d:IsA("SurfaceGui") then
-							table.insert(interfacesAInterpretar, d)
-						end
-					end
-				end
-				
-				for _, gui in ipairs(interfacesAInterpretar) do
-					if gui.Enabled or (gui:IsA("SurfaceGui") and gui.Adornee ~= nil) then
-						local framesActivos = {}
-						for _, objeto in ipairs(gui:GetDescendants()) do
-							if objeto:IsA("ImageLabel") or objeto:IsA("Frame") then
-								if objeto.Visible and objeto.AbsoluteSize.X > 0 then
-									table.insert(framesActivos, objeto)
-								end
-							end
-						end
+					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
+					if circleMinigame then
+						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
-						if #framesActivos >= 2 then
-							local circuloRojoMarcador = nil
-							local anilloFijoZona = nil
-							
-							for _, f in ipairs(framesActivos) do
-								local tamanoInicial = f.AbsoluteSize.X
-								task.wait(0.002)
-								local tamanoFinal = f.AbsoluteSize.X
-								
-								if tamanoInicial ~= tamanoFinal then
-									circuloRojoMarcador = f
-								else
-									local nombreMinuscula = f.Name:lower()
-									if nombreMinuscula:find("area") or nombreMinuscula:find("zone") or nombreMinuscula:find("gray") or nombreMinuscula:find("gold") or nombreMinuscula:find("required") then
-										anilloFijoZona = f
-									end
-								end
-							end
-							
-							if circuloRojoMarcador and not anilloFijoZona then
-								for _, f in ipairs(framesActivos) do
-									if f ~= circuloRojoMarcador then
-										anilloFijoZona = f
-										break
-									end
-								end
-							end
-							
-							if circuloRojoMarcador and anilloFijoZona then
-								local diametroMarcador = circuloRojoMarcador.AbsoluteSize.X
-								local diametroObjetivo = anilloFijoZona.AbsoluteSize.X
-								
-								local toleranciaDePixeles = 16
-								
-								if math.abs(diametroMarcador - diametroObjetivo) <= toleranciaDePixeles then
-									
-									forzarEspacioLegitimo(gui)
-									task.wait(0.5)
-								end
-							end
+						if circleGui and circleGui.Enabled then
+							simularExitoInterno(circleGui)
+							task.wait(0.4)
 						end
 					end
 				end
 
 				
-				local menu = playerGui:FindFirstChild("Menu", true)
-				local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
-				if skillFrame and skillFrame.Visible then
-					local marker = skillFrame:FindFirstChild("Marker")
-					local goldArea = skillFrame:FindFirstChild("GoldArea") or skillFrame:FindFirstChild("RequiredArea")
-					
-					if marker and goldArea and marker.Visible then
-						local markerScale = marker.Position.X.Scale
-						local zoneStart = goldArea.Position.X.Scale
-						local zoneEnd = zoneStart + goldArea.Size.X.Scale
+				for _, gui in ipairs(playerGui:GetChildren()) do
+					if gui and gui:IsA("ScreenGui") then
+						local menu = gui:FindFirstChild("Menu", true)
+						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
 						
-						if markerScale >= zoneStart and markerScale <= zoneEnd then
-							forzarEspacioLegitimo(skillFrame.Parent)
-							task.wait(0.4) 
+						if skillFrame and skillFrame.Visible then
+							local marker = skillFrame:FindFirstChild("Marker")
+							local goldArea = skillFrame:FindFirstChild("GoldArea") or skillFrame:FindFirstChild("RequiredArea")
+							
+							if marker and goldArea and marker.Visible then
+								
+								marker.Position = UDim2.new(goldArea.Position.X.Scale + (goldArea.Size.X.Scale / 2), 0, marker.Position.Y.Scale, 0)
+								simularExitoInterno(gui)
+								task.wait(0.4)
+							end
 						end
 					end
 				end
@@ -558,7 +519,8 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						forzarEspacioLegitimo(treadmillGui)
+						
+						simularExitoInterno(treadmillGui)
 						task.wait(0.02)
 					end
 				end
