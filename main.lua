@@ -452,7 +452,7 @@ VisualsTab:CreateToggle("ESP Generators & Elevators", false, function(state)
 	if not state then clearESP() end
 end)
 
-local Auto = Ventana:CreateTab("Automation")
+local AutoTab = Ventana:CreateTab("Automation")
 AutoTab:CreateSection("Teleports")
 AutoTab:CreateSection("Player")
 AutoTab:CreateToggle("Auto-Skillcheck", false, function(state)
