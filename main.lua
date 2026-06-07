@@ -435,61 +435,68 @@ task.spawn(function()
             
             if circleGui then
                 
+                
                 if _G.HideCircleMinigame then
-                    circleGui.Enabled = false
                     
-                    local surfaceGui = workspace:FindFirstChild("CircleMinigame", true)
-                    if surfaceGui then
-                        local sg = surfaceGui:FindFirstChildWhichIsA("SurfaceGui")
-                        if sg then sg.Enabled = false end
+                    for _, desc in ipairs(circleGui:GetDescendants()) do
+                        if desc:IsA("GuiObject") then
+                            if desc.Name:find("Background") or desc.Name:find("Frame") 
+                               or desc:IsA("ImageLabel") or desc:IsA("ImageButton") then
+                                pcall(function()
+                                    desc:Destroy()
+                                end)
+                            end
+                        end
                     end
-                else
-                    circleGui.Enabled = true
+                    
+                    
+                    local surface = workspace:FindFirstChild("CircleMinigame", true)
+                    if surface then
+                        local sg = surface:FindFirstChildWhichIsA("SurfaceGui")
+                        if sg then 
+                            pcall(function() sg:Destroy() end) 
+                        end
+                    end
                 end
 
                 
-                if circleGui.Enabled or _G.HideCircleMinigame then
-                    local mainFrame = circleGui:FindFirstChild("BackgroundFrame", true) 
-                                   or circleGui:FindFirstChildWhichIsA("Frame")
+                local mainFrame = circleGui:FindFirstChildWhichIsA("Frame")
+                if mainFrame then
+                    local marker = nil
+                    for _, desc in ipairs(mainFrame:GetDescendants()) do
+                        if (desc:IsA("ImageLabel") or desc:IsA("Frame")) 
+                           and (desc.Name:find("Marker") or desc.Name:find("Needle") 
+                                or desc.Name:find("Arrow") or (desc.Rotation and desc.Rotation ~= 0)) then
+                            marker = desc
+                            break
+                        end
+                    end
 
-                    if mainFrame then
-                        local marker = nil
+                    if marker and (marker.Visible or _G.HideCircleMinigame) then
+                        local currentRot = (marker.Rotation or 0) % 360
+
+                        local targetZone = nil
                         for _, desc in ipairs(mainFrame:GetDescendants()) do
-                            if (desc:IsA("ImageLabel") or desc:IsA("Frame")) 
-                               and (desc.Name:find("Marker") or desc.Name:find("Needle") 
-                                    or desc.Name:find("Arrow") or desc.Rotation ~= 0) then
-                                marker = desc
+                            if desc:IsA("GuiObject") 
+                               and (desc.Name:find("Gold") or desc.Name:find("Yellow") 
+                                    or desc.Name:find("Required") or desc.Name:find("Grey") 
+                                    or desc.Name:find("Area")) then
+                                targetZone = desc
                                 break
                             end
                         end
 
-                        if marker and marker.Visible then
-                            local currentRot = (marker.Rotation or 0) % 360
+                        if targetZone then
+                            local zoneRot = (targetZone.Rotation or 0) % 360
+                            local zoneWidth = targetZone.Size and targetZone.Size.X.Offset or 48
+                            local zoneEnd = (zoneRot + zoneWidth) % 360
 
-                            local targetZone = nil
-                            for _, desc in ipairs(mainFrame:GetDescendants()) do
-                                if desc:IsA("GuiObject") and desc.Visible 
-                                   and (desc.Name:find("Gold") or desc.Name:find("Yellow") 
-                                        or desc.Name:find("Required") or desc.Name:find("Grey") 
-                                        or desc.Name:find("Area")) then
-                                    targetZone = desc
-                                    break
-                                end
-                            end
+                            local inZone = (zoneRot <= zoneEnd and currentRot >= zoneRot and currentRot <= zoneEnd)
+                                        or (currentRot >= zoneRot or currentRot <= zoneEnd)
 
-                            if targetZone then
-                                local zoneRot = (targetZone.Rotation or 0) % 360
-                                local zoneWidth = targetZone.Size.X.Offset > 0 and targetZone.Size.X.Offset or 48
-                                local zoneEnd = (zoneRot + zoneWidth) % 360
-
-                                local inZone = (zoneRot <= zoneEnd) 
-                                    and (currentRot >= zoneRot and currentRot <= zoneEnd)
-                                    or (currentRot >= zoneRot or currentRot <= zoneEnd)
-
-                                if inZone then
-                                    forzarEspacioLegitimo()
-                                    task.wait(math.random(19, 27)/100) 
-                                end
+                            if inZone then
+                                forzarEspacioLegitimo()
+                                task.wait(math.random(19, 27)/100)
                             end
                         end
                     end
