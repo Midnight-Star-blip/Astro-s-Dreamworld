@@ -13,6 +13,9 @@ _G.ESPGenerators = false
 _G.ESPElevator = false
 _G.AutoSkillcheck = false
 _G.HideCircleMinigame = true   
+_G.Fly = false
+_G.Noclip = false
+_G.FlySpeed = 50
 
 local AstroUI = {}
 
@@ -507,6 +510,111 @@ local function ApplyInstantSkillcheck(state)
 end
 
 
+local character = nil
+local rootPart = nil
+local flyBodyVelocity = nil
+local connection = nil
+
+local function setupCharacter()
+    character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    rootPart = character:WaitForChild("HumanoidRootPart")
+    
+    
+    if flyBodyVelocity then flyBodyVelocity:Destroy() end
+end
+
+localPlayer.CharacterAdded:Connect(setupCharacter)
+if localPlayer.Character then setupCharacter() end
+
+local function ToggleFly(state)
+    _G.Fly = state
+    
+    if state then
+        if not rootPart then setupCharacter() end
+        
+        flyBodyVelocity = Instance.new("BodyVelocity")
+        flyBodyVelocity.Name = "AstroFly"
+        flyBodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+        flyBodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        flyBodyVelocity.Parent = rootPart
+        
+        local camera = workspace.CurrentCamera
+        local keys = {W = false, A = false, S = false, D = false, Space = false, LeftShift = false}
+        
+        connection = UserInputService.InputBegan:Connect(function(input, gp)
+            if gp then return end
+            local key = input.KeyCode.Name
+            if keys[key] ~= nil then keys[key] = true end
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input)
+            local key = input.KeyCode.Name
+            if keys[key] ~= nil then keys[key] = false end
+        end)
+        
+        task.spawn(function()
+            while _G.Fly and task.wait() do
+                if not rootPart or not rootPart.Parent then continue end
+                
+                local moveDirection = Vector3.new(0, 0, 0)
+                local camLook = camera.CFrame.LookVector
+                local camRight = camera.CFrame.RightVector
+                
+                if keys.W then moveDirection = moveDirection + camLook end
+                if keys.S then moveDirection = moveDirection - camLook end
+                if keys.A then moveDirection = moveDirection - camRight end
+                if keys.D then moveDirection = moveDirection + camRight end
+                if keys.Space then moveDirection = moveDirection + Vector3.new(0,1,0) end
+                if keys.LeftShift then moveDirection = moveDirection - Vector3.new(0,1,0) end
+                
+                if moveDirection.Magnitude > 0 then
+                    moveDirection = moveDirection.Unit
+                end
+                
+                flyBodyVelocity.Velocity = moveDirection * _G.FlySpeed
+            end
+        end)
+        
+    else
+        if connection then connection:Disconnect() end
+        if flyBodyVelocity then 
+            flyBodyVelocity:Destroy() 
+            flyBodyVelocity = nil 
+        end
+    end
+end
+
+local function ToggleNoclip(state)
+    _G.Noclip = state
+    
+    if state then
+        task.spawn(function()
+            while _G.Noclip and task.wait(0.1) do
+                pcall(function()
+                    if character then
+                        for _, part in ipairs(character:GetDescendants()) do
+                            if part:IsA("BasePart") and part.CanCollide then
+                                part.CanCollide = false
+                            end
+                        end
+                    end
+                end)
+            end
+        end)
+    else
+        
+        pcall(function()
+            if character then
+                for _, part in ipairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end)
+    end
+end
+
 
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
@@ -515,6 +623,18 @@ local Ventana = AstroUI.CreateWindow({
 
 local PlayerTab = Ventana:CreateTab("Player")
 PlayerTab:CreateSection("Movement")
+
+PlayerTab:CreateToggle("Fly", false, function(state)
+    ToggleFly(state)
+end)
+
+PlayerTab:CreateSlider("Fly Speed", 20, 150, 50, function(value)
+    _G.FlySpeed = value
+end)
+
+PlayerTab:CreateToggle("Noclip", false, function(state)
+    ToggleNoclip(state)
+end)
 
 local VisualsTab = Ventana:CreateTab("Visuals")
 VisualsTab:CreateSection("All ESPs")
@@ -547,3 +667,4 @@ AutoTab:CreateSection("Generator")
 local instantToggle = AutoTab:CreateToggle("Instant Skillcheck", false, function(state)
     ApplyInstantSkillcheck(state)
 end)
+
