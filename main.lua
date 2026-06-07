@@ -429,25 +429,54 @@ pcall(function()
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
 end)
 
-
-local function autocompletarMinijuego(tipo)
+-- Sistema de bypass directo por entorno de memoria interna
+local function simularExitoInterno(interfazJuego)
 	pcall(function()
 		
 		if GameContext and GameContext.PlayerState then
 			if GameContext.PlayerState.CompleteSkillCheck then
-				GameContext.PlayerState:CompleteSkillCheck(true) 
-				return true
+				GameContext.PlayerState:CompleteSkillCheck(true)
+				return
+			end
+		end
+
+		
+		if interfazJuego then
+			local scriptManejador = interfazJuego:FindFirstChildOfClass("LocalScript") or interfazJuego:FindFirstChildOfClass("ModuleScript")
+			if scriptManejador then
+				
+				if getupvalues then
+					for _, upv in ipairs(getupvalues(scriptManejador)) do
+						if type(upv) == "table" and upv.ActiveSkillCheck then
+							pcall(function()
+								upv.ActiveSkillCheck.Success = true
+							end)
+						end
+					end
+				end
+			end
+
+			
+			local background = interfazJuego:FindFirstChild("CircleBackgroundFrame") or interfazJuego:FindFirstChildOfClass("Frame")
+			if background then
+				local marcador = background:FindFirstChild("Marker") or background:FindFirstChild("Box") or background:FindFirstChildOfClass("ImageLabel")
+				local zonaSegura = background:FindFirstChild("GoldArea") or background:FindFirstChild("GreyArea") or background:FindFirstChild("RequiredArea")
+				
+				if marcador and zonaSegura and marcador.Visible then
+					
+					marcador.Size = zonaSegura.Size
+					marcador.Position = zonaSegura.Position
+				end
 			end
 		end
 	end)
-	return false
 end
 
 task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
-	while task.wait(0.02) do 
+	while task.wait(0.01) do 
 		if _G.AutoSkillcheck then
 			pcall(function()
 				
@@ -458,28 +487,9 @@ task.spawn(function()
 					if circleMinigame then
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
-						
 						if circleGui and circleGui.Enabled then
-							
-							local exito = autocompletarMinijuego()
-							
-							
-							if not exito then
-								local mainFrame = circleGui:FindFirstChildOfClass("Frame") or circleGui:FindFirstChild("CircleBackgroundFrame")
-								if mainFrame then
-									
-									local clickEvent = mainFrame:FindFirstChildOfClass("TextButton") or mainFrame
-									if clickEvent then
-										pcall(function()
-											
-											for _, conexion in ipairs(getconnections(clickEvent.MouseButton1Click or clickEvent.InputBegan)) do
-												conexion:Fire()
-											end
-										end)
-									end
-								end
-							end
-							task.wait(0.5) 
+							simularExitoInterno(circleGui)
+							task.wait(0.4)
 						end
 					end
 				end
@@ -497,7 +507,7 @@ task.spawn(function()
 							if marker and goldArea and marker.Visible then
 								
 								marker.Position = UDim2.new(goldArea.Position.X.Scale + (goldArea.Size.X.Scale / 2), 0, marker.Position.Y.Scale, 0)
-								autocompletarMinijuego()
+								simularExitoInterno(gui)
 								task.wait(0.4)
 							end
 						end
@@ -509,14 +519,8 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						autocompletarMinijuego()
-						pcall(function()
-							local btn = tapFrame:FindFirstChildOfClass("TextButton")
-							if btn then
-								for _, con in ipairs(getconnections(btn.MouseButton1Click)) do con:Fire() end
-							end
-						 pcall(function() game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0)) end)
-						end)
+						
+						simularExitoInterno(treadmillGui)
 						task.wait(0.02)
 					end
 				end
