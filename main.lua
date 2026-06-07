@@ -12,6 +12,7 @@ _G.ESPItems = false
 _G.ESPGenerators = false
 _G.ESPElevator = false
 _G.AutoSkillcheck = false
+_G.HideCircleMinigame = true   
 
 local AstroUI = {}
 
@@ -426,79 +427,68 @@ task.spawn(function()
     local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
     if not playerGui then return end
 
-    while task.wait(0.025) do
+    while task.wait(0.02) do
         if not _G.AutoSkillcheck then continue end
 
         pcall(function()
-            
             local circleGui = playerGui:FindFirstChild("CircleSkillCheckGui")
             
-            if circleGui and circleGui.Enabled then
-                local backgroundFrame = circleGui:FindFirstChild("BackgroundFrame", true)
-                if not backgroundFrame then
-                    backgroundFrame = circleGui:FindFirstChildWhichIsA("Frame")
+            if circleGui then
+                
+                if _G.HideCircleMinigame then
+                    circleGui.Enabled = false
+                    
+                    local surfaceGui = workspace:FindFirstChild("CircleMinigame", true)
+                    if surfaceGui then
+                        local sg = surfaceGui:FindFirstChildWhichIsA("SurfaceGui")
+                        if sg then sg.Enabled = false end
+                    end
+                else
+                    circleGui.Enabled = true
                 end
 
-                if backgroundFrame then
-                    
-                    local marker = backgroundFrame:FindFirstChild("Marker", true)
-                                 or backgroundFrame:FindFirstChild("Needle", true)
-                                 or backgroundFrame:FindFirstChildWhichIsA("ImageLabel")
-                                 or backgroundFrame:FindFirstChild("Arrow", true)
+                
+                if circleGui.Enabled or _G.HideCircleMinigame then
+                    local mainFrame = circleGui:FindFirstChild("BackgroundFrame", true) 
+                                   or circleGui:FindFirstChildWhichIsA("Frame")
 
-                    if marker and marker.Visible then
-                        local currentRot = (marker.Rotation or 0) % 360
-
-                        
-                        local goldZone = backgroundFrame:FindFirstChild("GoldArea", true)
-                                      or backgroundFrame:FindFirstChild("YellowZone", true)
-                                      or backgroundFrame:FindFirstChildWhichIsA("Frame") 
-
-                        local requiredZone = backgroundFrame:FindFirstChild("RequiredArea", true)
-                                           or backgroundFrame:FindFirstChild("GreyArea", true)
-
-                        local targetZone = (goldZone and goldZone.Visible) and goldZone or requiredZone
-
-                        if targetZone and targetZone.Visible then
-                            local zoneRot = (targetZone.Rotation or 0) % 360
-                            local zoneWidth = targetZone.Size and targetZone.Size.X.Offset or 45
-
-                            local zoneEnd = (zoneRot + zoneWidth) % 360
-
-                            local inZone = false
-                            if zoneRot <= zoneEnd then
-                                inZone = (currentRot >= zoneRot and currentRot <= zoneEnd)
-                            else
-                                inZone = (currentRot >= zoneRot or currentRot <= zoneEnd)
-                            end
-
-                            if inZone then
-                                forzarEspacioLegitimo()
-                                task.wait(0.23)  
+                    if mainFrame then
+                        local marker = nil
+                        for _, desc in ipairs(mainFrame:GetDescendants()) do
+                            if (desc:IsA("ImageLabel") or desc:IsA("Frame")) 
+                               and (desc.Name:find("Marker") or desc.Name:find("Needle") 
+                                    or desc.Name:find("Arrow") or desc.Rotation ~= 0) then
+                                marker = desc
+                                break
                             end
                         end
-                    end
-                end
-            end
 
-            
-            for _, gui in ipairs(playerGui:GetChildren()) do
-                if gui:IsA("ScreenGui") then
-                    local frame = gui:FindFirstChild("SkillCheckFrame", true)
-                    if frame and frame.Visible then
-                        local marker = frame:FindFirstChild("Marker")
                         if marker and marker.Visible then
-                            local pos = marker.Position.X.Scale
-                            local gold = frame:FindFirstChild("GoldArea")
-                            local req = frame:FindFirstChild("RequiredArea")
-                            local zone = (gold and gold.Visible) and gold or req
+                            local currentRot = (marker.Rotation or 0) % 360
 
-                            if zone then
-                                local startPos = zone.Position.X.Scale
-                                local endPos = startPos + zone.Size.X.Scale
-                                if pos >= startPos and pos <= endPos then
+                            local targetZone = nil
+                            for _, desc in ipairs(mainFrame:GetDescendants()) do
+                                if desc:IsA("GuiObject") and desc.Visible 
+                                   and (desc.Name:find("Gold") or desc.Name:find("Yellow") 
+                                        or desc.Name:find("Required") or desc.Name:find("Grey") 
+                                        or desc.Name:find("Area")) then
+                                    targetZone = desc
+                                    break
+                                end
+                            end
+
+                            if targetZone then
+                                local zoneRot = (targetZone.Rotation or 0) % 360
+                                local zoneWidth = targetZone.Size.X.Offset > 0 and targetZone.Size.X.Offset or 48
+                                local zoneEnd = (zoneRot + zoneWidth) % 360
+
+                                local inZone = (zoneRot <= zoneEnd) 
+                                    and (currentRot >= zoneRot and currentRot <= zoneEnd)
+                                    or (currentRot >= zoneRot or currentRot <= zoneEnd)
+
+                                if inZone then
                                     forzarEspacioLegitimo()
-                                    task.wait(0.32)
+                                    task.wait(math.random(19, 27)/100) 
                                 end
                             end
                         end
@@ -507,9 +497,32 @@ task.spawn(function()
             end
 
             
-            local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui", true)
-            if treadmillGui then
-                local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame", true)
+            for _, gui in ipairs(playerGui:GetChildren()) do
+                if gui:IsA("ScreenGui") and gui.Enabled then
+                    local frame = gui:FindFirstChild("SkillCheckFrame", true)
+                    if frame and frame.Visible then
+                        local marker = frame:FindFirstChild("Marker", true)
+                        if marker and marker.Visible then
+                            local pos = marker.Position.X.Scale
+                            local gold = frame:FindFirstChild("GoldArea", true)
+                            local req = frame:FindFirstChild("RequiredArea", true)
+                            local zone = (gold and gold.Visible) and gold or req
+                            if zone then
+                                local start = zone.Position.X.Scale
+                                local finish = start + zone.Size.X.Scale
+                                if pos >= start and pos <= finish then
+                                    forzarEspacioLegitimo()
+                                    task.wait(0.28)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            local treadmill = playerGui:FindFirstChild("TreadmillTapSkillCheckGui", true)
+            if treadmill and treadmill.Enabled then
+                local tapFrame = treadmill:FindFirstChild("TapSkillCheckFrame", true)
                 if tapFrame and tapFrame.Visible then
                     forzarEspacioLegitimo()
                     task.wait(0.015)
