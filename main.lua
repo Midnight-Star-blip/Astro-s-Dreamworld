@@ -384,12 +384,11 @@ task.spawn(function()
 	end
 end)
 
-local Players = game:GetService("Players") 
+local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
-_G.AutoSkillcheck = false
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VirtualInputManager = game:GetService("VirtualInputManager")
+
+_G.AutoSkillcheck = false
 
 
 local Modules = ReplicatedStorage:WaitForChild("Modules", 5)
@@ -401,45 +400,41 @@ local CircleSkillCheckHandler = Gameplay and Gameplay:FindFirstChild("CircleSkil
 local TreadmillTapSkillCheck = Gameplay and Gameplay:FindFirstChild("TreadmillTapSkillCheck")
 
 
-local function simularEspacioNativo()
-	pcall(function()
-		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-		task.wait(0.02)
-		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-	end)
-end
-
 task.spawn(function()
-	while task.wait(0.1) do
+	while task.wait(0.05) do
 		if _G.AutoSkillcheck then
 			pcall(function()
-				
-				
-				if character and character:FindFirstChild("HumanoidRootPart") then
+				local playerGui = localPlayer:FindFirstChild("PlayerGui")
+				if playerGui then
 					
-					
-					local playerGui = localPlayer:FindFirstChild("PlayerGui")
-					if playerGui then
-						for _, gui in ipairs(playerGui:GetChildren()) do
-							if gui:IsA("ScreenGui") then
+					for _, gui in ipairs(playerGui:GetChildren()) do
+						if gui:IsA("ScreenGui") then
+							
+							local skillFrame = gui:FindFirstChild("Minigame", true) 
+								or gui:FindFirstChild("SkillCheck", true) 
+								or gui:FindFirstChild("Circle", true)
+								or gui:FindFirstChild("Treadmill", true)
+								or gui:FindFirstChild("MainFrame", true)
+							
+							if skillFrame and skillFrame.Visible then
 								
+								local interactionRemote = ReplicatedStorage:FindFirstChild("InteractionEvent", true) 
+									or ReplicatedStorage:FindFirstChild("QTERemote", true) 
+									or ReplicatedStorage:FindFirstChild("SkillCheckRemote", true)
 								
-								local isQTEActive = gui:FindFirstChild("Minigame", true) 
-									or gui:FindFirstChild("SkillCheck", true) 
-									or gui:FindFirstChild("Circle", true)
-									or gui:FindFirstChild("Treadmill", true)
-									or gui:FindFirstChild("MainFrame", true)
-								
-								if isQTEActive and isQTEActive.Visible then
+								if interactionRemote and interactionRemote:IsA("RemoteEvent") then
 									
-									simularEspacioNativo()
-									task.wait(0.2) 
+									interactionRemote:FireServer(true, "Perfect")
+								else
+									
+									local VirtualUser = game:GetService("VirtualUser")
+									VirtualUser:CaptureController()
+									VirtualUser:ClickButton1(Vector2.new(0, 0))
 								end
-								
+								task.wait(0.2) 
 							end
 						end
 					end
-					
 				end
 			end)
 		end
