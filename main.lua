@@ -423,49 +423,59 @@ task.spawn(function()
 	end
 end)
 
-
 local S = { skillcheckOrigCB = nil }
 
 local function ApplyInstantSkillcheck(state)
-    local Remote = ReplicatedStorage:FindFirstChild("Events", true) and ReplicatedStorage.Events:FindFirstChild("SkillcheckUpdate")
-    if not Remote then 
-        warn("[Astro] No se encontró SkillcheckUpdate Remote")
-        return 
+    
+    local Remote = nil
+    
+    
+    for _, folder in ipairs(ReplicatedStorage:GetDescendants()) do
+        if folder.Name == "Events" or folder.Name == "Remotes" or folder.Name == "RemoteEvents" then
+            Remote = folder:FindFirstChild("SkillcheckUpdate") or folder:FindFirstChild("SkillCheckUpdate")
+            if Remote then break end
+        end
     end
+    
+    
+    if not Remote then
+        for _, v in ipairs(ReplicatedStorage:GetDescendants()) do
+            if v:IsA("RemoteFunction") and (v.Name:find("Skillcheck") or v.Name:find("SkillCheck")) then
+                Remote = v
+                break
+            end
+        end
+    end
+
+    
+    
 
     if state then
         
         if getcallbackvalue then
-            local ok, orig = pcall(function()
-                return getcallbackvalue(Remote, "OnClientInvoke")
-            end)
-            if ok and orig then
-                S.skillcheckOrigCB = orig
-            end
+            local ok, orig = pcall(function() return getcallbackvalue(Remote, "OnClientInvoke") end)
+            if ok and orig then S.skillcheckOrigCB = orig end
         end
 
-        
         Remote.OnClientInvoke = function(...)
             task.spawn(function()
                 pcall(function()
-                    local playerGui = localPlayer:WaitForChild("PlayerGui")
+                    local pGui = localPlayer:WaitForChild("PlayerGui")
                     
                     
-                    local skillFrame = playerGui:FindFirstChild("SkillCheckFrame", true)
-                    if skillFrame then skillFrame.Visible = false end
-                    
-                    local circleGui = playerGui:FindFirstChild("CircleSkillCheckGui")
-                    if circleGui then 
-                        circleGui.Enabled = false 
-                        for _, v in ipairs(circleGui:GetDescendants()) do
-                            if v:IsA("GuiObject") then
-                                pcall(function() v.Visible = false end)
-                            end
+                    local circleGui = pGui:FindFirstChild("CircleSkillCheckGui")
+                    if circleGui then
+                        circleGui.Enabled = false
+                        for _, obj in ipairs(circleGui:GetDescendants()) do
+                            if obj:IsA("GuiObject") then pcall(function() obj.Visible = false end) end
                         end
                     end
+                    
+                    local skillFrame = pGui:FindFirstChild("SkillCheckFrame", true)
+                    if skillFrame then skillFrame.Visible = false end
 
                     
-                    local menu = playerGui:FindFirstChild("Menu", true)
+                    local menu = pGui:FindFirstChild("Menu", true)
                     if menu then
                         local msg = menu:FindFirstChild("SkillCheckMessage")
                         if msg then
@@ -473,37 +483,37 @@ local function ApplyInstantSkillcheck(state)
                             msg.Visible = true
                             msg.TextTransparency = 0
                             pcall(function()
-                                msg.UIGradient.Enabled = false
-                                msg.UIGradientWin.Enabled = true
+                                if msg.UIGradient then msg.UIGradient.Enabled = false end
+                                if msg:FindFirstChild("UIGradientWin") then 
+                                    msg.UIGradientWin.Enabled = true 
+                                end
                             end)
                         end
                     end
 
                     
                     pcall(function()
-                        local gui = playerGui:FindFirstChildWhichIsA("ScreenGui")
-                        if gui then
-                            local correct = gui:FindFirstChild("Correct")
+                        local sounds = pGui:FindFirstChildWhichIsA("ScreenGui")
+                        if sounds then
+                            local correct = sounds:FindFirstChild("Correct")
                             if correct then correct:Play() end
-                            local goldHit = gui:FindFirstChild("GoldAreaHit")
-                            if goldHit then goldHit:Play() end
+                            local gold = sounds:FindFirstChild("GoldAreaHit")
+                            if gold then gold:Play() end
                         end
                     end)
                 end)
             end)
-            return "supercomplete"  
+            return "supercomplete"
         end
 
         
     else
         
-        if Remote then
-            if S.skillcheckOrigCB then
-                Remote.OnClientInvoke = S.skillcheckOrigCB
-                S.skillcheckOrigCB = nil
-            else
-                Remote.OnClientInvoke = nil
-            end
+        if Remote and S.skillcheckOrigCB then
+            Remote.OnClientInvoke = S.skillcheckOrigCB
+            S.skillcheckOrigCB = nil
+        elseif Remote then
+            Remote.OnClientInvoke = nil
         end
         
     end
@@ -545,6 +555,8 @@ end)
 
 local AutoTab = Ventana:CreateTab("Automation")
 AutoTab:CreateSection("Generator")
+
+
 
 local instantToggle = AutoTab:CreateToggle("Instant Skillcheck", false, function(state)
     ApplyInstantSkillcheck(state)
