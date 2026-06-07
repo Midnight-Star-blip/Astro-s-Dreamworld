@@ -402,9 +402,21 @@ end)
 
 local function forzarEspacioLegitimo()
 	pcall(function()
-		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-		task.wait(0.01)
-		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+		local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+		
+		if isMobile then
+			
+			local VirtualUser = game:GetService("VirtualUser")
+			VirtualUser:CaptureController()
+			VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+			task.wait(0.01)
+			VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+		else
+			
+			VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+			task.wait(0.01)
+			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+		end
 	end)
 end
 
@@ -419,7 +431,6 @@ task.spawn(function()
 				
 				for _, gui in ipairs(playerGui:GetChildren()) do
 					if gui:IsA("ScreenGui") then
-						
 						local menu = gui:FindFirstChild("Menu", true)
 						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
 						
@@ -428,46 +439,36 @@ task.spawn(function()
 							local goldArea = skillFrame:FindFirstChild("GoldArea")
 							local reqArea = skillFrame:FindFirstChild("RequiredArea")
 							
-							
 							if marker and marker.Visible then
 								local markerScale = marker.Position.X.Scale
-								
-								
 								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
 								if targetZone then
 									local zoneStart = targetZone.Position.X.Scale
 									local zoneEnd = zoneStart + targetZone.Size.X.Scale
 									
-									
 									if markerScale >= zoneStart and markerScale <= zoneEnd then
 										forzarEspacioLegitimo()
-										task.wait(0.4) 
+										task.wait(0.4)
 									end
 								end
 							end
 						end
-						
-						
-						local treadmill = gui:FindFirstChild("Treadmill", true) 
-							or gui:FindFirstChild("TreadmillTapSkillCheck", true)
-							or gui:FindFirstChild("TreadmillFrame", true)
-							or gui:FindFirstChild("TapArea", true)
-						
-						if treadmill and treadmill.Visible then
-							pcall(function()
-								
-								local VirtualUser = game:GetService("VirtualUser")
-								VirtualUser:CaptureController()
-								
-								VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-								task.wait(0.01)
-								VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-							end)
-							task.wait(0.02) 
-						end
-						
 					end
 				end
+				
+				
+				
+				local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
+				if treadmillGui then
+					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
+					
+					if tapFrame and tapFrame.Visible then
+						
+						forzarEspacioLegitimo()
+						task.wait(0.02) 
+					end
+				end
+				
 			end)
 		end
 	end
