@@ -373,7 +373,7 @@ task.spawn(function()
 			if elevators then
 				for _, elev in ipairs(elevators:GetChildren()) do
 					pcall(function()
-						if elev.Name == "Elevator" then 
+						if elev.Name == "ElevatorDoor" then 
 							makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220)) 
 						end
 					end)
