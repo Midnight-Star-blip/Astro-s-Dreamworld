@@ -67,9 +67,11 @@ end
 function AstroUI.CreateWindow(options)
 	options = options or {}
 	local theme = options.Theme or AstroUI.Theme
-	local playerGui = localPlayer:WaitForChild("PlayerGui")
-	local screenGui = create("ScreenGui", {Name = options.Name or "AstroUILibrary", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = options.Parent or playerGui})
+
+	local targetParent = game:GetService("CoreGui")
+	local screenGui = create("ScreenGui", {Name = options.Name or "AstroUILibrary", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = targetParent})
 	local self = setmetatable({Theme = theme, ScreenGui = screenGui, Pages = {}, TabButtons = {}, ActiveTab = nil}, Window)
+
 	
 	self.Main = create("Frame", {Name = "Main", AnchorPoint = Vector2.new(0.5, 0.5), Position = options.Position or UDim2.fromScale(0.5, 0.5), Size = options.Size or UDim2.fromOffset(824, 482), BackgroundTransparency = 1, BorderSizePixel = 0, Parent = screenGui})
 	create("Frame", {Name = "HeaderShadow", Position = UDim2.fromOffset(32, 10), Size = UDim2.new(1, -2, 0, 345), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 0, Parent = self.Main}, {corner(14)})
@@ -269,17 +271,24 @@ task.spawn(function()
 				if _G.ESPTwisteds then
 					local monFolder = sala:FindFirstChild("Monsters")
 					if monFolder then
-						for _, parte in ipairs(monFolder:GetDescendants()) do
-							if parte:IsA("BasePart") then
-								local carpetaMadre = parte:FindFirstAncestorOfClass("Folder")
-								if carpetaMadre and carpetaMadre.Name ~= "Monsters" then
-									local nombreTwisted = string.gsub(carpetaMadre.Name, "Monster", "")
-									makeESP(parte, "[Twisted] " .. nombreTwisted, Color3.fromRGB(255, 50, 50))
-								end
+						for _, monster in ipairs(monFolder:GetChildren()) do
+							
+							local primaryPart = monster:FindFirstChild("HumanoidRootPart") 
+								or monster:FindFirstChildOfClass("MeshPart") 
+								or monster:FindFirstChildOfClass("Part")
+								or monster
+							
+							if primaryPart then
+								
+								local nombreLimpio = string.gsub(monster.Name, "Monster", "")
+								nombreLimpio = string.gsub(nombreLimpio, "Character", "")
+								
+								
+								makeESP(primaryPart, "[Twisted] " .. nombreLimpio, Color3.fromRGB(255, 50, 50))
 							end
 						end
 					end
-				end
+
 				
 				if _G.ESPItems then
 					local itemsFolder = sala:FindFirstChild("Items")
