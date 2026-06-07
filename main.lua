@@ -1,6 +1,6 @@
-return(function(TQdrc, ...)
-local rtGit3 = {"4DRvniq5SW";"77C7VS";"oclHxRcdNRPI7k43";"LIwQhIv";"a6ivyYByN8V60V";"iAB";"L6AEQnH";"SYTFElQNxxH";"4x0JYR0LaOxU";"8hH";"8tT";"drvqeRtNTOQX";"yVB8PRKtMdy8XIzyq"}
-local RQ37eQE9 = function(...)
+return(function(2VuPm, ...)
+local Vx7U7s = {"jRT23a";"XHG26";"T4BaKxK0Xg006";"ezc3";"jI7m24qpZ";"kuGMvSHg";"d6heGEPJUYe";"ERKDYNWMF3JnfBr";"LiLMcMGp";"GWdoab6M7iRoR";"cSLOH4GQDV0";"oEGZ";"ZGrleNUs9M";"Kp7ypLjz"}
+local MU1p6Abd = function(...)
 local Players = game:GetService(loadstring(base64decode("UGxheWVycw=="))())
 local TweenService = game:GetService(loadstring(base64decode("VHdlZW5TZXJ2aWNl"))())
 local UserInputService = game:GetService(loadstring(base64decode("VXNlcklucHV0U2VydmljZQ=="))())
@@ -380,7 +380,25 @@ task.spawn(function()
 	end
 end)
 
- return AstroUI
+local Ventana = AstroUI.CreateWindow({
+	Title = loadstring(base64decode("QXN0cm8ncyBEcmVhbXdvcmxkIPCfmLR8IERhbmR5J3MgV29ybGQ="))(),
+	ToggleKey = Enum.KeyCode.RightShift
+})
+
+local VisualsTab = Ventana:CreateTab(loadstring(base64decode("VmlzdWFscw=="))())
+VisualsTab:CreateSection(loadstring(base64decode("UmFzdHJlYWRvciBkZSBBbWVuYXphcyB5IE9iamV0aXZvcw=="))())
+
+VisualsTab:CreateToggle(loadstring(base64decode("RVNQIFR3aXN0ZWRzIChNb25zdHJ1b3Mp"))(), false, function(state)
+	_G.ESPTwisteds = state
+end)
+
+VisualsTab:CreateToggle(loadstring(base64decode("RVNQIFJlc2VhcmNoIENhcHN1bGVz"))(), false, function(state)
+	_G.ESPItems = state
+end)
+
+VisualsTab:CreateToggle(loadstring(base64decode("RVNQIEdlbmVyYXRvcnMgJiBFbGV2YXRvcnM="))(), false, function(state)
+	_G.ESPGenerators = state
+end)
 end
-VOpZbVNF(Do83u)
+uLfnBoLV(Kv1vA)
 end)(...)
