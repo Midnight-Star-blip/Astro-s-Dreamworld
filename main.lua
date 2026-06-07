@@ -422,9 +422,6 @@ task.spawn(function()
 	end
 end)
 
-
-
-
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
@@ -444,7 +441,8 @@ task.spawn(function()
 	local playerGui = localPlayer and localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
-	while task.wait(0.01) do 
+	
+	while task.wait() do 
 		if _G.AutoSkillcheck then
 			pcall(function()
 				
@@ -454,7 +452,6 @@ task.spawn(function()
 					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
 					if circleMinigame then
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
-						
 						
 						if circleGui and circleGui.Enabled then
 							local circleParts = circleMinigame:FindFirstChild("CircleParts")
@@ -467,20 +464,30 @@ task.spawn(function()
 								local zonaGris = mainFrame:FindFirstChild("GreyArea") or mainFrame:FindFirstChild("RequiredArea")
 								
 								if marcadorAguja and marcadorAguja.Visible then
-									local rotacionActual = marcadorAguja.Rotation
+									
+									local rotacionActual = marcadorAguja.Rotation % 360
 									local zonaObjetivo = (zonaOro and zonaOro.Visible) and zonaOro or zonaGris
 									
 									if zonaObjetivo and zonaObjetivo.Visible then
 										
-										local inicioRango = zonaObjetivo.Rotation
-										
-										local anchoRango = 35
-										local finRango = inicioRango + anchoRango
+										 
+										local inicioRango = zonaObjetivo.Rotation % 360
 										
 										
-										if rotacionActual >= inicioRango and rotacionActual <= finRango then
+										local anchoRango = zonaObjetivo:IsA("GuiObject") and zonaObjetivo.Size.X.Offset or 35
+										local finRango = (inicioRango + anchoRango) % 360
+										
+										
+										local agujaEnZona = false
+										if inicioRango <= finRango then
+											agujaEnZona = (rotacionActual >= inicioRango and rotacionActual <= finRango)
+										else
+											agujaEnZona = (rotacionActual >= inicioRango or rotacionActual <= finRango)
+										end
+										
+										if agujaEnZona then
 											forzarEspacioLegitimo()
-											task.wait(0.5) 
+											task.wait(0.35) 
 										end
 									end
 								end
