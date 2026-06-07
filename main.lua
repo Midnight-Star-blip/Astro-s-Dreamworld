@@ -471,11 +471,9 @@ end
 local SoundService = game:GetService("SoundService")
 SoundService.ChildAdded:Connect(function(child)
 	if _G.AutoSkillcheck and child:IsA("Sound") then
-		
 		if child.Name:find("CircleSkillCheck") or child.SoundId:find("electronicpingshort") then
 			simularExitoInterno(nil)
 			pcall(function()
-				
 				for _, gui in ipairs(localPlayer.PlayerGui:GetChildren()) do
 					if gui.Name:lower():find("circle") then
 						simularExitoInterno(gui)
