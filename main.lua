@@ -422,6 +422,8 @@ task.spawn(function()
 	end
 end)
 
+
+
 local function forzarEspacioLegitimo()
 	pcall(function()
 		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
@@ -446,8 +448,34 @@ task.spawn(function()
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
 						if circleGui and circleGui.Enabled then
-							forzarEspacioLegitimo()
-							task.wait(0.4)
+							local mainFrame = circleGui:FindFirstChild("CircleBackgroundFrame") or circleGui:FindFirstChildOfClass("Frame")
+							local circleParts = circleMinigame:FindFirstChild("CircleParts")
+							
+							if mainFrame and circleParts then
+								
+								local aguja = circleParts:FindFirstChild("Marker") or circleParts:FindFirstChild("Arrow") or circleParts:FindFirstChildOfClass("ImageLabel")
+								local zonaOro = mainFrame:FindFirstChild("GoldArea") or mainFrame:FindFirstChild("YellowZone")
+								local zonaGris = mainFrame:FindFirstChild("GreyArea") or mainFrame:FindFirstChild("RequiredArea")
+								
+								if aguja and aguja.Visible then
+									local anguloAguja = aguja.Rotation
+									local zonaObjetivo = (zonaOro and zonaOro.Visible) and zonaOro or zonaGris
+									
+									if zonaObjetivo and zonaObjetivo.Visible then
+										
+										local inicioZona = zonaObjetivo.Rotation
+										
+										local anchoZona = 35 
+										local finZona = inicioZona + anchoZona
+										
+										
+										if anguloAguja >= inicioZona and anguloAguja <= finZona then
+											forzarEspacioLegitimo()
+											task.wait(0.5) 
+										end
+									end
+								end
+							end
 						end
 					end
 				end
