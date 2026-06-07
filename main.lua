@@ -403,31 +403,87 @@ task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
+	
+	local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+
 	while task.wait(0.01) do
 		if _G.AutoSkillcheck then
 			pcall(function()
 				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui:IsA("ScreenGui") and (string.find(gui.Name, "Action") or string.find(gui.Name, "QTE") or string.find(gui.Name, "Skill")) then
-						local bar = gui:FindFirstChild("Bar", true) or gui:FindFirstChild("Frame", true)
-						local needle = gui:FindFirstChild("Needle", true) or gui:FindFirstChild("Pointer", true)
-						local zone = gui:FindFirstChild("Zone", true) or gui:FindFirstChild("Success", true)
+					if gui:IsA("ScreenGui") then
 						
-						if needle and zone and needle.Visible and zone.Visible then
-							local needlePos = needle.AbsolutePosition.X
-							local zoneStart = zone.AbsolutePosition.X
-							local zoneEnd = zoneStart + zone.AbsoluteSize.X
+						
+						local mainFrame = gui:FindFirstChild("Circle", true) 
+							or gui:FindFirstChild("Minigame", true) 
+							or gui:FindFirstChild("SkillCheck", true)
+							or gui:FindFirstChild("MainFrame", true)
+						
+						if mainFrame and mainFrame.Visible then
+							local needle = mainFrame:FindFirstChild("Needle", true) or mainFrame:FindFirstChild("Pointer", true) or mainFrame:FindFirstChildOfClass("ImageLabel")
+							local zone = mainFrame:FindFirstChild("Zone", true) or mainFrame:FindFirstChild("SuccessZone", true) or mainFrame:FindFirstChild("WhiteBar", true)
 							
-							if needlePos >= (zoneStart + 2) and needlePos <= (zoneEnd - 2) then
-								presionarEspacio()
-								task.wait(0.5)
+							if needle and zone and needle.Visible then
+								
+								if string.find(gui.Name, "Circle") or mainFrame.Name == "Circle" then
+									local needleRotation = needle.Rotation % 360
+									local zoneStart = zone.Rotation % 360
+									local zoneEnd = (zoneStart + (zone.Size.X.Offset > 0 and zone.Size.X.Offset or 25)) % 360
+									
+									if zoneStart < zoneEnd then
+										if needleRotation >= zoneStart and needleRotation <= zoneEnd then
+											presionarEspacio()
+											task.wait(0.3)
+										end
+									else
+										if needleRotation >= zoneStart or needleRotation <= zoneEnd then
+											presionarEspacio()
+											task.wait(0.3)
+										end
+									end
+								
+								
+								else
+									local needleX = needle.AbsolutePosition.X
+									local zoneLeft = zone.AbsolutePosition.X
+									local zoneRight = zoneLeft + zone.AbsoluteSize.X
+									
+									if needleX >= zoneLeft and needleX <= zoneRight then
+										presionarEspacio()
+										task.wait(0.4)
+									end
+								end
 							end
 						end
+						
+						
+						local treadmillTap = gui:FindFirstChild("TreadmillTapSkillCheck", true) 
+							or gui:FindFirstChild("TapButton", true)
+							or gui:FindFirstChild("Treadmill", true)
+						
+						if treadmillTap and treadmillTap.Visible then
+							pcall(function()
+								if isMobile then
+									
+									local VirtualUser = game:GetService("VirtualUser")
+									VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+									task.wait(0.01)
+									VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+								else
+									
+									presionarEspacio()
+								end
+							end)
+							task.wait(0.02) 
+						end
+						
 					end
 				end
 			end)
 		end
 	end
 end)
+
+
 
 
 
