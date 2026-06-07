@@ -452,32 +452,64 @@ task.spawn(function()
 					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
 					if circleMinigame then
 						
+						local circleParts = circleMinigame:FindFirstChild("CircleParts")
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
-						if circleGui and circleGui.Enabled then
-							
-							local mainFrame = circleGui:FindFirstChildOfClass("Frame")
-							local marker = mainFrame and (mainFrame:FindFirstChild("Marker") or mainFrame:FindFirstChild("Indicator") or mainFrame:FindFirstChildOfClass("ImageLabel"))
+						
+						if circleParts and circleGui and circleGui.Enabled then
 							
 							
-							local goldZone = mainFrame and (mainFrame:FindFirstChild("GoldArea") or mainFrame:FindFirstChild("YellowZone"))
-							local greyZone = mainFrame and (mainFrame:FindFirstChild("GreyArea") or mainFrame:FindFirstChild("RequiredArea"))
-							local targetZone = (goldZone and goldZone.Visible) and goldZone or greyZone
+							local componentesVisuales = {}
+							for _, desc en ipairs(circleParts:GetDescendants()) do
+								if desc:IsA("ImageLabel") or desc:IsA("Frame") then
+									table.insert(componentesVisuales, desc)
+								end
+							end
 							
-							if marker and targetZone and marker.Visible and targetZone.Visible then
-								
-								local markerPos = marker.AbsolutePosition
-								local zonePos = targetZone.AbsolutePosition
-								local zoneSize = targetZone.AbsoluteSize
+							if #componentesVisuales >= 2 then
+								local redCircle = nil
+								local targetZone = nil
 								
 								
-								local tolerancia = 12 
+								for _, elem en ipairs(componentesVisuales) do
+									if elem.Visible then
+										
+										local nombre = elem.Name:lower()
+										if nombre:find("marker") or nombre:find("indicator") or nombre:find("pointer") then
+											redCircle = elem
+										elseif nombre:find("zone") or nombre:find("area") or nombre:find("target") then
+											targetZone = elem
+										end
+									end
+								end
 								
 								
-								if markerPos.X >= (zonePos.X - tolerancia) and markerPos.X <= (zonePos.X + zoneSize.X + tolerancia) then
-									if markerPos.Y >= (zonePos.Y - tolerancia) and markerPos.Y <= (zonePos.Y + zoneSize.Y + tolerancia) then
+								
+								if not redCircle or not targetZone then
+									for _, elem en ipairs(componentesVisuales) do
+										if elem.Visible then
+											
+											if elem.Name == "Box" or elem.Parent.Name == "Box" then
+												redCircle = elem
+											else
+												targetZone = elem
+											end
+										end
+									end
+								end
+								
+								
+								if redCircle and targetZone and redCircle.Visible and targetZone.Visible then
+									local redDiameter = redCircle.AbsoluteSize.X
+									local targetDiameter = targetZone.AbsoluteSize.X
+									
+									
+									local margenTolerancia = 12
+									
+									
+									if math.abs(redDiameter - targetDiameter) <= margenTolerancia then
 										forzarEspacioLegitimo()
-										task.wait(0.6)
+										task.wait(0.6) 
 									end
 								end
 							end
