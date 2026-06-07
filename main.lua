@@ -151,7 +151,12 @@ function Window:CreateTab(name)
 	listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
 	
 	local button = create("TextButton", {Name = name .. "Tab", Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
-	button.MouseButton1Click:Connect(function() self:SetActiveTab(name) end)
+	button.MouseButton1Click:Connect(function() 
+		self:SetActiveTab(name)
+		for pName, pPage in pairs(self.Pages) do
+			pPage.Visible = (pName == name)
+		end
+	end)
 	self.Pages[name], self.TabButtons[name] = page, button
 	if not self.ActiveTab then self:SetActiveTab(name) end
 	return setmetatable({Window = self, Page = page, Name = name}, Tab)
@@ -453,8 +458,10 @@ VisualsTab:CreateToggle("ESP Generators & Elevators", false, function(state)
 end)
 
 local AutoTab = Ventana:CreateTab("Automation")
+
 AutoTab:CreateSection("Teleports")
 AutoTab:CreateSection("Player")
+
 AutoTab:CreateToggle("Auto-Skillcheck", false, function(state)
   _G.AutoSkillcheck = state 
 end)
