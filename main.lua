@@ -1,1 +1,243 @@
-
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local localPlayer = Players.LocalPlayer
+ 
+local AstroUI = {}
+ 
+AstroUI.Theme = {
+	Background = Color3.fromRGB(63, 51, 141),
+	Header = Color3.fromRGB(232, 232, 232),
+	Panel = Color3.fromRGB(78, 65, 156),
+	PanelLight = Color3.fromRGB(91, 75, 188),
+	Accent = Color3.fromRGB(100, 82, 202),
+	AccentSoft = Color3.fromRGB(54, 78, 168),
+	Hover = Color3.fromRGB(45, 72, 155),
+	Shadow = Color3.fromRGB(15, 12, 38),
+	PanelStroke = Color3.fromRGB(134, 116, 230),
+	SoftStroke = Color3.fromRGB(184, 174, 255),
+	WhiteStroke = Color3.fromRGB(255, 255, 255),
+	ButtonTop = Color3.fromRGB(118, 99, 220),
+	Text = Color3.fromRGB(255, 255, 255),
+	HeaderText = Color3.fromRGB(17, 22, 92),
+	Muted = Color3.fromRGB(208, 204, 235),
+	Success = Color3.fromRGB(74, 222, 128),
+	DisplayFont = Enum.Font.Fondamento,
+}
+ 
+local Window = {}
+Window.__index = Window
+ 
+local Tab = {}
+Tab.__index = Tab
+ 
+local function create(className, props, children)
+	local instance = Instance.new(className)
+	for key, value in pairs(props or {}) do 
+		instance[key] = value 
+	end
+	for _, child in ipairs(children or {}) do 
+		child.Parent = instance 
+	end
+	return instance
+end
+ 
+local function corner(radius) 
+	return create("UICorner", {
+		CornerRadius = UDim.new(0, radius or 8)
+	}) 
+end
+ 
+local function stroke(color, thickness, transparency) 
+	return create("UIStroke", {
+		Color = color, 
+		Thickness = thickness or 1, 
+		Transparency = transparency or 0
+	}) 
+end
+ 
+local function gradient(rotation, colors) 
+	return create("UIGradient", {
+		Rotation = rotation or 90, 
+		Color = ColorSequence.new(colors)
+	}) 
+end
+ 
+local function tween(object, goal, duration)
+	local info = TweenInfo.new(duration or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	local animation = TweenService:Create(object, info, goal)
+	animation:Play()
+	return animation
+end
+ 
+local function applyButtonHover(button, theme, isActive)
+	local buttonGradient = button:FindFirstChildOfClass("UIGradient")
+	local function setNormal()
+		button.BackgroundColor3 = isActive and theme.Hover or theme.Accent
+		if buttonGradient then
+			buttonGradient.Color = isActive and ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(69, 102, 198)), 
+				ColorSequenceKeypoint.new(1, theme.Hover)
+			}) or ColorSequence.new({
+				ColorSequenceKeypoint.new(0, theme.ButtonTop), 
+				ColorSequenceKeypoint.new(1, theme.Accent)
+			})
+		end
+	end
+ 
+	button.MouseEnter:Connect(function()
+		tween(button, { BackgroundColor3 = theme.Hover }, 0.12)
+		if buttonGradient then 
+			buttonGradient.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(69, 102, 198)), 
+				ColorSequenceKeypoint.new(1, theme.Hover)
+			}) 
+		end
+	end)
+ 
+	button.MouseLeave:Connect(setNormal)
+	setNormal()
+	return setNormal
+end
+ 
+function AstroUI.CreateWindow(options)
+	options = options or {}
+	local theme = options.Theme or AstroUI.Theme
+	local playerGui = localPlayer:WaitForChild("PlayerGui")
+	local screenGui = create("ScreenGui", {Name = options.Name or "AstroUILibrary", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = options.Parent or playerGui})
+	local self = setmetatable({Theme = theme, ScreenGui = screenGui, Pages = {}, TabButtons = {}, ActiveTab = nil}, Window)
+ 
+	self.Main = create("Frame", {Name = "Main", AnchorPoint = Vector2.new(0.5, 0.5), Position = options.Position or UDim2.fromScale(0.5, 0.5), Size = options.Size or UDim2.fromOffset(824, 482), BackgroundTransparency = 1, BorderSizePixel = 0, Parent = screenGui})
+	create("Frame", {Name = "HeaderShadow", Position = UDim2.fromOffset(32, 10), Size = UDim2.new(1, -2, 0, 345), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 0, Parent = self.Main}, {corner(14)})
+	create("Frame", {Name = "HeaderBack", Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, 0, 0, 345), BackgroundColor3 = theme.Header, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(14), stroke(theme.WhiteStroke, 1, 0.35), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 224))})})
+	self.Header = create("Frame", {Name = "Header", Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, -24, 0, 54), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 4, Parent = self.Main})
+	create("TextLabel", {Name = "Title", Position = UDim2.fromOffset(14, 0), Size = UDim2.new(0, 360, 1, 0), BackgroundTransparency = 1, Text = options.Title or "Astro's Dreamworld", TextColor3 = theme.HeaderText, Font = theme.DisplayFont, TextSize = 30, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = self.Header})
+	self.CloseButton = create("TextButton", {Name = "Close", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -18, 0.5, 0), Size = UDim2.fromOffset(30, 30), BackgroundTransparency = 1, BorderSizePixel = 0, Text = "x", TextColor3 = theme.HeaderText, Font = Enum.Font.GothamBold, TextSize = 16, ZIndex = 5, Parent = self.Header})
+	create("Frame", {Name = "BodyShadow", Position = UDim2.fromOffset(10, 54), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.42, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(16)})
+	self.Body = create("Frame", {Name = "Body", Position = UDim2.fromOffset(0, 43), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Background, BorderSizePixel = 0, ZIndex = 2, Parent = self.Main}, {corner(16), stroke(theme.PanelStroke, 2, 0.18), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(78, 63, 168)), ColorSequenceKeypoint.new(0.55, theme.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 42, 125))})})
+	self.Sidebar = create("ScrollingFrame", {Name = "Sidebar", Position = UDim2.fromOffset(18, 43), Size = UDim2.fromOffset(175, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, ZIndex = 3, Parent = self.Body}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(93, 78, 185)), ColorSequenceKeypoint.new(1, Color3.fromRGB(67, 55, 145))})})
+ 
+	local sidebarLayout = create("UIListLayout", {Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder, Parent = self.Sidebar})
+	create("UIPadding", {PaddingTop = UDim.new(0, 33), PaddingLeft = UDim.new(0, 17), PaddingRight = UDim.new(0, 17), Parent = self.Sidebar})
+	sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() self.Sidebar.CanvasSize = UDim2.fromOffset(0, sidebarLayout.AbsoluteContentSize.Y + 66) end)
+	self.Content = create("Frame", {Name = "Content", Position = UDim2.fromOffset(224, 43), Size = UDim2.fromOffset(573, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, ZIndex = 3, Parent = self.Body}, {corner(14), stroke(theme.SoftStroke, 1, 0.7), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(89, 75, 175)), ColorSequenceKeypoint.new(1, Color3.fromRGB(69, 57, 150))})})
+ 
+	self.CloseButton.MouseButton1Click:Connect(function() self.ScreenGui.Enabled = false end)
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if not gameProcessed and input.KeyCode == (options.ToggleKey or Enum.KeyCode.RightShift) then self.ScreenGui.Enabled = not self.ScreenGui.Enabled end
+	end)
+ 
+	self:EnableDragging()
+	return self
+end
+ 
+function Window:EnableDragging()
+	local dragging, dragStart, startPosition = false, nil, nil
+	self.Header.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true dragStart = input.Position startPosition = self.Main.Position
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local delta = input.Position - dragStart
+			self.Main.Position = UDim2.new(startPosition.X.Scale, startPosition.X.Offset + delta.X, startPosition.Y.Scale, startPosition.Y.Offset + delta.Y)
+		end
+	end)
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
+	end)
+end
+ 
+function Window:CreateTab(name)
+	local theme = self.Theme
+	local page = create("ScrollingFrame", {Name = name .. "Page", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
+	local listLayout = create("UIListLayout", {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
+	create("UIPadding", {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
+	listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
+ 
+	local button = create("TextButton", {Name = name .. "Tab", Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+ 
+	button.MouseButton1Click:Connect(function() 
+		self:SetActiveTab(name) 
+	end)
+ 
+	self.Pages[name], self.TabButtons[name] = page, button
+ 
+	if not self.ActiveTab then 
+		self:SetActiveTab(name) 
+	end
+ 
+	return setmetatable({Window = self, Page = page, Name = name}, Tab)
+end
+ 
+function Window:SetActiveTab(name)
+	self.ActiveTab = name
+	for tabName, page in pairs(self.Pages) do
+		local isActive = tabName == name
+		page.Visible = isActive
+		if self.TabButtons[tabName] then 
+			applyButtonHover(self.TabButtons[tabName], self.Theme, isActive) 
+		end
+	end
+end
+ 
+function Tab:CreateSection(text)
+	local theme = self.Window.Theme
+	return create("TextLabel", {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
+end
+ 
+function Tab:CreateButton(text, callback)
+	local theme = self.Window.Theme
+	local button = create("TextButton", {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	applyButtonHover(button, theme, false)
+	button.MouseButton1Click:Connect(function() if callback then callback() end end)
+	return button
+end
+ 
+function Window:CreateTab(name)
+	local theme = self.Theme
+	local page = create("ScrollingFrame", {Name = name .. "Page", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
+	local listLayout = create("UIListLayout", {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
+	create("UIPadding", {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
+	listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
+ 
+	local button = create("TextButton", {Name = name .. "Tab", Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+ 
+	button.MouseButton1Click:Connect(function() 
+		self:SetActiveTab(name) 
+	end)
+ 
+	self.Pages[name], self.TabButtons[name] = page, button
+ 
+	if not self.ActiveTab then 
+		self:SetActiveTab(name) 
+	end
+ 
+	return setmetatable({Window = self, Page = page, Name = name}, Tab)
+end
+ 
+function Window:SetActiveTab(name)
+	self.ActiveTab = name
+	for tabName, page in pairs(self.Pages) do
+		local isActive = tabName == name
+		page.Visible = isActive
+		if self.TabButtons[tabName] then 
+			applyButtonHover(self.TabButtons[tabName], self.Theme, isActive) 
+		end
+	end
+end
+ 
+function Tab:CreateSection(text)
+	local theme = self.Window.Theme
+	return create("TextLabel", {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
+end
+ 
+function Tab:CreateButton(text, callback)
+	local theme = self.Window.Theme
+	local button = create("TextButton", {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	applyButtonHover(button, theme, false)
+	button.MouseButton1Click:Connect(function() if callback then callback() end end)
+	return button
+end
+return AstroUI
