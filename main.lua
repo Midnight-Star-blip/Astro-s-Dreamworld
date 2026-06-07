@@ -424,39 +424,36 @@ end)
 
 
 
-
 local GameContext = nil
 pcall(function()
-	
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
 end)
 
 
-local function forzarExitoNativo()
+local function autocompletarMinijuego(tipo)
 	pcall(function()
+		
 		if GameContext and GameContext.PlayerState then
-			
 			if GameContext.PlayerState.CompleteSkillCheck then
-				GameContext.PlayerState:CompleteSkillCheck(true)
-			elseif GameContext.PlayerState.SkillCheckComplete then
-				GameContext.PlayerState:SkillCheckComplete(true)
+				GameContext.PlayerState:CompleteSkillCheck(true) 
+				return true
 			end
 		end
 	end)
+	return false
 end
 
 task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
-	while task.wait(0.01) do 
+	while task.wait(0.02) do 
 		if _G.AutoSkillcheck then
 			pcall(function()
 				
 				
 				local room = workspace:FindFirstChild("CurrentRoom")
 				if room then
-					
 					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
 					if circleMinigame then
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
@@ -464,15 +461,22 @@ task.spawn(function()
 						
 						if circleGui and circleGui.Enabled then
 							
-							forzarExitoNativo()
+							local exito = autocompletarMinijuego()
 							
 							
-							
-							local mainFrame = circleGui:FindFirstChildOfClass("Frame") or circleGui:FindFirstChild("CircleBackgroundFrame")
-							if mainFrame and getconnections then
-								
-								for _, conexion in ipairs(getconnections(mainFrame.InputBegan)) do
-									conexion:Fire()
+							if not exito then
+								local mainFrame = circleGui:FindFirstChildOfClass("Frame") or circleGui:FindFirstChild("CircleBackgroundFrame")
+								if mainFrame then
+									
+									local clickEvent = mainFrame:FindFirstChildOfClass("TextButton") or mainFrame
+									if clickEvent then
+										pcall(function()
+											
+											for _, conexion in ipairs(getconnections(clickEvent.MouseButton1Click or clickEvent.InputBegan)) do
+												conexion:Fire()
+											end
+										end)
+									end
 								end
 							end
 							task.wait(0.5) 
@@ -493,7 +497,7 @@ task.spawn(function()
 							if marker and goldArea and marker.Visible then
 								
 								marker.Position = UDim2.new(goldArea.Position.X.Scale + (goldArea.Size.X.Scale / 2), 0, marker.Position.Y.Scale, 0)
-								forzarExitoNativo()
+								autocompletarMinijuego()
 								task.wait(0.4)
 							end
 						end
@@ -505,13 +509,14 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						forzarExitoNativo()
-						if getconnections then
+						autocompletarMinijuego()
+						pcall(function()
 							local btn = tapFrame:FindFirstChildOfClass("TextButton")
 							if btn then
 								for _, con in ipairs(getconnections(btn.MouseButton1Click)) do con:Fire() end
 							end
-						end
+						 pcall(function() game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0)) end)
+						end)
 						task.wait(0.02)
 					end
 				end
