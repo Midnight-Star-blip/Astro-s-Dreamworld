@@ -429,10 +429,9 @@ pcall(function()
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
 end)
 
--- Sistema de bypass directo por entorno de memoria interna
+
 local function simularExitoInterno(interfazJuego)
 	pcall(function()
-		
 		if GameContext and GameContext.PlayerState then
 			if GameContext.PlayerState.CompleteSkillCheck then
 				GameContext.PlayerState:CompleteSkillCheck(true)
@@ -440,11 +439,9 @@ local function simularExitoInterno(interfazJuego)
 			end
 		end
 
-		
 		if interfazJuego then
 			local scriptManejador = interfazJuego:FindFirstChildOfClass("LocalScript") or interfazJuego:FindFirstChildOfClass("ModuleScript")
 			if scriptManejador then
-				
 				if getupvalues then
 					for _, upv in ipairs(getupvalues(scriptManejador)) do
 						if type(upv) == "table" and upv.ActiveSkillCheck then
@@ -456,14 +453,12 @@ local function simularExitoInterno(interfazJuego)
 				end
 			end
 
-			
 			local background = interfazJuego:FindFirstChild("CircleBackgroundFrame") or interfazJuego:FindFirstChildOfClass("Frame")
 			if background then
 				local marcador = background:FindFirstChild("Marker") or background:FindFirstChild("Box") or background:FindFirstChildOfClass("ImageLabel")
 				local zonaSegura = background:FindFirstChild("GoldArea") or background:FindFirstChild("GreyArea") or background:FindFirstChild("RequiredArea")
 				
 				if marcador and zonaSegura and marcador.Visible then
-					
 					marcador.Size = zonaSegura.Size
 					marcador.Position = zonaSegura.Position
 				end
@@ -471,6 +466,25 @@ local function simularExitoInterno(interfazJuego)
 		end
 	end)
 end
+
+
+local SoundService = game:GetService("SoundService")
+SoundService.ChildAdded:Connect(function(child)
+	if _G.AutoSkillcheck and child:IsA("Sound") then
+		
+		if child.Name:find("CircleSkillCheck") or child.SoundId:find("electronicpingshort") then
+			simularExitoInterno(nil)
+			pcall(function()
+				
+				for _, gui in ipairs(localPlayer.PlayerGui:GetChildren()) do
+					if gui.Name:lower():find("circle") then
+						simularExitoInterno(gui)
+					end
+				end
+			end)
+		end
+	end
+end)
 
 task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
@@ -519,7 +533,6 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						
 						simularExitoInterno(treadmillGui)
 						task.wait(0.02)
 					end
