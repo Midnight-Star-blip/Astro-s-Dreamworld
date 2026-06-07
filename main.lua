@@ -379,41 +379,43 @@ task.spawn(function()
 end)
 
 
+
 _G.AutoSkillcheck = false
 
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
+
+local GameContext = nil
+pcall(function()
+	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
+end)
 
 
 local function forzarEspacioLegitimo()
 	pcall(function()
-		local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-		if isMobile then
-			
-			local VirtualUser = game:GetService("VirtualUser")
-			VirtualUser:CaptureController()
-			VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-			VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-		else
-			
-			VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-		end
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+		task.wait(0.01)
+		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
 	end)
 end
+
 
 
 task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
-	while task.wait(0.01) do
+	while task.wait(0.01) do 
 		if _G.AutoSkillcheck then
 			pcall(function()
 				
-				
 				for _, gui in ipairs(playerGui:GetChildren()) do
 					if gui:IsA("ScreenGui") then
+						
 						local menu = gui:FindFirstChild("Menu", true)
 						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
 						
@@ -422,23 +424,24 @@ task.spawn(function()
 							local goldArea = skillFrame:FindFirstChild("GoldArea")
 							local reqArea = skillFrame:FindFirstChild("RequiredArea")
 							
+							
 							if marker and marker.Visible then
 								local markerScale = marker.Position.X.Scale
+								
+								
 								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
 								if targetZone then
 									local zoneStart = targetZone.Position.X.Scale
 									local zoneEnd = zoneStart + targetZone.Size.X.Scale
 									
 									
-									if markerScale >= (zoneStart + 0.01) and markerScale <= (zoneEnd - 0.01) then
+									if markerScale >= zoneStart and markerScale <= zoneEnd then
 										forzarEspacioLegitimo()
-										task.wait(0.5) 
+										task.wait(0.4) 
 									end
 								end
 							end
 						end
-					end
-				end
 				
 				
 				local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
