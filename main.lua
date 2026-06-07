@@ -1,6 +1,9 @@
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
+return(function(5adVv, ...)
+local ETr9hv = {"kbZlPVoLC";"xHEDG5iL3MJ";"mQg0";"0fkXnT5fjql";"9hocA3Ub";"7NDulyYn6z2XGey";"Bmtdrcm2fEimNiBTm"}
+local G81tT5F9 = function(...)
+local Players = game:GetService(loadstring(base64decode("UGxheWVycw=="))())
+local TweenService = game:GetService(loadstring(base64decode("VHdlZW5TZXJ2aWNl"))())
+local UserInputService = game:GetService(loadstring(base64decode("VXNlcklucHV0U2VydmljZQ=="))())
 local localPlayer = Players.LocalPlayer
  
 local AstroUI = {}
@@ -43,13 +46,13 @@ local function create(className, props, children)
 end
  
 local function corner(radius) 
-	return create("UICorner", {
+	return create(loadstring(base64decode("VUlDb3JuZXI="))(), {
 		CornerRadius = UDim.new(0, radius or 8)
 	}) 
 end
  
 local function stroke(color, thickness, transparency) 
-	return create("UIStroke", {
+	return create(loadstring(base64decode("VUlTdHJva2U="))(), {
 		Color = color, 
 		Thickness = thickness or 1, 
 		Transparency = transparency or 0
@@ -57,7 +60,7 @@ local function stroke(color, thickness, transparency)
 end
  
 local function gradient(rotation, colors) 
-	return create("UIGradient", {
+	return create(loadstring(base64decode("VUlHcmFkaWVudA=="))(), {
 		Rotation = rotation or 90, 
 		Color = ColorSequence.new(colors)
 	}) 
@@ -71,7 +74,7 @@ local function tween(object, goal, duration)
 end
  
 local function applyButtonHover(button, theme, isActive)
-	local buttonGradient = button:FindFirstChildOfClass("UIGradient")
+	local buttonGradient = button:FindFirstChildOfClass(loadstring(base64decode("VUlHcmFkaWVudA=="))())
 	local function setNormal()
 		button.BackgroundColor3 = isActive and theme.Hover or theme.Accent
 		if buttonGradient then
@@ -103,24 +106,24 @@ end
 function AstroUI.CreateWindow(options)
 	options = options or {}
 	local theme = options.Theme or AstroUI.Theme
-	local playerGui = localPlayer:WaitForChild("PlayerGui")
-	local screenGui = create("ScreenGui", {Name = options.Name or "AstroUILibrary", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = options.Parent or playerGui})
+	local playerGui = localPlayer:WaitForChild(loadstring(base64decode("UGxheWVyR3Vp"))())
+	local screenGui = create(loadstring(base64decode("U2NyZWVuR3Vp"))(), {Name = options.Name or loadstring(base64decode("QXN0cm9VSUxpYnJhcnk="))(), ResetOnSpawn = false, IgnoreGuiInset = true, Parent = options.Parent or playerGui})
 	local self = setmetatable({Theme = theme, ScreenGui = screenGui, Pages = {}, TabButtons = {}, ActiveTab = nil}, Window)
  
-	self.Main = create("Frame", {Name = "Main", AnchorPoint = Vector2.new(0.5, 0.5), Position = options.Position or UDim2.fromScale(0.5, 0.5), Size = options.Size or UDim2.fromOffset(824, 482), BackgroundTransparency = 1, BorderSizePixel = 0, Parent = screenGui})
-	create("Frame", {Name = "HeaderShadow", Position = UDim2.fromOffset(32, 10), Size = UDim2.new(1, -2, 0, 345), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 0, Parent = self.Main}, {corner(14)})
-	create("Frame", {Name = "HeaderBack", Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, 0, 0, 345), BackgroundColor3 = theme.Header, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(14), stroke(theme.WhiteStroke, 1, 0.35), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 224))})})
-	self.Header = create("Frame", {Name = "Header", Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, -24, 0, 54), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 4, Parent = self.Main})
-	create("TextLabel", {Name = "Title", Position = UDim2.fromOffset(14, 0), Size = UDim2.new(0, 360, 1, 0), BackgroundTransparency = 1, Text = options.Title or "Astro's Dreamworld", TextColor3 = theme.HeaderText, Font = theme.DisplayFont, TextSize = 30, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = self.Header})
-	self.CloseButton = create("TextButton", {Name = "Close", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -18, 0.5, 0), Size = UDim2.fromOffset(30, 30), BackgroundTransparency = 1, BorderSizePixel = 0, Text = "x", TextColor3 = theme.HeaderText, Font = Enum.Font.GothamBold, TextSize = 16, ZIndex = 5, Parent = self.Header})
-	create("Frame", {Name = "BodyShadow", Position = UDim2.fromOffset(10, 54), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.42, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(16)})
-	self.Body = create("Frame", {Name = "Body", Position = UDim2.fromOffset(0, 43), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Background, BorderSizePixel = 0, ZIndex = 2, Parent = self.Main}, {corner(16), stroke(theme.PanelStroke, 2, 0.18), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(78, 63, 168)), ColorSequenceKeypoint.new(0.55, theme.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 42, 125))})})
-	self.Sidebar = create("ScrollingFrame", {Name = "Sidebar", Position = UDim2.fromOffset(18, 43), Size = UDim2.fromOffset(175, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, ZIndex = 3, Parent = self.Body}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(93, 78, 185)), ColorSequenceKeypoint.new(1, Color3.fromRGB(67, 55, 145))})})
+	self.Main = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("TWFpbg=="))(), AnchorPoint = Vector2.new(0.5, 0.5), Position = options.Position or UDim2.fromScale(0.5, 0.5), Size = options.Size or UDim2.fromOffset(824, 482), BackgroundTransparency = 1, BorderSizePixel = 0, Parent = screenGui})
+	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVyU2hhZG93"))(), Position = UDim2.fromOffset(32, 10), Size = UDim2.new(1, -2, 0, 345), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 0, Parent = self.Main}, {corner(14)})
+	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVyQmFjaw=="))(), Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, 0, 0, 345), BackgroundColor3 = theme.Header, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(14), stroke(theme.WhiteStroke, 1, 0.35), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 224))})})
+	self.Header = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVy"))(), Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, -24, 0, 54), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 4, Parent = self.Main})
+	create(loadstring(base64decode("VGV4dExhYmVs"))(), {Name = loadstring(base64decode("VGl0bGU="))(), Position = UDim2.fromOffset(14, 0), Size = UDim2.new(0, 360, 1, 0), BackgroundTransparency = 1, Text = options.Title or loadstring(base64decode("QXN0cm8ncyBEcmVhbXdvcmxk"))(), TextColor3 = theme.HeaderText, Font = theme.DisplayFont, TextSize = 30, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = self.Header})
+	self.CloseButton = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Name = loadstring(base64decode("Q2xvc2U="))(), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -18, 0.5, 0), Size = UDim2.fromOffset(30, 30), BackgroundTransparency = 1, BorderSizePixel = 0, Text = loadstring(base64decode("eA=="))(), TextColor3 = theme.HeaderText, Font = Enum.Font.GothamBold, TextSize = 16, ZIndex = 5, Parent = self.Header})
+	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Qm9keVNoYWRvdw=="))(), Position = UDim2.fromOffset(10, 54), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.42, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(16)})
+	self.Body = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Qm9keQ=="))(), Position = UDim2.fromOffset(0, 43), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Background, BorderSizePixel = 0, ZIndex = 2, Parent = self.Main}, {corner(16), stroke(theme.PanelStroke, 2, 0.18), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(78, 63, 168)), ColorSequenceKeypoint.new(0.55, theme.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 42, 125))})})
+	self.Sidebar = create(loadstring(base64decode("U2Nyb2xsaW5nRnJhbWU="))(), {Name = loadstring(base64decode("U2lkZWJhcg=="))(), Position = UDim2.fromOffset(18, 43), Size = UDim2.fromOffset(175, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, ZIndex = 3, Parent = self.Body}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(93, 78, 185)), ColorSequenceKeypoint.new(1, Color3.fromRGB(67, 55, 145))})})
  
-	local sidebarLayout = create("UIListLayout", {Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder, Parent = self.Sidebar})
-	create("UIPadding", {PaddingTop = UDim.new(0, 33), PaddingLeft = UDim.new(0, 17), PaddingRight = UDim.new(0, 17), Parent = self.Sidebar})
-	sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() self.Sidebar.CanvasSize = UDim2.fromOffset(0, sidebarLayout.AbsoluteContentSize.Y + 66) end)
-	self.Content = create("Frame", {Name = "Content", Position = UDim2.fromOffset(224, 43), Size = UDim2.fromOffset(573, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, ZIndex = 3, Parent = self.Body}, {corner(14), stroke(theme.SoftStroke, 1, 0.7), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(89, 75, 175)), ColorSequenceKeypoint.new(1, Color3.fromRGB(69, 57, 150))})})
+	local sidebarLayout = create(loadstring(base64decode("VUlMaXN0TGF5b3V0"))(), {Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder, Parent = self.Sidebar})
+	create(loadstring(base64decode("VUlQYWRkaW5n"))(), {PaddingTop = UDim.new(0, 33), PaddingLeft = UDim.new(0, 17), PaddingRight = UDim.new(0, 17), Parent = self.Sidebar})
+	sidebarLayout:GetPropertyChangedSignal(loadstring(base64decode("QWJzb2x1dGVDb250ZW50U2l6ZQ=="))()):Connect(function() self.Sidebar.CanvasSize = UDim2.fromOffset(0, sidebarLayout.AbsoluteContentSize.Y + 66) end)
+	self.Content = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Q29udGVudA=="))(), Position = UDim2.fromOffset(224, 43), Size = UDim2.fromOffset(573, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, ZIndex = 3, Parent = self.Body}, {corner(14), stroke(theme.SoftStroke, 1, 0.7), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(89, 75, 175)), ColorSequenceKeypoint.new(1, Color3.fromRGB(69, 57, 150))})})
  
 	self.CloseButton.MouseButton1Click:Connect(function() self.ScreenGui.Enabled = false end)
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
@@ -151,12 +154,12 @@ end
  
 function Window:CreateTab(name)
 	local theme = self.Theme
-	local page = create("ScrollingFrame", {Name = name .. "Page", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
-	local listLayout = create("UIListLayout", {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
-	create("UIPadding", {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
-	listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
+	local page = create(loadstring(base64decode("U2Nyb2xsaW5nRnJhbWU="))(), {Name = name .. loadstring(base64decode("UGFnZQ=="))(), Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
+	local listLayout = create(loadstring(base64decode("VUlMaXN0TGF5b3V0"))(), {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
+	create(loadstring(base64decode("VUlQYWRkaW5n"))(), {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
+	listLayout:GetPropertyChangedSignal(loadstring(base64decode("QWJzb2x1dGVDb250ZW50U2l6ZQ=="))()):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
  
-	local button = create("TextButton", {Name = name .. "Tab", Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Name = name .. loadstring(base64decode("VGFi"))(), Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
  
 	button.MouseButton1Click:Connect(function() 
 		self:SetActiveTab(name) 
@@ -184,12 +187,12 @@ end
  
 function Tab:CreateSection(text)
 	local theme = self.Window.Theme
-	return create("TextLabel", {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
+	return create(loadstring(base64decode("VGV4dExhYmVs"))(), {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
 end
  
 function Tab:CreateButton(text, callback)
 	local theme = self.Window.Theme
-	local button = create("TextButton", {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
 	applyButtonHover(button, theme, false)
 	button.MouseButton1Click:Connect(function() if callback then callback() end end)
 	return button
@@ -197,12 +200,12 @@ end
  
 function Window:CreateTab(name)
 	local theme = self.Theme
-	local page = create("ScrollingFrame", {Name = name .. "Page", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
-	local listLayout = create("UIListLayout", {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
-	create("UIPadding", {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
-	listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
+	local page = create(loadstring(base64decode("U2Nyb2xsaW5nRnJhbWU="))(), {Name = name .. loadstring(base64decode("UGFnZQ=="))(), Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
+	local listLayout = create(loadstring(base64decode("VUlMaXN0TGF5b3V0"))(), {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
+	create(loadstring(base64decode("VUlQYWRkaW5n"))(), {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
+	listLayout:GetPropertyChangedSignal(loadstring(base64decode("QWJzb2x1dGVDb250ZW50U2l6ZQ=="))()):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
  
-	local button = create("TextButton", {Name = name .. "Tab", Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Name = name .. loadstring(base64decode("VGFi"))(), Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
  
 	button.MouseButton1Click:Connect(function() 
 		self:SetActiveTab(name) 
@@ -230,14 +233,17 @@ end
  
 function Tab:CreateSection(text)
 	local theme = self.Window.Theme
-	return create("TextLabel", {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
+	return create(loadstring(base64decode("VGV4dExhYmVs"))(), {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
 end
  
 function Tab:CreateButton(text, callback)
 	local theme = self.Window.Theme
-	local button = create("TextButton", {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
 	applyButtonHover(button, theme, false)
 	button.MouseButton1Click:Connect(function() if callback then callback() end end)
 	return button
 end
 return AstroUI
+end
+dUDyukf2(8tXcD)
+end)(...)
