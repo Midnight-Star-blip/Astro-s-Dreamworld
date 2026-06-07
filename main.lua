@@ -271,20 +271,13 @@ task.spawn(function()
 				if _G.ESPTwisteds then
 					local monFolder = sala:FindFirstChild("Monsters")
 					if monFolder then
-						for _, monster in ipairs(monFolder:GetChildren()) do
-							
-							local primaryPart = monster:FindFirstChild("HumanoidRootPart") 
-								or monster:FindFirstChildOfClass("MeshPart") 
-								or monster:FindFirstChildOfClass("Part")
-								or monster
-							
-							if primaryPart then
-								
-								local nombreLimpio = string.gsub(monster.Name, "Monster", "")
-								nombreLimpio = string.gsub(nombreLimpio, "Character", "")
-								
-								
-								makeESP(primaryPart, "[Twisted] " .. nombreLimpio, Color3.fromRGB(255, 50, 50))
+						for _, parte in ipairs(monFolder:GetDescendants()) do
+							if parte:IsA("BasePart") then
+								local carpetaMadre = parte:FindFirstAncestorOfClass("Folder")
+								if carpetaMadre and carpetaMadre.Name ~= "Monsters" then
+									local nombreTwisted = string.gsub(carpetaMadre.Name, "Monster", "")
+									makeESP(parte, "[Twisted] " .. nombreTwisted, Color3.fromRGB(255, 50, 50))
+								end
 							end
 						end
 					end
