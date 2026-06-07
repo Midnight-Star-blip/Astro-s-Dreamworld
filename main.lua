@@ -450,29 +450,31 @@ task.spawn(function()
 				if room then
 					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
 					if circleMinigame then
-						
 						local circleParts = circleMinigame:FindFirstChild("CircleParts")
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
 						
 						if circleParts and circleGui and circleGui.Enabled then
-							
-							
 							local componentesVisuales = {}
-							for _, desc en ipairs(circleParts:GetDescendants()) do
-								if desc:IsA("ImageLabel") or desc:IsA("Frame") then
-									table.insert(componentesVisuales, desc)
+							
+							
+							local success, descendants = pcall(function() return circleParts:GetDescendants() end)
+							if success and descendants then
+								for _, desc in ipairs(descendants) do
+									if desc and (desc:IsA("ImageLabel") or desc:IsA("Frame")) then
+										table.insert(componentesVisuales, desc)
+									end
 								end
 							end
+							
 							
 							if #componentesVisuales >= 2 then
 								local redCircle = nil
 								local targetZone = nil
 								
 								
-								for _, elem en ipairs(componentesVisuales) do
-									if elem.Visible then
-										
+								for _, elem in ipairs(componentesVisuales) do
+									if elem and elem.Visible then
 										local nombre = elem.Name:lower()
 										if nombre:find("marker") or nombre:find("indicator") or nombre:find("pointer") then
 											redCircle = elem
@@ -483,11 +485,9 @@ task.spawn(function()
 								end
 								
 								
-								
 								if not redCircle or not targetZone then
-									for _, elem en ipairs(componentesVisuales) do
-										if elem.Visible then
-											
+									for _, elem in ipairs(componentesVisuales) do
+										if elem and elem.Visible then
 											if elem.Name == "Box" or elem.Parent.Name == "Box" then
 												redCircle = elem
 											else
@@ -505,7 +505,6 @@ task.spawn(function()
 									
 									local margenTolerancia = 12
 									
-									
 									if math.abs(redDiameter - targetDiameter) <= margenTolerancia then
 										forzarEspacioLegitimo()
 										task.wait(0.6) 
@@ -518,7 +517,7 @@ task.spawn(function()
 
 				
 				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui:IsA("ScreenGui") then
+					if gui and gui:IsA("ScreenGui") then
 						local menu = gui:FindFirstChild("Menu", true)
 						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
 						
