@@ -1,7 +1,17 @@
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local localPlayer = Players.LocalPlayer
+
+
+_G.ESPTwisteds = false
+_G.ESPItems = false
+_G.ESPGenerators = false
+_G.ESPElevator = false
+_G.AutoSkillcheck = false
 
 local AstroUI = {}
 
@@ -41,12 +51,14 @@ end
 local function corner(radius) return create("UICorner", {CornerRadius = UDim.new(0, radius or 8)}) end
 local function stroke(color, thickness, transparency) return create("UIStroke", {Color = color, Thickness = thickness or 1, Transparency = transparency or 0}) end
 local function gradient(rotation, colors) return create("UIGradient", {Rotation = rotation or 90, Color = ColorSequence.new(colors)}) end
+
 local function tween(object, goal, duration)
 	local info = TweenInfo.new(duration or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	local animation = TweenService:Create(object, info, goal)
 	animation:Play()
 	return animation
 end
+
 local function applyButtonHover(button, theme, isActive)
 	local buttonGradient = button:FindFirstChildOfClass("UIGradient")
 	local function setNormal()
@@ -68,10 +80,14 @@ function AstroUI.CreateWindow(options)
 	options = options or {}
 	local theme = options.Theme or AstroUI.Theme
 	local targetParent = game:GetService("CoreGui")
+	
+	
+	local oldGui = targetParent:FindFirstChild(options.Name or "AstroUILibrary")
+	if oldGui then oldGui:Destroy() end
+
 	local screenGui = create("ScreenGui", {Name = options.Name or "AstroUILibrary", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = targetParent})
 	local self = setmetatable({Theme = theme, ScreenGui = screenGui, Pages = {}, TabButtons = {}, ActiveTab = nil}, Window)
 
-	
 	self.Main = create("Frame", {Name = "Main", AnchorPoint = Vector2.new(0.5, 0.5), Position = options.Position or UDim2.fromScale(0.5, 0.5), Size = options.Size or UDim2.fromOffset(824, 482), BackgroundTransparency = 1, BorderSizePixel = 0, Parent = screenGui})
 	create("Frame", {Name = "HeaderShadow", Position = UDim2.fromOffset(32, 10), Size = UDim2.new(1, -2, 0, 345), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 0, Parent = self.Main}, {corner(14)})
 	create("Frame", {Name = "HeaderBack", Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, 0, 0, 345), BackgroundColor3 = theme.Header, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(14), stroke(theme.WhiteStroke, 1, 0.35), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 224))})})
@@ -115,6 +131,7 @@ function AstroUI.CreateWindow(options)
 		end)
 	else
 		UserInputService.InputBegan:Connect(function(input, gameProcessed)
+			if gameProcessed then return end
 			if input.KeyCode == (options.ToggleKey or Enum.KeyCode.RightShift) then 
 				self.ScreenGui.Enabled = not self.ScreenGui.Enabled 
 			end
@@ -153,9 +170,6 @@ function Window:CreateTab(name)
 	local button = create("TextButton", {Name = name .. "Tab", Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
 	button.MouseButton1Click:Connect(function() 
 		self:SetActiveTab(name)
-		for pName, pPage in pairs(self.Pages) do
-			pPage.Visible = (pName == name)
-		end
 	end)
 	self.Pages[name], self.TabButtons[name] = page, button
 	if not self.ActiveTab then self:SetActiveTab(name) end
@@ -170,6 +184,7 @@ function Window:SetActiveTab(name)
 		if self.TabButtons[tabName] then applyButtonHover(self.TabButtons[tabName], self.Theme, isActive) end
 	end
 end
+
 
 function Tab:CreateSection(text)
 	local theme = self.Window.Theme
@@ -226,6 +241,7 @@ function Tab:CreateKeybind(text, defaultKey, callback)
 	local currentKey, listening = defaultKey, false
 	callback = callback or function() end
 	local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+	
 	local row = create("Frame", {Size = UDim2.new(1, 0, 0, 42), BackgroundColor3 = theme.PanelLight, BorderSizePixel = 0, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.76), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(102, 86, 198)), ColorSequenceKeypoint.new(1, Color3.fromRGB(76, 63, 165))})})
 	create("TextLabel", {Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -120, 1, 0), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = row})
 	local bindButton = create("TextButton", {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(100, 26), BackgroundColor3 = theme.Accent, Text = isMobile and "Mobile" or (currentKey and currentKey.Name or "None"), TextColor3 = theme.Text, Font = Enum.Font.GothamMedium, TextSize = 13, ZIndex = 5, Parent = row}, {corner(6), stroke(theme.SoftStroke, 1, 0.5)})
@@ -233,35 +249,64 @@ function Tab:CreateKeybind(text, defaultKey, callback)
 	if isMobile then
 		local btn = create("TextButton", {Size = UDim2.fromOffset(55, 55), Position = UDim2.new(0.8, 0, 0.3, 0), BackgroundColor3 = theme.Accent, Text = string.sub(text, 1, 3), TextColor3 = theme.Text, Font = Enum.Font.GothamBold, TextSize = 14, ZIndex = 10, Parent = self.Window.ScreenGui}, {corner(27), stroke(theme.SoftStroke, 2, 0.2)})
 		local mD, mS, mP = false, nil, nil
-		btn.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.Touch then mD = true mS = i.Position mP = btn.Position end end)
-		UserInputService.InputChanged:Connect(function(i) if mD and i.UserInputType == Enum.UserInputType.Touch then local d = i.Position - mS btn.Position = UDim2.new(mP.X.Scale, mP.X.Offset + d.X, mP.Y.Scale, mP.Y.Offset + d.Y) end end)
-		UserInputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.Touch then mD = false end end)
+		
+		btn.InputBegan:Connect(function(i) 
+			if i.UserInputType == Enum.UserInputType.Touch then 
+				mD = true 
+				mS = i.Position 
+				mP = btn.Position 
+			end 
+		end)
+		
+		UserInputService.InputChanged:Connect(function(i) 
+			if mD and i.UserInputType == Enum.UserInputType.Touch then 
+				local d = i.Position - mS 
+				btn.Position = UDim2.new(mP.X.Scale, mP.X.Offset + d.X, mP.Y.Scale, mP.Y.Offset + d.Y) 
+			end 
+		end)
+		
+		UserInputService.InputEnded:Connect(function(i) 
+			if i.UserInputType == Enum.UserInputType.Touch then 
+				mD = false 
+			end 
+		end)
+		
 		btn.MouseButton1Click:Connect(callback)
 	end
-	bindButton.MouseButton1Click:Connect(function() if not isMobile then listening = true bindButton.Text = "..." bindButton.BackgroundColor3 = theme.Hover end end)
+
+	bindButton.MouseButton1Click:Connect(function() 
+		if not isMobile then 
+			listening = true 
+			bindButton.Text = "..." 
+			bindButton.BackgroundColor3 = theme.Hover 
+		end 
+	end)
+
 	UserInputService.InputBegan:Connect(function(i, p)
 		if p then return end
 		if listening and i.UserInputType == Enum.UserInputType.Keyboard then
 			currentKey = i.KeyCode ~= Enum.KeyCode.Escape and i.KeyCode or nil
-			bindButton.Text = currentKey and currentKey.Name or "None" listening = false bindButton.BackgroundColor3 = theme.Accent
-		elseif currentKey and i.KeyCode == currentKey then callback() end
+			bindButton.Text = currentKey and currentKey.Name or "None" 
+			listening = false 
+			bindButton.BackgroundColor3 = theme.Accent
+		elseif currentKey and i.KeyCode == currentKey then 
+			callback() 
+		end
 	end)
+
 	return {Get = function() return currentKey end}
 end
 
-local espTable = {}
 
+local espTable = {}
 
 local function makeESP(obj, txt, col)
 	if not obj then return end
 	
-	
 	local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or obj
 	if not targetModel then return end
 	
-	
 	if targetModel:FindFirstChild("AstroHighlight") or obj:FindFirstChild("AstroTag") then return end
-	
 	
 	local hl = Instance.new("Highlight")
 	hl.Name = "AstroHighlight"
@@ -272,7 +317,6 @@ local function makeESP(obj, txt, col)
 	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 	hl.Adornee = targetModel
 	hl.Parent = targetModel
-	
 	
 	local bb = Instance.new("BillboardGui") 
 	bb.Name = "AstroTag"
@@ -329,7 +373,7 @@ task.spawn(function()
 						end
 					end
 				end
-				
+
 				
 				if _G.ESPItems then
 					local itemsFolder = sala:FindFirstChild("Items")
@@ -379,21 +423,10 @@ task.spawn(function()
 end)
 
 
-
-_G.AutoSkillcheck = false
-
-local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
-local VirtualInputManager = game:GetService("VirtualInputManager")
-
-
 local GameContext = nil
 pcall(function()
 	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
 end)
-
 
 local function forzarEspacioLegitimo()
 	pcall(function()
@@ -402,8 +435,6 @@ local function forzarEspacioLegitimo()
 		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
 	end)
 end
-
-
 
 task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
@@ -415,7 +446,6 @@ task.spawn(function()
 				
 				for _, gui in ipairs(playerGui:GetChildren()) do
 					if gui:IsA("ScreenGui") then
-						
 						local menu = gui:FindFirstChild("Menu", true)
 						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
 						
@@ -424,16 +454,13 @@ task.spawn(function()
 							local goldArea = skillFrame:FindFirstChild("GoldArea")
 							local reqArea = skillFrame:FindFirstChild("RequiredArea")
 							
-							
 							if marker and marker.Visible then
 								local markerScale = marker.Position.X.Scale
-								
-								
 								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
+								
 								if targetZone then
 									local zoneStart = targetZone.Position.X.Scale
 									local zoneEnd = zoneStart + targetZone.Size.X.Scale
-									
 									
 									if markerScale >= zoneStart and markerScale <= zoneEnd then
 										forzarEspacioLegitimo()
@@ -442,7 +469,8 @@ task.spawn(function()
 								end
 							end
 						end
-                    end
+					end
+				end
 				
 				local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
 				if treadmillGui then
@@ -459,14 +487,13 @@ task.spawn(function()
 end)
 
 
-
-
 local Ventana = AstroUI.CreateWindow({
-	Title = "Astro's Dreamworld 😴| Dandy's World",
+	Title = "Astro's Dreamworld 😴 | Dandy's World",
 	ToggleKey = Enum.KeyCode.V
 })
 
 local PlayerTab = Ventana:CreateTab("Player")
+PlayerTab:CreateSection("Movement")
 
 local VisualsTab = Ventana:CreateTab("Visuals")
 VisualsTab:CreateSection("All ESPs")
@@ -492,10 +519,8 @@ VisualsTab:CreateToggle("ESP Elevator", false, function(state)
 end)
 
 local AutoTab = Ventana:CreateTab("Automation")
-
-AutoTab:CreateSection("Teleports")
-AutoTab:CreateSection("Player")
+AutoTab:CreateSection("Minigames")
 
 AutoTab:CreateToggle("Auto-Skillcheck", false, function(state)
-  _G.AutoSkillcheck = state 
+	_G.AutoSkillcheck = state 
 end)
