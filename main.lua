@@ -429,6 +429,7 @@ task.spawn(function()
 		if _G.AutoSkillcheck then
 			pcall(function()
 				
+				
 				for _, gui in ipairs(playerGui:GetChildren()) do
 					if gui:IsA("ScreenGui") then
 						local menu = gui:FindFirstChild("Menu", true)
@@ -456,18 +457,52 @@ task.spawn(function()
 					end
 				end
 				
-				
-				
+				-- 2. MOTOR DE LA CAMINADORA (TREADMILL) -> ¡El que ya te funciona perfecto!
 				local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
-					
 					if tapFrame and tapFrame.Visible then
-						
 						forzarEspacioLegitimo()
-						task.wait(0.02) 
+						task.wait(0.02)
 					end
 				end
+
+                				
+				for _, gui in ipairs(playerGui:GetChildren()) do
+					if gui:IsA("ScreenGui") then
+						
+						local circleFrame = gui:FindFirstChild("CircleSkillCheckFrame", true) 
+							or gui:FindFirstChild("CircleFrame", true)
+							or gui:FindFirstChild("Wheel", true)
+                            or gui:FindFirstChild("SkillCheckFrame", true) 
+						
+						if circleFrame and circleFrame.Visible then
+							local marker = circleFrame:FindFirstChild("Marker") or circleFrame:FindFirstChild("Pointer")
+							local targetArea = circleFrame:FindFirstChild("GoldArea") 
+								or circleFrame:FindFirstChild("SuccessZone") 
+								or circleFrame:FindFirstChild("RequiredArea")
+							
+							if marker and targetArea and marker.Visible then
+								
+								local markerX = marker.Position.X.Offset
+								local markerY = marker.Position.Y.Offset
+								
+								local areaX = targetArea.Position.X.Offset
+								local areaY = targetArea.Position.Y.Offset
+								
+								
+								local distancia = math.sqrt((markerX - areaX)^2 + (markerY - areaY)^2)
+								
+								
+								if distancia <= 18 then 
+									forzarEspacioLegitimo()
+									task.wait(0.4) 
+								end
+							end
+						end
+					end
+				end
+
 				
 			end)
 		end
