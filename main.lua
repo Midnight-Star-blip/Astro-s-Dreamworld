@@ -424,65 +424,13 @@ end)
 
 
 
-local GameContext = nil
-pcall(function()
-	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
-end)
-
-
-local function simularExitoInterno(interfazJuego)
+local function forzarEspacioLegitimo()
 	pcall(function()
-		if GameContext and GameContext.PlayerState then
-			if GameContext.PlayerState.CompleteSkillCheck then
-				GameContext.PlayerState:CompleteSkillCheck(true)
-				return
-			end
-		end
-
-		if interfazJuego then
-			local scriptManejador = interfazJuego:FindFirstChildOfClass("LocalScript") or interfazJuego:FindFirstChildOfClass("ModuleScript")
-			if scriptManejador then
-				if getupvalues then
-					for _, upv in ipairs(getupvalues(scriptManejador)) do
-						if type(upv) == "table" and upv.ActiveSkillCheck then
-							pcall(function()
-								upv.ActiveSkillCheck.Success = true
-							end)
-						end
-					end
-				end
-			end
-
-			local background = interfazJuego:FindFirstChild("CircleBackgroundFrame") or interfazJuego:FindFirstChildOfClass("Frame")
-			if background then
-				local marcador = background:FindFirstChild("Marker") or background:FindFirstChild("Box") or background:FindFirstChildOfClass("ImageLabel")
-				local zonaSegura = background:FindFirstChild("GoldArea") or background:FindFirstChild("GreyArea") or background:FindFirstChild("RequiredArea")
-				
-				if marcador and zonaSegura and marcador.Visible then
-					marcador.Size = zonaSegura.Size
-					marcador.Position = zonaSegura.Position
-				end
-			end
-		end
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+		task.wait(0.01)
+		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
 	end)
 end
-
-
-local SoundService = game:GetService("SoundService")
-SoundService.ChildAdded:Connect(function(child)
-	if _G.AutoSkillcheck and child:IsA("Sound") then
-		if child.Name:find("CircleSkillCheck") or child.SoundId:find("electronicpingshort") then
-			simularExitoInterno(nil)
-			pcall(function()
-				for _, gui in ipairs(localPlayer.PlayerGui:GetChildren()) do
-					if gui.Name:lower():find("circle") then
-						simularExitoInterno(gui)
-					end
-				end
-			end)
-		end
-	end
-end)
 
 task.spawn(function()
 	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
@@ -500,7 +448,7 @@ task.spawn(function()
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
 						if circleGui and circleGui.Enabled then
-							simularExitoInterno(circleGui)
+							forzarEspacioLegitimo()
 							task.wait(0.4)
 						end
 					end
@@ -508,19 +456,28 @@ task.spawn(function()
 
 				
 				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui and gui:IsA("ScreenGui") then
+					if gui:IsA("ScreenGui") then
 						local menu = gui:FindFirstChild("Menu", true)
 						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
 						
 						if skillFrame and skillFrame.Visible then
 							local marker = skillFrame:FindFirstChild("Marker")
-							local goldArea = skillFrame:FindFirstChild("GoldArea") or skillFrame:FindFirstChild("RequiredArea")
+							local goldArea = skillFrame:FindFirstChild("GoldArea")
+							local reqArea = skillFrame:FindFirstChild("RequiredArea")
 							
-							if marker and goldArea and marker.Visible then
+							if marker and marker.Visible then
+								local markerScale = marker.Position.X.Scale
+								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
 								
-								marker.Position = UDim2.new(goldArea.Position.X.Scale + (goldArea.Size.X.Scale / 2), 0, marker.Position.Y.Scale, 0)
-								simularExitoInterno(gui)
-								task.wait(0.4)
+								if targetZone then
+									local zoneStart = targetZone.Position.X.Scale
+									local zoneEnd = zoneStart + targetZone.Size.X.Scale
+									
+									if markerScale >= zoneStart and markerScale <= zoneEnd then
+										forzarEspacioLegitimo()
+										task.wait(0.4) 
+									end
+								end
 							end
 						end
 					end
@@ -531,7 +488,7 @@ task.spawn(function()
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						simularExitoInterno(treadmillGui)
+						forzarEspacioLegitimo()
 						task.wait(0.02)
 					end
 				end
