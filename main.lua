@@ -449,43 +449,54 @@ task.spawn(function()
 				end
 
 				
+								
 				for _, gui in ipairs(playerGui:GetChildren()) do
 					if gui:IsA("ScreenGui") then
 						
-						local menu = gui:FindFirstChild("Menu", true)
-						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
+						local skillCheckFrame = gui:FindFirstChild("SkillCheckFrame", true) 
+							or gui:FindFirstChild("ButtonCircleMinigame", true)
+							or gui:FindFirstChild("Circle", true)
 						
-						if skillFrame and skillFrame.Visible then
-							local marker = skillFrame:FindFirstChild("Marker")
-							
-							local goldArea = skillFrame:FindFirstChild("GoldArea") or skillFrame:FindFirstChild("RequiredArea")
-							
-							
-							if marker and goldArea and marker.Visible and goldArea.Visible then
-								local markerPos = marker.AbsolutePosition
-								local areaPos = goldArea.AbsolutePosition
+						
+						if skillCheckFrame and skillCheckFrame.Visible then
+							pcall(function()
+								
+								local VirtualUser = game:GetService("VirtualUser")
+								VirtualUser:CaptureController()
+								
+								VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+								task.wait(0.01)
+								VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 								
 								
-								local distanciaX = math.abs(markerPos.X - areaPos.X)
-								local distanciaY = math.abs(markerPos.Y - areaPos.Y)
-								
-								
-								if distanciaX <= 20 and distanciaY <= 20 then
-									presionarEspacioSeguro()
-									task.wait(0.4) 
-								end
-							end
+								local VirtualInputManager = game:GetService("VirtualInputManager")
+								VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+								task.wait(0.01)
+								VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+							end)
+							task.wait(0.18) 
 						end
 					end
 				end
 				
 				
-				local playerGui = localPlayer:FindFirstChild("PlayerGui")
-				local treadmillGui = playerGui and playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
+				local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						presionarEspacioSeguro()
+						local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+						if isMobile then
+							local VirtualUser = game:GetService("VirtualUser")
+							VirtualUser:CaptureController()
+							VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+							task.wait(0.01)
+							VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+						else
+							local VirtualInputManager = game:GetService("VirtualInputManager")
+							VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+							task.wait(0.01)
+							VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+						end
 						task.wait(0.02)
 					end
 				end
@@ -494,6 +505,7 @@ task.spawn(function()
 		end
 	end
 end)
+
 
 
 
