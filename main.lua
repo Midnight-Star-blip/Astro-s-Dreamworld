@@ -442,7 +442,7 @@ task.spawn(function()
 								end
 							end
 						end
-				
+                    end
 				
 				local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
 				if treadmillGui then
