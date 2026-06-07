@@ -385,125 +385,57 @@ task.spawn(function()
 end)
 
 
+
 _G.AutoSkillcheck = false
 
-local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
 
 local GameContext = nil
+local CircleHandler = nil
+
 pcall(function()
-	GameContext = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Core"):WaitForChild("GameContext"))
+	local Modules = ReplicatedStorage:WaitForChild("Modules", 5)
+	if Modules then
+		GameContext = require(Modules:WaitForChild("Core"):WaitForChild("GameContext"))
+		CircleHandler = require(Modules:WaitForChild("Gameplay"):WaitForChild("CircleSkillCheckHandler"))
+	end
 end)
 
 
-local function forzarEspacioLegitimo()
+local function presionarEspacioSeguro()
 	pcall(function()
-		local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
-		
-		if isMobile then
-			
-			local VirtualUser = game:GetService("VirtualUser")
-			VirtualUser:CaptureController()
-			VirtualUser:Button1Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-			task.wait(0.01)
-			VirtualUser:Button1Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-		else
-			
-			VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-			task.wait(0.01)
-			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-		end
+		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+		task.wait(0.01)
+		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
 	end)
 end
 
-
 task.spawn(function()
-	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
-	if not playerGui then return end
-
-	while task.wait(0.01) do 
-		if _G.AutoSkillcheck then
+	while task.wait(0.05) do 
+		if _G.AutoSkillcheck and GameContext then
 			pcall(function()
 				
-				
-				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui:IsA("ScreenGui") then
-						local menu = gui:FindFirstChild("Menu", true)
-						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
-						
-						if skillFrame and skillFrame.Visible then
-							local marker = skillFrame:FindFirstChild("Marker")
-							local goldArea = skillFrame:FindFirstChild("GoldArea")
-							local reqArea = skillFrame:FindFirstChild("RequiredArea")
-							
-							if marker and marker.Visible then
-								local markerScale = marker.Position.X.Scale
-								local targetZone = (goldArea and goldArea.Visible) and goldArea or reqArea
-								if targetZone then
-									local zoneStart = targetZone.Position.X.Scale
-									local zoneEnd = zoneStart + targetZone.Size.X.Scale
-									
-									if markerScale >= zoneStart and markerScale <= zoneEnd then
-										forzarEspacioLegitimo()
-										task.wait(0.4)
-									end
-								end
-							end
-						end
-					end
+				if GameContext.skillchecking == true or GameContext.currentMinigameType ~= nil then
+					
+					
+					presionarEspacioSeguro()
+					
+					
+					task.wait(0.25)
 				end
 				
-				-- 2. MOTOR DE LA CAMINADORA (TREADMILL) -> ¡El que ya te funciona perfecto!
-				local treadmillGui = playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
+				
+				local playerGui = localPlayer:FindFirstChild("PlayerGui")
+				local treadmillGui = playerGui and playerGui:FindFirstChild("TreadmillTapSkillCheckGui")
 				if treadmillGui then
 					local tapFrame = treadmillGui:FindFirstChild("TapSkillCheckFrame")
 					if tapFrame and tapFrame.Visible then
-						forzarEspacioLegitimo()
+						presionarEspacioSeguro()
 						task.wait(0.02)
 					end
 				end
-
-                				
-				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui:IsA("ScreenGui") then
-						
-						local circleFrame = gui:FindFirstChild("CircleSkillCheckFrame", true) 
-							or gui:FindFirstChild("CircleFrame", true)
-							or gui:FindFirstChild("Wheel", true)
-                            or gui:FindFirstChild("SkillCheckFrame", true) 
-						
-						if circleFrame and circleFrame.Visible then
-							local marker = circleFrame:FindFirstChild("Marker") or circleFrame:FindFirstChild("Pointer")
-							local targetArea = circleFrame:FindFirstChild("GoldArea") 
-								or circleFrame:FindFirstChild("SuccessZone") 
-								or circleFrame:FindFirstChild("RequiredArea")
-							
-							if marker and targetArea and marker.Visible then
-								
-								local markerX = marker.Position.X.Offset
-								local markerY = marker.Position.Y.Offset
-								
-								local areaX = targetArea.Position.X.Offset
-								local areaY = targetArea.Position.Y.Offset
-								
-								
-								local distancia = math.sqrt((markerX - areaX)^2 + (markerY - areaY)^2)
-								
-								
-								if distancia <= 18 then 
-									forzarEspacioLegitimo()
-									task.wait(0.4) 
-								end
-							end
-						end
-					end
-				end
-
-				
 			end)
 		end
 	end
