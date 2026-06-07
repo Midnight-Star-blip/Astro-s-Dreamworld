@@ -1,318 +1,402 @@
-local _0x0000 = _0x0001:_0x0002(string.char(80, 108, 97, 121, 101, 114, 115))
-local _0x0003 = _0x0001:_0x0002(string.char(84, 119, 101, 101, 110, 83, 101, 114, 118, 105, 99, 101))
-local _0x0004 = _0x0001:_0x0002(string.char(85, 115, 101, 114, 73, 110, 112, 117, 116, 83, 101, 114, 118, 105, 99, 101))
-local _0x0005 = _0x0000._0x0006
-local _0x0007 = {}
-_0x0007._0x0008 = {
-_0x0009 = _0x000a._0x000b(63, (109 - 58), 141),
-_0x000c = _0x000a._0x000b(232, 232, (928 / 4)),
-_0x000d = _0x000a._0x000b((312 / 4), (139 - 74), 156),
-_0x000e = _0x000a._0x000b((129 - 38), (37 + 38), 188),
-_0x000f = _0x000a._0x000b(100, 82, (606 / 3)),
-_0x0010 = _0x000a._0x000b((123 - 69), 78, 168),
-_0x0011 = _0x000a._0x000b((141 - 96), 72, 155),
-_0x0012 = _0x000a._0x000b(15, 12, 38),
-_0x0013 = _0x000a._0x000b(134, (348 / 3), (295 - 65)),
-_0x0014 = _0x000a._0x000b(184, (696 / 4), 255),
-_0x0015 = _0x000a._0x000b(255, 255, 255),
-_0x0016 = _0x000a._0x000b(118, (124 - 25), (440 / 2)),
-_0x0017 = _0x000a._0x000b((1020 / 4), 255, 255),
-_0x0018 = _0x000a._0x000b((8 + 9), (76 - 54), (46 + 46)),
-_0x0019 = _0x000a._0x000b((104 + 104), 204, (253 - 18)),
-_0x001a = _0x000a._0x000b((97 - 23), (111 + 111), 128),
-_0x001b = _0x001c._0x001d._0x001e,
+local R9q73v = {"BxnM0xzN";"Ajq3zkeGsXtK";"owIGbATcjlS0adI";"YN08";"Zf4e1707";"lIMaiSfyp";"RbxunIwAmcRkSl";"4LYneicv";"ew5gzXN35";"lmiUpi6RHTuDkB";"iUgC";"Kf2gx0nZul0C9";"IJsu17n0rHaLrg58t"}
+local ALXBNw0R = function(...)
+local Players = game:GetService(loadstring(base64decode("UGxheWVycw=="))())
+local TweenService = game:GetService(loadstring(base64decode("VHdlZW5TZXJ2aWNl"))())
+local UserInputService = game:GetService(loadstring(base64decode("VXNlcklucHV0U2VydmljZQ=="))())
+local localPlayer = Players.LocalPlayer
+
+local AstroUI = {}
+
+AstroUI.Theme = {
+	Background = Color3.fromRGB(63, 51, 141),
+	Header = Color3.fromRGB(232, 232, 232),
+	Panel = Color3.fromRGB(78, 65, 156),
+	PanelLight = Color3.fromRGB(91, 75, 188),
+	Accent = Color3.fromRGB(100, 82, 202),
+	AccentSoft = Color3.fromRGB(54, 78, 168),
+	Hover = Color3.fromRGB(45, 72, 155),
+	Shadow = Color3.fromRGB(15, 12, 38),
+	PanelStroke = Color3.fromRGB(134, 116, 230),
+	SoftStroke = Color3.fromRGB(184, 174, 255),
+	WhiteStroke = Color3.fromRGB(255, 255, 255),
+	ButtonTop = Color3.fromRGB(118, 99, 220),
+	Text = Color3.fromRGB(255, 255, 255),
+	HeaderText = Color3.fromRGB(17, 22, 92),
+	Muted = Color3.fromRGB(208, 204, 235),
+	Success = Color3.fromRGB(74, 222, 128),
+	DisplayFont = Enum.Font.Fondamento,
 }
-local _0x001f = {}
-_0x001f._0x0020 = _0x001f
-local _0x0021 = {}
-_0x0021._0x0020 = _0x0021
-local function _0x0022(_0x0023, _0x0024, _0x0025)
-local _0x0026 = _0x0027._0x0028(_0x0023)
-for _0x0029, _0x002a in pairs(_0x0024 or {}) do
-_0x0026[_0x0029] = _0x002a
+
+local Window = {}
+Window.__index = Window
+
+local Tab = {}
+Tab.__index = Tab
+
+local function create(className, props, children)
+	local instance = Instance.new(className)
+	for key, value in pairs(props or {}) do 
+		instance[key] = value 
+	end
+	for _, child in ipairs(children or {}) do 
+		child.Parent = instance 
+	end
+	return instance
 end
-for _0x002b, _0x002c in ipairs(_0x0025 or {}) do
-_0x002c._0x002d = _0x0026
+
+local function corner(radius) 
+	return create(loadstring(base64decode("VUlDb3JuZXI="))(), {
+		CornerRadius = UDim.new(0, radius or 8)
+	}) 
 end
-return _0x0026
+
+local function stroke(color, thickness, transparency) 
+	return create(loadstring(base64decode("VUlTdHJva2U="))(), {
+		Color = color, 
+		Thickness = thickness or 1, 
+		Transparency = transparency or 0
+	}) 
 end
-local function _0x002e(_0x002f)
-return _0x0022(string.char(85, 73, 67, 111, 114, 110, 101, 114), {
-_0x0030 = _0x0031._0x0028(0, _0x002f or 8)
+
+local function gradient(rotation, colors) 
+	return create(loadstring(base64decode("VUlHcmFkaWVudA=="))(), {
+		Rotation = rotation or 90, 
+		Color = ColorSequence.new(colors)
+	}) 
+end
+
+local function tween(object, goal, duration)
+	local info = TweenInfo.new(duration or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	local animation = TweenService:Create(object, info, goal)
+	animation:Play()
+	return animation
+end
+
+local function applyButtonHover(button, theme, isActive)
+	local buttonGradient = button:FindFirstChildOfClass(loadstring(base64decode("VUlHcmFkaWVudA=="))())
+	local function setNormal()
+		button.BackgroundColor3 = isActive and theme.Hover or theme.Accent
+		if buttonGradient then
+			buttonGradient.Color = isActive and ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(69, 102, 198)), 
+				ColorSequenceKeypoint.new(1, theme.Hover)
+			}) or ColorSequence.new({
+				ColorSequenceKeypoint.new(0, theme.ButtonTop), 
+				ColorSequenceKeypoint.new(1, theme.Accent)
+			})
+		end
+	end
+	
+	button.MouseEnter:Connect(function()
+		tween(button, { BackgroundColor3 = theme.Hover }, 0.12)
+		if buttonGradient then 
+			buttonGradient.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(69, 102, 198)), 
+				ColorSequenceKeypoint.new(1, theme.Hover)
+			}) 
+		end
+	end)
+	
+	button.MouseLeave:Connect(setNormal)
+	setNormal()
+	return setNormal
+end
+
+function AstroUI.CreateWindow(options)
+	options = options or {}
+	local theme = options.Theme or AstroUI.Theme
+	local playerGui = localPlayer:WaitForChild(loadstring(base64decode("UGxheWVyR3Vp"))())
+	local screenGui = create(loadstring(base64decode("U2NyZWVuR3Vp"))(), {Name = options.Name or loadstring(base64decode("QXN0cm9VSUxpYnJhcnk="))(), ResetOnSpawn = false, IgnoreGuiInset = true, Parent = options.Parent or playerGui})
+	local self = setmetatable({Theme = theme, ScreenGui = screenGui, Pages = {}, TabButtons = {}, ActiveTab = nil}, Window)
+	
+	self.Main = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("TWFpbg=="))(), AnchorPoint = Vector2.new(0.5, 0.5), Position = options.Position or UDim2.fromScale(0.5, 0.5), Size = options.Size or UDim2.fromOffset(824, 482), BackgroundTransparency = 1, BorderSizePixel = 0, Parent = screenGui})
+	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVyU2hhZG93"))(), Position = UDim2.fromOffset(32, 10), Size = UDim2.new(1, -2, 0, 345), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 0, Parent = self.Main}, {corner(14)})
+	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVyQmFjaw=="))(), Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, 0, 0, 345), BackgroundColor3 = theme.Header, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(14), stroke(theme.WhiteStroke, 1, 0.35), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 224))})})
+	self.Header = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVy"))(), Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, -24, 0, 54), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 4, Parent = self.Main})
+	create(loadstring(base64decode("VGV4dExhYmVs"))(), {Name = loadstring(base64decode("VGl0bGU="))(), Position = UDim2.fromOffset(14, 0), Size = UDim2.new(0, 360, 1, 0), BackgroundTransparency = 1, Text = options.Title or loadstring(base64decode("QXN0cm8ncyBEcmVhbXdvcmxk"))(), TextColor3 = theme.HeaderText, Font = theme.DisplayFont, TextSize = 30, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = self.Header})
+	self.CloseButton = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Name = loadstring(base64decode("Q2xvc2U="))(), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -18, 0.5, 0), Size = UDim2.fromOffset(30, 30), BackgroundTransparency = 1, BorderSizePixel = 0, Text = loadstring(base64decode("eA=="))(), TextColor3 = theme.HeaderText, Font = Enum.Font.GothamBold, TextSize = 16, ZIndex = 5, Parent = self.Header})
+	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Qm9keVNoYWRvdw=="))(), Position = UDim2.fromOffset(10, 54), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.42, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(16)})
+	self.Body = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Qm9keQ=="))(), Position = UDim2.fromOffset(0, 43), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Background, BorderSizePixel = 0, ZIndex = 2, Parent = self.Main}, {corner(16), stroke(theme.PanelStroke, 2, 0.18), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(78, 63, 168)), ColorSequenceKeypoint.new(0.55, theme.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 42, 125))})})
+	self.Sidebar = create(loadstring(base64decode("U2Nyb2xsaW5nRnJhbWU="))(), {Name = loadstring(base64decode("U2lkZWJhcg=="))(), Position = UDim2.fromOffset(18, 43), Size = UDim2.fromOffset(175, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, ZIndex = 3, Parent = self.Body}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(93, 78, 185)), ColorSequenceKeypoint.new(1, Color3.fromRGB(67, 55, 145))})})
+
+	local sidebarLayout = create(loadstring(base64decode("VUlMaXN0TGF5b3V0"))(), {Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder, Parent = self.Sidebar})
+	create(loadstring(base64decode("VUlQYWRkaW5n"))(), {PaddingTop = UDim.new(0, 33), PaddingLeft = UDim.new(0, 17), PaddingRight = UDim.new(0, 17), Parent = self.Sidebar})
+	sidebarLayout:GetPropertyChangedSignal(loadstring(base64decode("QWJzb2x1dGVDb250ZW50U2l6ZQ=="))()):Connect(function() self.Sidebar.CanvasSize = UDim2.fromOffset(0, sidebarLayout.AbsoluteContentSize.Y + 66) end)
+	self.Content = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Q29udGVudA=="))(), Position = UDim2.fromOffset(224, 43), Size = UDim2.fromOffset(573, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, ZIndex = 3, Parent = self.Body}, {corner(14), stroke(theme.SoftStroke, 1, 0.7), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(89, 75, 175)), ColorSequenceKeypoint.new(1, Color3.fromRGB(69, 57, 150))})})
+	
+	self.CloseButton.MouseButton1Click:Connect(function() self.ScreenGui.Enabled = false end)
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if not gameProcessed and input.KeyCode == (options.ToggleKey or Enum.KeyCode.RightShift) then self.ScreenGui.Enabled = not self.ScreenGui.Enabled end
+	end)
+	
+	self:EnableDragging()
+	return self
+end
+
+function Window:EnableDragging()
+	local dragging, dragStart, startPosition = false, nil, nil
+	self.Header.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true dragStart = input.Position startPosition = self.Main.Position
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local delta = input.Position - dragStart
+			self.Main.Position = UDim2.new(startPosition.X.Scale, startPosition.X.Offset + delta.X, startPosition.Y.Scale, startPosition.Y.Offset + delta.Y)
+		end
+	end)
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
+	end)
+end
+
+function Window:CreateTab(name)
+	local theme = self.Theme
+	local page = create(loadstring(base64decode("U2Nyb2xsaW5nRnJhbWU="))(), {Name = name .. loadstring(base64decode("UGFnZQ=="))(), Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
+	local listLayout = create(loadstring(base64decode("VUlMaXN0TGF5b3V0"))(), {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
+	create(loadstring(base64decode("VUlQYWRkaW5n"))(), {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
+	listLayout:GetPropertyChangedSignal(loadstring(base64decode("QWJzb2x1dGVDb250ZW50U2l6ZQ=="))()):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
+	
+	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Name = name .. loadstring(base64decode("VGFi"))(), Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	
+	button.MouseButton1Click:Connect(function() 
+		self:SetActiveTab(name) 
+	end)
+	
+	self.Pages[name], self.TabButtons[name] = page, button
+	
+	if not self.ActiveTab then 
+		self:SetActiveTab(name) 
+	end
+	
+	return setmetatable({Window = self, Page = page, Name = name}, Tab)
+end
+
+function Window:SetActiveTab(name)
+	self.ActiveTab = name
+	for tabName, page in pairs(self.Pages) do
+		local isActive = tabName == name
+		page.Visible = isActive
+		if self.TabButtons[tabName] then 
+			applyButtonHover(self.TabButtons[tabName], self.Theme, isActive) 
+		end
+	end
+end
+
+function Tab:CreateSection(text)
+	local theme = self.Window.Theme
+	return create(loadstring(base64decode("VGV4dExhYmVs"))(), {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
+end
+
+function Tab:CreateButton(text, callback)
+	local theme = self.Window.Theme
+	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	applyButtonHover(button, theme, false)
+	button.MouseButton1Click:Connect(function() if callback then callback() end end)
+	return button
+end
+
+function Window:CreateTab(name)
+	local theme = self.Theme
+	local page = create(loadstring(base64decode("U2Nyb2xsaW5nRnJhbWU="))(), {Name = name .. loadstring(base64decode("UGFnZQ=="))(), Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
+	local listLayout = create(loadstring(base64decode("VUlMaXN0TGF5b3V0"))(), {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
+	create(loadstring(base64decode("VUlQYWRkaW5n"))(), {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
+	listLayout:GetPropertyChangedSignal(loadstring(base64decode("QWJzb2x1dGVDb250ZW50U2l6ZQ=="))()):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
+	
+	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Name = name .. loadstring(base64decode("VGFi"))(), Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	
+	button.MouseButton1Click:Connect(function() 
+		self:SetActiveTab(name) 
+	end)
+	
+	self.Pages[name], self.TabButtons[name] = page, button
+	
+	if not self.ActiveTab then 
+		self:SetActiveTab(name) 
+	end
+	
+	return setmetatable({Window = self, Page = page, Name = name}, Tab)
+end
+
+function Window:SetActiveTab(name)
+	self.ActiveTab = name
+	for tabName, page in pairs(self.Pages) do
+		local isActive = tabName == name
+		page.Visible = isActive
+		if self.TabButtons[tabName] then 
+			applyButtonHover(self.TabButtons[tabName], self.Theme, isActive) 
+		end
+	end
+end
+
+function Tab:CreateSection(text)
+	local theme = self.Window.Theme
+	return create(loadstring(base64decode("VGV4dExhYmVs"))(), {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
+end
+
+function Tab:CreateButton(text, callback)
+	local theme = self.Window.Theme
+	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	applyButtonHover(button, theme, false)
+	button.MouseButton1Click:Connect(function() if callback then callback() end end)
+	return button
+end
+
+local espTable = {}
+
+-- Función interna optimizada usando Highlights para los monstruos
+local function makeESP(obj, txt, col)
+	if not obj then return end
+	
+	-- Buscamos el objeto principal (el modelo o la parte física del Twisted)
+	local p = obj:IsA(loadstring(base64decode("QmFzZVBhcnQ="))()) and obj 
+		or obj:FindFirstChildOfClass(loadstring(base64decode("TWVzaFBhcnQ="))()) 
+		or obj:FindFirstChildOfClass(loadstring(base64decode("UGFydA=="))()) 
+		or obj:FindFirstChild(loadstring(base64decode("SHVtYW5vaWRSb290UGFydA=="))())
+	if not p then return end
+	
+	-- Buscamos el ancestro que sea un Modelo o la carpeta del monstruo para aplicarle el contorno completo
+	local targetModel = obj:IsA(loadstring(base64decode("TW9kZWw="))()) and obj or obj:FindFirstAncestorOfClass(loadstring(base64decode("TW9kZWw="))()) or p
+	
+	-- Evitamos duplicar efectos si ya tiene un Highlight o Tag activo
+	if targetModel:FindFirstChild(loadstring(base64decode("QXN0cm9IaWdobGlnaHQ="))()) or p:FindFirstChild(loadstring(base64decode("QXN0cm9UYWc="))()) then return end
+	
+	
+	local hl = Instance.new(loadstring(base64decode("SGlnaGxpZ2h0"))())
+	hl.Name = loadstring(base64decode("QXN0cm9IaWdobGlnaHQ="))()
+	hl.FillColor = col             
+	hl.FillTransparency = 0.7      
+	hl.OutlineColor = col          
+	hl.OutlineTransparency = 0     
+	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop 
+	hl.Adornee = targetModel
+	hl.Parent = targetModel
+	
+	
+	local bb = Instance.new(loadstring(base64decode("QmlsbGJvYXJkR3Vp"))()) 
+	bb.Name = loadstring(base64decode("QXN0cm9UYWc="))()
+	bb.Size = UDim2.new(0, 200, 0, 50)
+	bb.AlwaysOnTop = true
+	bb.StudsOffset = Vector3.new(0, 4, 0) 
+	bb.Adornee = p
+	bb.Parent = p
+	
+	local l = Instance.new(loadstring(base64decode("VGV4dExhYmVs"))()) 
+	l.Size = UDim2.new(1, 0, 1, 0)
+	l.BackgroundTransparency = 1
+	l.Text = txt
+	l.TextColor3 = col
+	l.Font = Enum.Font.GothamBold
+	l.TextSize = 14
+	l.Parent = bb
+	
+	table.insert(espTable, hl) 
+	table.insert(espTable, bb)
+end
+
+
+local function clearESP() 
+	for _, v in ipairs(espTable) do 
+		pcall(function() v:Destroy() end) 
+	end 
+	table.clear(espTable) 
+end
+
+
+task.spawn(function()
+	while task.wait(0.6) do
+		
+		clearESP()
+		
+		
+		local room = workspace:FindFirstChild(loadstring(base64decode("Q3VycmVudFJvb20="))())
+		if room then
+			
+			for _, sala in ipairs(room:GetChildren()) do
+				
+				
+				if _G.ESPTwisteds then
+					local monFolder = sala:FindFirstChild(loadstring(base64decode("TW9uc3RlcnM="))())
+					if monFolder then
+						
+						for _, parte in ipairs(monFolder:GetDescendants()) do
+							
+							if parte:IsA(loadstring(base64decode("QmFzZVBhcnQ="))()) then
+								
+								local carpetaMadre = parte:FindFirstAncestorOfClass(loadstring(base64decode("Rm9sZGVy"))())
+								if carpetaMadre and carpetaMadre.Name ~= loadstring(base64decode("TW9uc3RlcnM="))() then
+									
+									local nombreTwisted = string.gsub(carpetaMadre.Name, loadstring(base64decode("TW9uc3Rlcg=="))(), loadstring(base64decode(""))())
+									
+									
+									makeESP(parte, loadstring(base64decode("W1R3aXN0ZWRdIA=="))() .. nombreTwisted, Color3.fromRGB(255, 50, 50))
+								end
+							end
+						end
+					end
+				end
+				
+				
+				if _G.ESPItems then
+					local itemsFolder = sala:FindFirstChild(loadstring(base64decode("SXRlbXM="))())
+					if itemsFolder then
+						for _, item in ipairs(itemsFolder:GetChildren()) do
+							if item.Name == loadstring(base64decode("UmVzZWFyY2hDYXBzdWxl"))() then 
+								makeESP(item, loadstring(base64decode("8J+nqiBDYXBzdWxl"))(), Color3.fromRGB(82, 218, 255)) 
+							end
+						end
+					end
+				end
+				
+				
+				if _G.ESPGenerators then
+					local gensFolder = sala:FindFirstChild(loadstring(base64decode("R2VuZXJhdG9ycw=="))())
+					if gensFolder then
+						for _, gen in ipairs(gensFolder:GetChildren()) do
+							if gen.Name == loadstring(base64decode("R2VuZXJhdG9y"))() then 
+								makeESP(gen, loadstring(base64decode("4pqZ77iPIEdlbmVyYXRvcg=="))(), Color3.fromRGB(74, 222, 128)) 
+							end
+						end
+					end
+				end
+				
+			end
+		end
+		
+		
+		if _G.ESPGenerators then
+			local elevators = workspace:FindFirstChild(loadstring(base64decode("RWxldmF0b3Jz"))())
+			if elevators then
+				for _, elev in ipairs(elevators:GetChildren()) do
+					if elev.Name == loadstring(base64decode("RWxldmF0b3I="))() then 
+						makeESP(elev, loadstring(base64decode("IEVsZXZhdG9y"))(), Color3.fromRGB(230, 100, 220)) 
+					end
+				end
+			end
+		end
+		
+	end
+end)
+
+local Ventana = AstroUI.CreateWindow({
+	Title = loadstring(base64decode("QXN0cm8ncyBEcmVhbXdvcmxkIPCfmLR8IERhbmR5J3MgV29ybGQ="))(),
+	ToggleKey = Enum.KeyCode.RightShift
 })
-end
-local function _0x0032(_0x0033, _0x0034, _0x0035)
-return _0x0022(string.char(85, 73, 83, 116, 114, 111, 107, 101), {
-_0x0036 = _0x0033,
-_0x0037 = _0x0034 or 1,
-_0x0038 = _0x0035 or 0
-})
-end
-local function _0x0039(_0x003a, _0x003b)
-return _0x0022(string.char(85, 73, 71, 114, 97, 100, 105, 101, 110, 116), {
-_0x003c = _0x003a or (45 + 45),
-_0x0036 = _0x003d._0x0028(_0x003b)
-})
-end
-local function _0x003e(_0x003f, _0x0040, _0x0041)
-local _0x0042 = _0x0043._0x0028(_0x0041 or 0.15, _0x001c._0x0044._0x0045, _0x001c._0x0046._0x0047)
-local _0x0048 = _0x0003:_0x0049(_0x003f, _0x0042, _0x0040)
-_0x0048:_0x004a()
-return _0x0048
-end
-local function _0x004b(_0x004c, _0x004d, _0x004e)
-local _0x004f = _0x004c:_0x0050(string.char(85, 73, 71, 114, 97, 100, 105, 101, 110, 116))
-local function _0x0051()
-_0x004c._0x0052 = _0x004e and _0x004d._0x0011 or _0x004d._0x000f
-if _0x004f then
-_0x004f._0x0036 = _0x004e and _0x003d._0x0028({
-_0x0053._0x0028(0, _0x000a._0x000b((207 / 3), 102, (594 / 3))),
-_0x0053._0x0028(1, _0x004d._0x0011)
-}) or _0x003d._0x0028({
-_0x0053._0x0028(0, _0x004d._0x0016),
-_0x0053._0x0028(1, _0x004d._0x000f)
-})
-end
-end
-_0x004c._0x0054:_0x0055(function()
-_0x003e(_0x004c, { _0x0052 = _0x004d._0x0011 }, 0.12)
-if _0x004f then
-_0x004f._0x0036 = _0x003d._0x0028({
-_0x0053._0x0028(0, _0x000a._0x000b(69, (408 / 4), (284 - 86))),
-_0x0053._0x0028(1, _0x004d._0x0011)
-})
-end
+
+local VisualsTab = Ventana:CreateTab(loadstring(base64decode("VmlzdWFscw=="))())
+VisualsTab:CreateSection(loadstring(base64decode("UmFzdHJlYWRvciBkZSBBbWVuYXphcyB5IE9iamV0aXZvcw=="))())
+
+VisualsTab:CreateToggle(loadstring(base64decode("RVNQIFR3aXN0ZWRzIChNb25zdHJ1b3Mp"))(), false, function(state)
+	_G.ESPTwisteds = state
 end)
-_0x004c._0x0056:_0x0055(_0x0051)
-_0x0051()
-return _0x0051
-end
-function _0x0007._0x0057(_0x0058)
-_0x0058 = _0x0058 or {}
-local _0x004d = _0x0058._0x0008 or _0x0007._0x0008
-local _0x0059 = _0x0005:_0x005a(string.char(80, 108, 97, 121, 101, 114, 71, 117, 105))
-local _0x005b = _0x0022(string.char(83, 99, 114, 101, 101, 110, 71, 117, 105), {_0x005c = _0x0058._0x005c or string.char(65, 115, 116, 114, 111, 85, 73, 76, 105, 98, 114, 97, 114, 121), _0x005d = false, _0x005e = true, _0x002d = _0x0058._0x002d or _0x0059})
-local _0x005f = setmetatable({_0x0008 = _0x004d, _0x0060 = _0x005b, _0x0061 = {}, _0x0062 = {}, _0x0063 = nil}, _0x001f)
-_0x005f._0x0064 = _0x0022(string.char(70, 114, 97, 109, 101), {_0x005c = string.char(77, 97, 105, 110), _0x0065 = _0x0066._0x0028(0.5, 0.5), _0x0067 = _0x0058._0x0067 or _0x0068._0x0069(0.5, 0.5), _0x006a = _0x0058._0x006a or _0x0068._0x006b(824, 482), _0x006c = 1, _0x006d = 0, _0x002d = _0x005b})
-_0x0022(string.char(70, 114, 97, 109, 101), {_0x005c = string.char(72, 101, 97, 100, 101, 114, 83, 104, 97, 100, 111, 119), _0x0067 = _0x0068._0x006b(32, (5 + 5)), _0x006a = _0x0068._0x0028(1, -2, 0, (430 - 85)), _0x0052 = _0x004d._0x0012, _0x006c = 0.62, _0x006d = 0, _0x006e = 0, _0x002d = _0x005f._0x0064}, {_0x002e((7 + 7))})
-_0x0022(string.char(70, 114, 97, 109, 101), {_0x005c = string.char(72, 101, 97, 100, 101, 114, 66, 97, 99, 107), _0x0067 = _0x0068._0x006b(24, 0), _0x006a = _0x0068._0x0028(1, 0, 0, (399 - 54)), _0x0052 = _0x004d._0x000c, _0x006d = 0, _0x006e = 1, _0x002d = _0x005f._0x0064}, {_0x002e((74 - 60)), _0x0032(_0x004d._0x0015, 1, 0.35), _0x0039(90, {_0x0053._0x0028(0, _0x000a._0x000b((127 + 128), 255, (319 - 64))), _0x0053._0x0028(1, _0x000a._0x000b(214, (642 / 3), (112 + 112)))})})
-_0x005f._0x000c = _0x0022(string.char(70, 114, 97, 109, 101), {_0x005c = string.char(72, 101, 97, 100, 101, 114), _0x0067 = _0x0068._0x006b((117 - 93), 0), _0x006a = _0x0068._0x0028(1, -24, 0, 54), _0x006c = 1, _0x006d = 0, _0x006e = 4, _0x002d = _0x005f._0x0064})
-_0x0022(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108), {_0x005c = string.char(84, 105, 116, 108, 101), _0x0067 = _0x0068._0x006b(14, 0), _0x006a = _0x0068._0x0028(0, 360, 1, 0), _0x006c = 1, _0x0017 = _0x0058._0x006f or string.char(65, 115, 116, 114, 111, 39, 115, 32, 68, 114, 101, 97, 109, 119, 111, 114, 108, 100), _0x0070 = _0x004d._0x0018, _0x001d = _0x004d._0x001b, _0x0071 = 30, _0x0072 = _0x001c._0x0072._0x0073, _0x006e = 5, _0x002d = _0x005f._0x000c})
-_0x005f._0x0074 = _0x0022(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110), {_0x005c = string.char(67, 108, 111, 115, 101), _0x0065 = _0x0066._0x0028(1, 0.5), _0x0067 = _0x0068._0x0028(1, -(9 + 9), 0.5, 0), _0x006a = _0x0068._0x006b(30, (74 - 44)), _0x006c = 1, _0x006d = 0, _0x0017 = string.char(120), _0x0070 = _0x004d._0x0018, _0x001d = _0x001c._0x001d._0x0075, _0x0071 = (59 - 43), _0x006e = 5, _0x002d = _0x005f._0x000c})
-_0x0022(string.char(70, 114, 97, 109, 101), {_0x005c = string.char(66, 111, 100, 121, 83, 104, 97, 100, 111, 119), _0x0067 = _0x0068._0x006b((5 + 5), (115 - 61)), _0x006a = _0x0068._0x0028(1, -24, 0, 439), _0x0052 = _0x004d._0x0012, _0x006c = 0.42, _0x006d = 0, _0x006e = 1, _0x002d = _0x005f._0x0064}, {_0x002e((8 + 8))})
-_0x005f._0x0076 = _0x0022(string.char(70, 114, 97, 109, 101), {_0x005c = string.char(66, 111, 100, 121), _0x0067 = _0x0068._0x006b(0, 43), _0x006a = _0x0068._0x0028(1, -(12 + 12), 0, 439), _0x0052 = _0x004d._0x0009, _0x006d = 0, _0x006e = 2, _0x002d = _0x005f._0x0064}, {_0x002e(16), _0x0032(_0x004d._0x0013, 2, 0.18), _0x0039(90, {_0x0053._0x0028(0, _0x000a._0x000b((128 - 50), 63, (196 - 28))), _0x0053._0x0028(0.55, _0x004d._0x0009), _0x0053._0x0028(1, _0x000a._0x000b((100 / 2), 42, (62 + 63)))})})
-_0x005f._0x0077 = _0x0022(string.char(83, 99, 114, 111, 108, 108, 105, 110, 103, 70, 114, 97, 109, 101), {_0x005c = string.char(83, 105, 100, 101, 98, 97, 114), _0x0067 = _0x0068._0x006b(18, 43), _0x006a = _0x0068._0x006b((270 - 95), (430 - 68)), _0x0052 = _0x004d._0x000d, _0x006d = 0, _0x0078 = true, _0x0079 = _0x0068._0x006b(0, 0), _0x007a = _0x001c._0x007a._0x007b, _0x007c = true, _0x007d = 4, _0x007e = _0x004d._0x000f, _0x006e = 3, _0x002d = _0x005f._0x0076}, {_0x002e(16), _0x0032(_0x004d._0x0014, 1, 0.62), _0x0039((181 - 91), {_0x0053._0x0028(0, _0x000a._0x000b((149 - 56), (97 - 19), (272 - 87))), _0x0053._0x0028(1, _0x000a._0x000b((33 + 34), (220 / 4), 145))})})
-local _0x007f = _0x0022(string.char(85, 73, 76, 105, 115, 116, 76, 97, 121, 111, 117, 116), {_0x0080 = _0x0031._0x0028(0, 14), _0x0081 = _0x001c._0x0081._0x0082, _0x002d = _0x005f._0x0077})
-_0x0022(string.char(85, 73, 80, 97, 100, 100, 105, 110, 103), {_0x0083 = _0x0031._0x0028(0, 33), _0x0084 = _0x0031._0x0028(0, (34 / 2)), _0x0085 = _0x0031._0x0028(0, (8 + 9)), _0x002d = _0x005f._0x0077})
-_0x007f:_0x0086(string.char(65, 98, 115, 111, 108, 117, 116, 101, 67, 111, 110, 116, 101, 110, 116, 83, 105, 122, 101)):_0x0055(function() _0x005f._0x0077._0x0079 = _0x0068._0x006b(0, _0x007f._0x0087._0x007b + 66) end)
-_0x005f._0x0088 = _0x0022(string.char(70, 114, 97, 109, 101), {_0x005c = string.char(67, 111, 110, 116, 101, 110, 116), _0x0067 = _0x0068._0x006b(224, (21 + 22)), _0x006a = _0x0068._0x006b((2292 / 4), 362), _0x0052 = _0x004d._0x000d, _0x006d = 0, _0x006e = 3, _0x002d = _0x005f._0x0076}, {_0x002e((7 + 7)), _0x0032(_0x004d._0x0014, 1, 0.7), _0x0039((180 / 2), {_0x0053._0x0028(0, _0x000a._0x000b((267 / 3), 75, 175)), _0x0053._0x0028(1, _0x000a._0x000b((207 / 3), 57, (75 + 75)))})})
-_0x005f._0x0074._0x0089:_0x0055(function() _0x005f._0x0060._0x008a = false end)
-_0x0004._0x008b:_0x0055(function(_0x008c, _0x008d)
-if not _0x008d and _0x008c._0x008e == (_0x0058._0x008f or _0x001c._0x008e._0x0090) then _0x005f._0x0060._0x008a = not _0x005f._0x0060._0x008a end
+
+VisualsTab:CreateToggle(loadstring(base64decode("RVNQIFJlc2VhcmNoIENhcHN1bGVz"))(), false, function(state)
+	_G.ESPItems = state
 end)
-_0x005f:_0x0091()
-return _0x005f
-end
-function _0x001f:_0x0091()
-local _0x0092, _0x0093, _0x0094 = false, nil, nil
-_0x005f._0x000c._0x008b:_0x0055(function(_0x008c)
-if _0x008c._0x0095 == _0x001c._0x0095._0x0096 or _0x008c._0x0095 == _0x001c._0x0095._0x0097 then
-_0x0092 = true _0x0093 = _0x008c._0x0067 _0x0094 = _0x005f._0x0064._0x0067
-end
-end)
-_0x0004._0x0098:_0x0055(function(_0x008c)
-if _0x0092 and (_0x008c._0x0095 == _0x001c._0x0095._0x0099 or _0x008c._0x0095 == _0x001c._0x0095._0x0097) then
-local _0x009a = _0x008c._0x0067 - _0x0093
-_0x005f._0x0064._0x0067 = _0x0068._0x0028(_0x0094._0x009b._0x009c, _0x0094._0x009b._0x009d + _0x009a._0x009b, _0x0094._0x007b._0x009c, _0x0094._0x007b._0x009d + _0x009a._0x007b)
-end
-end)
-_0x0004._0x009e:_0x0055(function(_0x008c)
-if _0x008c._0x0095 == _0x001c._0x0095._0x0096 or _0x008c._0x0095 == _0x001c._0x0095._0x0097 then _0x0092 = false end
+
+VisualsTab:CreateToggle(loadstring(base64decode("RVNQIEdlbmVyYXRvcnMgJiBFbGV2YXRvcnM="))(), false, function(state)
+	_G.ESPGenerators = state
 end)
 end
-function _0x001f:_0x009f(_0x00a0)
-local _0x004d = _0x005f._0x0008
-local _0x00a1 = _0x0022(string.char(83, 99, 114, 111, 108, 108, 105, 110, 103, 70, 114, 97, 109, 101), {_0x005c = _0x00a0 .. string.char(80, 97, 103, 101), _0x006a = _0x0068._0x0069(1, 1), _0x006c = 1, _0x006d = 0, _0x0078 = true, _0x0079 = _0x0068._0x006b(0, 0), _0x007a = _0x001c._0x007a._0x007b, _0x007c = true, _0x007d = (88 - 84), _0x007e = _0x004d._0x000f, _0x00a2 = false, _0x006e = 4, _0x002d = _0x005f._0x0088})
-local _0x00a3 = _0x0022(string.char(85, 73, 76, 105, 115, 116, 76, 97, 121, 111, 117, 116), {_0x0080 = _0x0031._0x0028(0, (20 / 2)), _0x0081 = _0x001c._0x0081._0x0082, _0x002d = _0x00a1})
-_0x0022(string.char(85, 73, 80, 97, 100, 100, 105, 110, 103), {_0x0083 = _0x0031._0x0028(0, (109 - 95)), _0x0084 = _0x0031._0x0028(0, 14), _0x0085 = _0x0031._0x0028(0, 18), _0x002d = _0x00a1})
-_0x00a3:_0x0086(string.char(65, 98, 115, 111, 108, 117, 116, 101, 67, 111, 110, 116, 101, 110, 116, 83, 105, 122, 101)):_0x0055(function() _0x00a1._0x0079 = _0x0068._0x006b(0, _0x00a3._0x0087._0x007b + (56 - 22)) end)
-local _0x004c = _0x0022(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110), {_0x005c = _0x00a0 .. string.char(84, 97, 98), _0x006a = _0x0068._0x0028(1, 0, 0, 54), _0x0052 = _0x004d._0x000f, _0x006d = 0, _0x0017 = _0x00a0, _0x0070 = _0x004d._0x0017, _0x001d = _0x004d._0x001b, _0x0071 = 25, _0x006e = (2 + 2), _0x002d = _0x005f._0x0077}, {_0x002e((8 + 8)), _0x0032(_0x004d._0x0014, 1, 0.62), _0x0039(90, {_0x0053._0x0028(0, _0x004d._0x0016), _0x0053._0x0028(1, _0x004d._0x000f)})})
-_0x004c._0x0089:_0x0055(function()
-_0x005f:_0x00a4(_0x00a0)
-end)
-_0x005f._0x0061[_0x00a0], _0x005f._0x0062[_0x00a0] = _0x00a1, _0x004c
-if not _0x005f._0x0063 then
-_0x005f:_0x00a4(_0x00a0)
-end
-return setmetatable({_0x001f = _0x005f, _0x00a5 = _0x00a1, _0x005c = _0x00a0}, _0x0021)
-end
-function _0x001f:_0x00a4(_0x00a0)
-_0x005f._0x0063 = _0x00a0
-for _0x00a6, _0x00a1 in pairs(_0x005f._0x0061) do
-local _0x004e = _0x00a6 == _0x00a0
-_0x00a1._0x00a2 = _0x004e
-if _0x005f._0x0062[_0x00a6] then
-_0x004b(_0x005f._0x0062[_0x00a6], _0x005f._0x0008, _0x004e)
-end
-end
-end
-function _0x0021:_0x00a7(_0x00a8)
-local _0x004d = _0x005f._0x001f._0x0008
-return _0x0022(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108), {_0x006a = _0x0068._0x0028(1, 0, 0, 24), _0x006c = 1, _0x0017 = _0x00a8, _0x0070 = _0x004d._0x0017, _0x001d = _0x004d._0x001b, _0x0071 = 18, _0x0072 = _0x001c._0x0072._0x0073, _0x006e = (58 - 54), _0x002d = _0x005f._0x00a5})
-end
-function _0x0021:_0x00a9(_0x00a8, _0x00aa)
-local _0x004d = _0x005f._0x001f._0x0008
-local _0x004c = _0x0022(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110), {_0x006a = _0x0068._0x0028(1, 0, 0, (20 + 20)), _0x0052 = _0x004d._0x000f, _0x006d = 0, _0x0017 = _0x00a8, _0x0070 = _0x004d._0x0017, _0x001d = _0x004d._0x001b, _0x0071 = 18, _0x006e = (95 - 91), _0x002d = _0x005f._0x00a5}, {_0x002e(7), _0x0032(_0x004d._0x0014, 1, 0.65), _0x0039((360 / 4), {_0x0053._0x0028(0, _0x004d._0x0016), _0x0053._0x0028(1, _0x004d._0x000f)})})
-_0x004b(_0x004c, _0x004d, false)
-_0x004c._0x0089:_0x0055(function() if _0x00aa then _0x00aa() end end)
-return _0x004c
-end
-function _0x001f:_0x009f(_0x00a0)
-local _0x004d = _0x005f._0x0008
-local _0x00a1 = _0x0022(string.char(83, 99, 114, 111, 108, 108, 105, 110, 103, 70, 114, 97, 109, 101), {_0x005c = _0x00a0 .. string.char(80, 97, 103, 101), _0x006a = _0x0068._0x0069(1, 1), _0x006c = 1, _0x006d = 0, _0x0078 = true, _0x0079 = _0x0068._0x006b(0, 0), _0x007a = _0x001c._0x007a._0x007b, _0x007c = true, _0x007d = 4, _0x007e = _0x004d._0x000f, _0x00a2 = false, _0x006e = 4, _0x002d = _0x005f._0x0088})
-local _0x00a3 = _0x0022(string.char(85, 73, 76, 105, 115, 116, 76, 97, 121, 111, 117, 116), {_0x0080 = _0x0031._0x0028(0, 10), _0x0081 = _0x001c._0x0081._0x0082, _0x002d = _0x00a1})
-_0x0022(string.char(85, 73, 80, 97, 100, 100, 105, 110, 103), {_0x0083 = _0x0031._0x0028(0, (28 / 2)), _0x0084 = _0x0031._0x0028(0, (28 / 2)), _0x0085 = _0x0031._0x0028(0, 18), _0x002d = _0x00a1})
-_0x00a3:_0x0086(string.char(65, 98, 115, 111, 108, 117, 116, 101, 67, 111, 110, 116, 101, 110, 116, 83, 105, 122, 101)):_0x0055(function() _0x00a1._0x0079 = _0x0068._0x006b(0, _0x00a3._0x0087._0x007b + (17 + 17)) end)
-local _0x004c = _0x0022(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110), {_0x005c = _0x00a0 .. string.char(84, 97, 98), _0x006a = _0x0068._0x0028(1, 0, 0, 54), _0x0052 = _0x004d._0x000f, _0x006d = 0, _0x0017 = _0x00a0, _0x0070 = _0x004d._0x0017, _0x001d = _0x004d._0x001b, _0x0071 = (52 - 27), _0x006e = (2 + 2), _0x002d = _0x005f._0x0077}, {_0x002e((48 / 3)), _0x0032(_0x004d._0x0014, 1, 0.62), _0x0039((360 / 4), {_0x0053._0x0028(0, _0x004d._0x0016), _0x0053._0x0028(1, _0x004d._0x000f)})})
-_0x004c._0x0089:_0x0055(function()
-_0x005f:_0x00a4(_0x00a0)
-end)
-_0x005f._0x0061[_0x00a0], _0x005f._0x0062[_0x00a0] = _0x00a1, _0x004c
-if not _0x005f._0x0063 then
-_0x005f:_0x00a4(_0x00a0)
-end
-return setmetatable({_0x001f = _0x005f, _0x00a5 = _0x00a1, _0x005c = _0x00a0}, _0x0021)
-end
-function _0x001f:_0x00a4(_0x00a0)
-_0x005f._0x0063 = _0x00a0
-for _0x00a6, _0x00a1 in pairs(_0x005f._0x0061) do
-local _0x004e = _0x00a6 == _0x00a0
-_0x00a1._0x00a2 = _0x004e
-if _0x005f._0x0062[_0x00a6] then
-_0x004b(_0x005f._0x0062[_0x00a6], _0x005f._0x0008, _0x004e)
-end
-end
-end
-function _0x0021:_0x00a7(_0x00a8)
-local _0x004d = _0x005f._0x001f._0x0008
-return _0x0022(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108), {_0x006a = _0x0068._0x0028(1, 0, 0, 24), _0x006c = 1, _0x0017 = _0x00a8, _0x0070 = _0x004d._0x0017, _0x001d = _0x004d._0x001b, _0x0071 = (9 + 9), _0x0072 = _0x001c._0x0072._0x0073, _0x006e = (16 / 4), _0x002d = _0x005f._0x00a5})
-end
-function _0x0021:_0x00a9(_0x00a8, _0x00aa)
-local _0x004d = _0x005f._0x001f._0x0008
-local _0x004c = _0x0022(string.char(84, 101, 120, 116, 66, 117, 116, 116, 111, 110), {_0x006a = _0x0068._0x0028(1, 0, 0, 40), _0x0052 = _0x004d._0x000f, _0x006d = 0, _0x0017 = _0x00a8, _0x0070 = _0x004d._0x0017, _0x001d = _0x004d._0x001b, _0x0071 = 18, _0x006e = 4, _0x002d = _0x005f._0x00a5}, {_0x002e(7), _0x0032(_0x004d._0x0014, 1, 0.65), _0x0039((113 - 23), {_0x0053._0x0028(0, _0x004d._0x0016), _0x0053._0x0028(1, _0x004d._0x000f)})})
-_0x004b(_0x004c, _0x004d, false)
-_0x004c._0x0089:_0x0055(function() if _0x00aa then _0x00aa() end end)
-return _0x004c
-end
-local _0x00ab = {}
-local function _0x00b5(_0x00b6, _0x00b7, _0x00b8)
-if not _0x00b6 then return end
-local _0x00c5 = _0x00b6:_0x00c6(string.char(66, 97, 115, 101, 80, 97, 114, 116)) and _0x00b6
-or _0x00b6:_0x0050(string.char(77, 101, 115, 104, 80, 97, 114, 116))
-or _0x00b6:_0x0050(string.char(80, 97, 114, 116))
-or _0x00b6:_0x00c7(string.char(72, 117, 109, 97, 110, 111, 105, 100, 82, 111, 111, 116, 80, 97, 114, 116))
-if not _0x00c5 then return end
-local _0x00d2 = _0x00b6:_0x00c6(string.char(77, 111, 100, 101, 108)) and _0x00b6 or _0x00b6:_0x00d3(string.char(77, 111, 100, 101, 108)) or _0x00c5
-if _0x00d2:_0x00c7(string.char(65, 115, 116, 114, 111, 72, 105, 103, 104, 108, 105, 103, 104, 116)) or _0x00c5:_0x00c7(string.char(65, 115, 116, 114, 111, 84, 97, 103)) then return end
-local _0x00dd = _0x0027._0x0028(string.char(72, 105, 103, 104, 108, 105, 103, 104, 116))
-_0x00dd._0x005c = string.char(65, 115, 116, 114, 111, 72, 105, 103, 104, 108, 105, 103, 104, 116)
-_0x00dd._0x00de = _0x00b8
-_0x00dd._0x00df = 0.7
-_0x00dd._0x00e0 = _0x00b8
-_0x00dd._0x00e1 = 0
-_0x00dd._0x00e2 = _0x001c._0x00e3._0x00e4
-_0x00dd._0x00e5 = _0x00d2
-_0x00dd._0x002d = _0x00d2
-local _0x00e6 = _0x0027._0x0028(string.char(66, 105, 108, 108, 98, 111, 97, 114, 100, 71, 117, 105))
-_0x00e6._0x005c = string.char(65, 115, 116, 114, 111, 84, 97, 103)
-_0x00e6._0x006a = _0x0068._0x0028(0, (600 / 3), 0, 50)
-_0x00e6._0x00e4 = true
-_0x00e6._0x00e7 = _0x00e8._0x0028(0, 4, 0)
-_0x00e6._0x00e5 = _0x00c5
-_0x00e6._0x002d = _0x00c5
-local _0x00e9 = _0x0027._0x0028(string.char(84, 101, 120, 116, 76, 97, 98, 101, 108))
-_0x00e9._0x006a = _0x0068._0x0028(1, 0, 1, 0)
-_0x00e9._0x006c = 1
-_0x00e9._0x0017 = _0x00b7
-_0x00e9._0x0070 = _0x00b8
-_0x00e9._0x001d = _0x001c._0x001d._0x0075
-_0x00e9._0x0071 = (7 + 7)
-_0x00e9._0x002d = _0x00e6
-table.insert(_0x00ab, _0x00dd)
-table.insert(_0x00ab, _0x00e6)
-end
-local function _0x00ea()
-for _0x002b, _0x00eb in ipairs(_0x00ab) do
-pcall(function() _0x00eb:_0x00ec() end)
-end
-table._0x00ed(_0x00ab)
-end
-_0x00ee._0x00ef(function()
-while _0x00ee._0x00f0(0.6) do
-_0x00ea()
-local _0x00f1 = _0x00f2:_0x00c7(string.char(67, 117, 114, 114, 101, 110, 116, 82, 111, 111, 109))
-if _0x00f1 then
-for _0x002b, _0x00f3 in ipairs(_0x00f1:_0x00f4()) do
-if _0x00f5._0x00f6 then
-local _0x00f7 = _0x00f3:_0x00c7(string.char(77, 111, 110, 115, 116, 101, 114, 115))
-if _0x00f7 then
-for _0x002b, _0x00c0 in ipairs(_0x00f7:_0x00f8()) do
-if _0x00c0:_0x00c6(string.char(66, 97, 115, 101, 80, 97, 114, 116)) then
-local _0x00f9 = _0x00c0:_0x00d3(string.char(70, 111, 108, 100, 101, 114))
-if _0x00f9 and _0x00f9._0x005c ~= string.char(77, 111, 110, 115, 116, 101, 114, 115) then
-local _0x00fa = string.gsub(_0x00f9._0x005c, string.char(77, 111, 110, 115, 116, 101, 114), "")
-_0x00b5(_0x00c0, string.char(91, 84, 119, 105, 115, 116, 101, 100, 93, 32) .. _0x00fa, _0x000a._0x000b((335 - 80), 50, (86 - 36)))
-end
-end
-end
-end
-end
-if _0x00f5._0x00fb then
-local _0x00fc = _0x00f3:_0x00c7(string.char(73, 116, 101, 109, 115))
-if _0x00fc then
-for _0x002b, _0x00fd in ipairs(_0x00fc:_0x00f4()) do
-if _0x00fd._0x005c == string.char(82, 101, 115, 101, 97, 114, 99, 104, 67, 97, 112, 115, 117, 108, 101) then
-_0x00b5(_0x00fd, string.char(55358, 56810, 32, 67, 97, 112, 115, 117, 108, 101), _0x000a._0x000b((328 / 4), 218, (510 / 2)))
-end
-end
-end
-end
-if _0x00f5._0x00fe then
-local _0x00ff = _0x00f3:_0x00c7(string.char(71, 101, 110, 101, 114, 97, 116, 111, 114, 115))
-if _0x00ff then
-for _0x002b, _0x0100 in ipairs(_0x00ff:_0x00f4()) do
-if _0x0100._0x005c == string.char(71, 101, 110, 101, 114, 97, 116, 111, 114) then
-_0x00b5(_0x0100, string.char(9881, 65039, 32, 71, 101, 110, 101, 114, 97, 116, 111, 114), _0x000a._0x000b(74, (262 - 40), (256 / 2)))
-end
-end
-end
-end
-end
-end
-if _0x00f5._0x00fe then
-local _0x0101 = _0x00f2:_0x00c7(string.char(69, 108, 101, 118, 97, 116, 111, 114, 115))
-if _0x0101 then
-for _0x002b, _0x0102 in ipairs(_0x0101:_0x00f4()) do
-if _0x0102._0x005c == string.char(69, 108, 101, 118, 97, 116, 111, 114) then
-_0x00b5(_0x0102, string.char(32, 69, 108, 101, 118, 97, 116, 111, 114), _0x000a._0x000b(230, 100, 220))
-end
-end
-end
-end
-end
-end)
-local _0x0103 = _0x0007._0x0057({
-_0x006f = string.char(65, 115, 116, 114, 111, 39, 115, 32, 68, 114, 101, 97, 109, 119, 111, 114, 108, 100, 32, 55357, 56884, 124, 32, 68, 97, 110, 100, 121, 39, 115, 32, 87, 111, 114, 108, 100),
-_0x008f = _0x001c._0x008e._0x0090
-})
-local _0x0104 = _0x0103:_0x009f(string.char(86, 105, 115, 117, 97, 108, 115))
-_0x0104:_0x00a7(string.char(82, 97, 115, 116, 114, 101, 97, 100, 111, 114, 32, 100, 101, 32, 65, 109, 101, 110, 97, 122, 97, 115, 32, 121, 32, 79, 98, 106, 101, 116, 105, 118, 111, 115))
-_0x0104:_0x0105(string.char(69, 83, 80, 32, 84, 119, 105, 115, 116, 101, 100, 115, 32, 40, 77, 111, 110, 115, 116, 114, 117, 111, 115, 41), false, function(_0x0106)
-_0x00f5._0x00f6 = _0x0106
-end)
-_0x0104:_0x0105(string.char(69, 83, 80, 32, 82, 101, 115, 101, 97, 114, 99, 104, 32, 67, 97, 112, 115, 117, 108, 101, 115), false, function(_0x0106)
-_0x00f5._0x00fb = _0x0106
-end)
-_0x0104:_0x0105(string.char(69, 83, 80, 32, 71, 101, 110, 101, 114, 97, 116, 111, 114, 115, 32, 38, 32, 69, 108, 101, 118, 97, 116, 111, 114, 115), false, function(_0x0106)
-_0x00f5._0x00fe = _0x0106
-end)
+WVOSYeaK(3PdZb)
