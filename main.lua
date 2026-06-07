@@ -450,64 +450,59 @@ task.spawn(function()
 				if room then
 					local circleMinigame = room:FindFirstChild("CircleMinigame", true)
 					if circleMinigame then
-						local circleParts = circleMinigame:FindFirstChild("CircleParts")
+						
 						local circleGui = circleMinigame:FindFirstChild("CircleScreenGui") or circleMinigame:FindFirstChildOfClass("ScreenGui")
 						
-						
-						if circleParts and circleGui and circleGui.Enabled then
-							local componentesVisuales = {}
+						if circleGui and circleGui.Enabled then
+							local mainFrame = circleGui:FindFirstChild("CircleBackgroundFrame") or circleGui:FindFirstChildOfClass("Frame")
 							
-							
-							local success, descendants = pcall(function() return circleParts:GetDescendants() end)
-							if success and descendants then
-								for _, desc in ipairs(descendants) do
-									if desc and (desc:IsA("ImageLabel") or desc:IsA("Frame")) then
-										table.insert(componentesVisuales, desc)
-									end
-								end
-							end
-							
-							
-							if #componentesVisuales >= 2 then
-								local redCircle = nil
-								local targetZone = nil
+							if mainFrame then
 								
+								local es, elementos = pcall(function() return mainFrame:GetChildren() end)
 								
-								for _, elem in ipairs(componentesVisuales) do
-									if elem and elem.Visible then
-										local nombre = elem.Name:lower()
-										if nombre:find("marker") or nombre:find("indicator") or nombre:find("pointer") then
-											redCircle = elem
-										elseif nombre:find("zone") or nombre:find("area") or nombre:find("target") then
-											targetZone = elem
-										end
-									end
-								end
-								
-								
-								if not redCircle or not targetZone then
-									for _, elem in ipairs(componentesVisuales) do
-										if elem and elem.Visible then
-											if elem.Name == "Box" or elem.Parent.Name == "Box" then
-												redCircle = elem
-											else
+								if es and elementos and #elementos > 1 then
+									local ringMarker = nil
+									local targetZone = nil
+									
+									
+									for _, elem in ipairs(elementos) do
+										if elem and elem:IsA("GuiObject") and elem.Visible then
+											
+											if elem.Name == "Marker" or elem.Name == "Box" or elem.Name == "Indicator" then
+												ringMarker = elem
+											elseif elem.Name == "GoldArea" or elem.Name == "GreyArea" or elem.Name == "RequiredArea" then
 												targetZone = elem
 											end
 										end
 									end
-								end
-								
-								
-								if redCircle and targetZone and redCircle.Visible and targetZone.Visible then
-									local redDiameter = redCircle.AbsoluteSize.X
-									local targetDiameter = targetZone.AbsoluteSize.X
 									
 									
-									local margenTolerancia = 12
+									if not ringMarker or not targetZone then
+										for _, elem in ipairs(elementos) do
+											if elem and elem:IsA("GuiObject") and elem.Visible then
+												
+												if elem.Parent.Name == "CircleParts" or elem.Name == "RenderParts" then
+													ringMarker = elem
+												else
+													targetZone = elem
+												end
+											end
+										end
+									end
 									
-									if math.abs(redDiameter - targetDiameter) <= margenTolerancia then
-										forzarEspacioLegitimo()
-										task.wait(0.6) 
+									
+									if ringMarker and targetZone and ringMarker.AbsoluteSize and targetZone.AbsoluteSize then
+										local currentDiameter = ringMarker.AbsoluteSize.X
+										local targetDiameter = targetZone.AbsoluteSize.X
+										
+										
+										local toleranciaPixeles = 14
+										
+										
+										if math.abs(currentDiameter - targetDiameter) <= toleranciaPixeles then
+											forzarEspacioLegitimo()
+											task.wait(0.6) 
+										end
 									end
 								end
 							end
