@@ -87,10 +87,39 @@ function AstroUI.CreateWindow(options)
 	sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() self.Sidebar.CanvasSize = UDim2.fromOffset(0, sidebarLayout.AbsoluteContentSize.Y + 66) end)
 	self.Content = create("Frame", {Name = "Content", Position = UDim2.fromOffset(224, 43), Size = UDim2.fromOffset(573, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, ZIndex = 3, Parent = self.Body}, {corner(14), stroke(theme.SoftStroke, 1, 0.7), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(89, 75, 175)), ColorSequenceKeypoint.new(1, Color3.fromRGB(69, 57, 150))})})
 	
-	self.CloseButton.MouseButton1Click:Connect(function() self.ScreenGui.Enabled = false end)
-	UserInputService.InputBegan:Connect(function(input, gameProcessed)
-		if not gameProcessed and input.KeyCode == (options.ToggleKey or Enum.KeyCode.RightShift) then self.ScreenGui.Enabled = not self.ScreenGui.Enabled end
+	self.CloseButton.MouseButton1Click:Connect(function() 
+		self.ScreenGui.Enabled = false 
 	end)
+	
+	local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+	if isMobile then
+		local mobileBtn = create("TextButton", {
+			Name = "AstroMobileToggle",
+			Size = UDim2.fromOffset(50, 50),
+			Position = UDim2.new(0.05, 0, 0.2, 0),
+			BackgroundColor3 = theme.Accent,
+			BackgroundTransparency = 0.3,
+			Text = "Astro",
+			TextColor3 = theme.Text,
+			Font = Enum.Font.GothamBold,
+			TextSize = 14,
+			ZIndex = 100,
+			Parent = screenGui
+		}, {
+			corner(25),
+			stroke(theme.SoftStroke, 2, 0.2)
+		})
+		
+		mobileBtn.MouseButton1Click:Connect(function()
+			self.ScreenGui.Enabled = not self.ScreenGui.Enabled
+		end)
+	else
+		UserInputService.InputBegan:Connect(function(input, gameProcessed)
+			if input.KeyCode == (options.ToggleKey or Enum.KeyCode.RightShift) then 
+				self.ScreenGui.Enabled = not self.ScreenGui.Enabled 
+			end
+		end)
+	end
 	
 	self:EnableDragging()
 	return self
@@ -353,7 +382,7 @@ end)
 
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴| Dandy's World",
-	ToggleKey = Enum.KeyCode.RightShift
+	ToggleKey = Enum.KeyCode.V
 })
 
 local VisualsTab = Ventana:CreateTab("Visuals")
