@@ -424,16 +424,24 @@ end)
 
 
 
+
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+
 local function forzarEspacioLegitimo()
 	pcall(function()
-		VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-		task.wait(0.01)
-		VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+		if VirtualInputManager then
+			VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+			task.wait(0.01)
+			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+		end
 	end)
 end
 
 task.spawn(function()
-	local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
+	
+	local playerGui = localPlayer and localPlayer:WaitForChild("PlayerGui", 5)
 	if not playerGui then return end
 
 	while task.wait(0.01) do 
@@ -473,6 +481,7 @@ task.spawn(function()
 										if rotacionActual >= inicioRango and rotacionActual <= finRango then
 											forzarEspacioLegitimo()
 											task.wait(0.5) 
+										end
 									end
 								end
 							end
@@ -482,7 +491,7 @@ task.spawn(function()
 
 				
 				for _, gui in ipairs(playerGui:GetChildren()) do
-					if gui:IsA("ScreenGui") then
+					if gui and gui:IsA("ScreenGui") then
 						local menu = gui:FindFirstChild("Menu", true)
 						local skillFrame = menu and menu:FindFirstChild("SkillCheckFrame")
 						
