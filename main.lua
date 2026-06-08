@@ -637,7 +637,7 @@ PlayerTab:CreateToggle("Fly", false, function(state)
 end)
 
 PlayerTab:CreateSlider("Fly Speed", 20, 150, 50, function(value)
-    _G.FlySpeed = value
+    FlyState.speed  = value
 end)
 
 PlayerTab:CreateToggle("Noclip", false, function(state)
