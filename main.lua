@@ -671,6 +671,45 @@ local function ToggleNoclip(state)
     end
 end
 
+local tpWalkLoop = nil
+local tpWalkSpeed = 2  
+
+local function ToggleTPWalk(state)
+    _G.TPWalk = state
+
+    if tpWalkLoop then
+        tpWalkLoop:Disconnect()
+        tpWalkLoop = nil
+    end
+
+    if not state then return end
+
+    tpWalkLoop = RunService.Heartbeat:Connect(function(dt)
+        local char = localPlayer.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+
+        local camera = workspace.CurrentCamera
+        local moveDir = Vector3.zero
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
+
+        if moveDir.Magnitude > 0 then
+            moveDir = moveDir.Unit
+            local newPosition = root.Position + (moveDir * tpWalkSpeed)
+            root.CFrame = CFrame.new(newPosition, newPosition + camera.CFrame.LookVector)
+        end
+    end)
+end
+
+
+
+
+
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
 	ToggleKey = Enum.KeyCode.V
