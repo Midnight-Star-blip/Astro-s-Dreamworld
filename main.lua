@@ -672,7 +672,7 @@ local function ToggleNoclip(state)
 end
 
 local tpWalkLoop = nil
-local tpWalkSpeed = 2.2   
+local tpWalkSpeed = 1.4   
 
 local function ToggleTPWalk(state)
     _G.TPWalk = state
@@ -684,7 +684,7 @@ local function ToggleTPWalk(state)
 
     if not state then return end
 
-    tpWalkLoop = RunService.Heartbeat:Connect(function(dt)
+    tpWalkLoop = RunService.Heartbeat:Connect(function()
         local char = localPlayer.Character
         if not char then return end
         local root = char:FindFirstChild("HumanoidRootPart")
@@ -699,20 +699,18 @@ local function ToggleTPWalk(state)
         if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
 
         if moveDir.Magnitude > 0 then
-            moveDir = moveDir.Unit
+            
+            moveDir = Vector3.new(moveDir.X, 0, moveDir.Z).Unit
+
+            local targetPos = root.Position + moveDir * tpWalkSpeed
             
             
-            local targetPos = root.Position + moveDir * (tpWalkSpeed * 1.8)
+            local newPos = root.Position:Lerp(targetPos, 0.75)
             
-            
-            local newPos = root.Position:Lerp(targetPos, 0.65)
-            
-            root.CFrame = CFrame.new(newPos) * root.CFrame.Rotation
+            root.CFrame = CFrame.new(newPos, newPos + camera.CFrame.LookVector * Vector3.new(1, 0, 1))
         end
     end)
 end
-
-
 
 
 
@@ -740,7 +738,7 @@ PlayerTab:CreateToggle("TP Walk", false, function(state)
     ToggleTPWalk(state)
 end)
 
-PlayerTab:CreateSlider("Teleport Walk Speed", 1, 10, 2.2, function(value)
+PlayerTab:CreateSlider("Teleport Walk Speed", 0.5, 6, 1.4, function(value)
     tpWalkSpeed = value
 end)
 
