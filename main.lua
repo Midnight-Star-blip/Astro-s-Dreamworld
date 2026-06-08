@@ -587,91 +587,86 @@ end
 
 
 local noclipLoop = nil
-local charAddedConn = nil
-local _collisionDisableCount = 0
-local _partOriginalCollision = {}
-
-local function DisableAllCollisions(char)
-    _collisionDisableCount += 1
-    if _collisionDisableCount > 1 then return end
-
-    pcall(function()
-        for _, part in ipairs(char:GetDescendants()) do
-            if part:IsA("BasePart") or part:IsA("MeshPart") then
-                _partOriginalCollision[part] = part.CanCollide
-                part.CanCollide = false
-                part.Massless = true
-            end
-        end
-        local root = char:FindFirstChild("HumanoidRootPart")
-        if root then
-            root.CanCollide = false
-            root.Massless = true
-        end
-    end)
-end
-
-local function RestoreAllCollisions(char)
-    _collisionDisableCount = math.max(0, _collisionDisableCount - 1)
-    if _collisionDisableCount > 0 then return end
-
-    pcall(function()
-        for part, original in pairs(_partOriginalCollision) do
-            if part and part.Parent then
-                part.CanCollide = original
-                part.Massless = false
-            end
-        end
-        table.clear(_partOriginalCollision)
-
-        local root = char:FindFirstChild("HumanoidRootPart")
-        if root then
-            root.CanCollide = true
-            root.Massless = false
-        end
-    end)
-end
+local charConn = nil
 
 local function ToggleNoclip(state)
     _G.Noclip = state
 
     if noclipLoop then noclipLoop:Disconnect() noclipLoop = nil end
-    if charAddedConn then charAddedConn:Disconnect() charAddedConn = nil end
+    if charConn then charConn:Disconnect() charConn = nil end
 
-    local function forceNoclip(char)
-        if not char then return end
-        DisableAllCollisions(char)
+    local function DestroyAntiNoclip()
+        
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name == "NoClip_Collider" and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
+                pcall(function() obj:Destroy() end)
+            end
+        end
+    end
+
+    local function ApplyNoclip(char)
+        pcall(function()
+            
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.CanCollide = false
+                    part.Massless = true
+                end
+            end
+
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CanCollide = false
+                root.Massless = true
+            end
+        end)
     end
 
     if state then
+        
+        DestroyAntiNoclip()
+
         local char = localPlayer.Character
-        if char then forceNoclip(char) end
+        if char then ApplyNoclip(char) end
 
         noclipLoop = RunService.Stepped:Connect(function()
             local char = localPlayer.Character
-            if char then forceNoclip(char) end
+            if char then 
+                ApplyNoclip(char)
+                
+                DestroyAntiNoclip()
+            end
         end)
 
-        charAddedConn = localPlayer.CharacterAdded:Connect(function(newChar)
-            task.wait(0.4)
-            forceNoclip(newChar)
+        charConn = localPlayer.CharacterAdded:Connect(function(newChar)
+            task.wait(0.6)
+            ApplyNoclip(newChar)
+            DestroyAntiNoclip()
         end)
 
     else
+        
         local char = localPlayer.Character
         if char then
-            RestoreAllCollisions(char)
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.CanCollide = true
+                    part.Massless = false
+                end
+            end
+
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CanCollide = true
+                root.Massless = false
+                root.Velocity = Vector3.new(0, -40, 0)
+            end
 
             local hum = char:FindFirstChildWhichIsA("Humanoid")
             if hum then
                 hum.PlatformStand = false
                 task.wait(0.1)
                 hum:ChangeState(Enum.HumanoidStateType.Running)
-            end
-
-            local root = char:FindFirstChild("HumanoidRootPart")
-            if root then
-                root.Velocity = Vector3.new(0, -30, 0)
             end
         end
     end
