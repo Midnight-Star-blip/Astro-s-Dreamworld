@@ -588,14 +588,13 @@ local function ToggleFly(state)
 end
 
 local noclipLoop = nil
-local originalCollisions = {}  
+local originalCollisions = {}
 
 local function ToggleNoclip(state)
     _G.Noclip = state
     if noclipLoop then noclipLoop:Disconnect() end
 
     if state then
-        
         originalCollisions = {}
         local char = localPlayer.Character
         if char then
@@ -614,30 +613,15 @@ local function ToggleNoclip(state)
                 local root = char:FindFirstChild("HumanoidRootPart")
                 if not root then return end
 
-                
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
                         part.CanCollide = false
                     end
                 end
-
-                
-                for _, obj in ipairs(workspace:GetDescendants()) do
-                    if (obj:IsA("BasePart") or obj:IsA("MeshPart")) and obj.CanCollide then
-                        local dist = (obj.Position - root.Position).Magnitude
-                        if dist < 35 then
-                            if (obj.Position.Y + (obj.Size.Y / 2)) < (root.Position.Y - 3) then
-                                obj.CanCollide = true   
-                            else
-                                obj.CanCollide = false  
-                            end
-                        end
-                    end
-                end
             end)
         end)
 
-        print("[Astro] Noclip Activado (Inteligente)")
+        print("[Astro] Noclip Activado")
     else
         
         if noclipLoop then noclipLoop:Disconnect() end
@@ -647,27 +631,19 @@ local function ToggleNoclip(state)
             
             for _, part in ipairs(char:GetDescendants()) do
                 if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    
-                    if originalCollisions[part] ~= nil then
-                        part.CanCollide = originalCollisions[part]
-                    else
-                        part.CanCollide = true
-                    end
+                    part.CanCollide = (originalCollisions[part] ~= nil) and originalCollisions[part] or true
                 end
+            end
+
+            
+            local hum = char:FindFirstChildWhichIsA("Humanoid")
+            if hum then
+                hum:ChangeState(Enum.HumanoidStateType.Running)
+                hum.PlatformStand = false
+                task.wait(0.1)
+                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
             end
         end
-
-        
-        pcall(function()
-            for _, obj in ipairs(workspace:GetDescendants()) do
-                if (obj:IsA("BasePart") or obj:IsA("MeshPart")) and obj.CanCollide == false then
-                    local name = obj.Name:lower()
-                    if not name:find("invis") and not name:find("wall") then
-                        obj.CanCollide = true
-                    end
-                end
-            end
-        end)
 
         originalCollisions = {}
         
