@@ -402,51 +402,53 @@ task.spawn(function()
 				end
 				
 				
+								
 				if _G.ESPGenerators then
 					local gensFolder = sala:FindFirstChild("Generators")
 					if gensFolder then
 						for _, gen in ipairs(gensFolder:GetChildren()) do
 							pcall(function()
-								if gen.Name == "Generator" or string.find(gen.Name:lower(), "generator") then
+								if not (gen.Name == "Generator" or string.find(gen.Name:lower(), "generator")) then 
+									return 
+								end
+								
+								local isCompleted = false
+								
+								
+								local lightPart = gen:FindFirstChild("Light")
+								if lightPart and lightPart:IsA("MeshPart") and lightPart.Material == Enum.Material.Neon then
+									local color = lightPart.Color
 									
-									local isCompleted = false
-									
-									
-									local light = gen:FindFirstChildWhichIsA("Light") 
-												or gen:FindFirstChild("Light") 
-												or gen:FindFirstChild("TopLight") 
-												or gen:FindFirstChild("Indicator") 
-												or gen:FindFirstChild("Neon") 
-												or gen:FindFirstChild("Glow")
-									
-									if light then
-										if light:IsA("Light") then
-											if light.Color.G > 0.8 then  
+									if color.G > 0.5 and color.R < 0.4 then
+										isCompleted = true
+									end
+								end
+								
+								
+								if not isCompleted then
+									for _, obj in ipairs(gen:GetDescendants()) do
+										if obj:IsA("Light") then
+											if obj.Color.G > 0.7 then
 												isCompleted = true
+												break
 											end
-										elseif light:IsA("BasePart") and light.Color then
-											if light.Color.G > 0.8 then
+										elseif obj:IsA("BasePart") and obj.Material == Enum.Material.Neon then
+											if obj.Color.G > 0.5 and obj.Color.R < 0.4 then
 												isCompleted = true
+												break
 											end
+										elseif (obj:IsA("NumberValue") or obj:IsA("IntValue")) and 
+										       (obj.Name == "Progress" or obj.Name == "Ichor" or obj.Name == "Fill") and 
+										       obj.Value >= 100 then
+											isCompleted = true
+											break
 										end
 									end
-									
-									
-									if not isCompleted then
-										for _, v in ipairs(gen:GetDescendants()) do
-											if v:IsA("NumberValue") or v:IsA("IntValue") then
-												if (v.Name == "Progress" or v.Name == "Completed" or v.Name == "Fill") and v.Value >= 100 then
-													isCompleted = true
-													break
-												end
-											end
-										end
-									end
-									
-									
-									if not isCompleted then
-										makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
-									end
+								end
+								
+								
+								if not isCompleted then
+									makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
 								end
 							end)
 						end
@@ -470,7 +472,6 @@ task.spawn(function()
 		
 	end
 end)
-
 
 
 local S = { skillcheckOrigCB = nil }
