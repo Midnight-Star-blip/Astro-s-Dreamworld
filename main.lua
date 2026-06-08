@@ -730,6 +730,14 @@ PlayerTab:CreateToggle("Noclip", false, function(state)
     ToggleNoclip(state)
 end)
 
+PlayerTab:CreateToggle("TP Walk", false, function(state)
+    ToggleTPWalk(state)
+end)
+
+PlayerTab:CreateSlider("Teleport Walk Speed", 1, 15, 2, function(value)
+    tpWalkSpeed = value
+end)
+
 local VisualsTab = Ventana:CreateTab("Visuals")
 VisualsTab:CreateSection("All ESPs")
 
