@@ -588,34 +588,46 @@ local function ToggleFly(state)
 end
 
 local noclipLoop = nil
+local originalCollisions = {}  
 
 local function ToggleNoclip(state)
     _G.Noclip = state
     if noclipLoop then noclipLoop:Disconnect() end
 
     if state then
+        
+        originalCollisions = {}
+        local char = localPlayer.Character
+        if char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    originalCollisions[part] = part.CanCollide
+                    part.CanCollide = false
+                end
+            end
+        end
+
         noclipLoop = RunService.Heartbeat:Connect(function()
             pcall(function()
                 local char = localPlayer.Character
                 if not char then return end
-                
                 local root = char:FindFirstChild("HumanoidRootPart")
                 if not root then return end
+
                 
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
                         part.CanCollide = false
                     end
                 end
-                
+
                 
                 for _, obj in ipairs(workspace:GetDescendants()) do
                     if (obj:IsA("BasePart") or obj:IsA("MeshPart")) and obj.CanCollide then
                         local dist = (obj.Position - root.Position).Magnitude
-                        if dist < 40 then
-                            
-                            if (obj.Position.Y + obj.Size.Y/2) < (root.Position.Y - 2) then
-                                obj.CanCollide = true
+                        if dist < 35 then
+                            if (obj.Position.Y + (obj.Size.Y / 2)) < (root.Position.Y - 3) then
+                                obj.CanCollide = true   
                             else
                                 obj.CanCollide = false  
                             end
@@ -624,19 +636,40 @@ local function ToggleNoclip(state)
                 end
             end)
         end)
-        
+
+        print("[Astro] Noclip Activado (Inteligente)")
     else
+        
         if noclipLoop then noclipLoop:Disconnect() end
-        pcall(function()
-            local char = localPlayer.Character
-            if char then
-                for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") or part:IsA("MeshPart") then
+
+        local char = localPlayer.Character
+        if char then
+            
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    
+                    if originalCollisions[part] ~= nil then
+                        part.CanCollide = originalCollisions[part]
+                    else
                         part.CanCollide = true
                     end
                 end
             end
+        end
+
+        
+        pcall(function()
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if (obj:IsA("BasePart") or obj:IsA("MeshPart")) and obj.CanCollide == false then
+                    local name = obj.Name:lower()
+                    if not name:find("invis") and not name:find("wall") then
+                        obj.CanCollide = true
+                    end
+                end
+            end
         end)
+
+        originalCollisions = {}
         
     end
 end
