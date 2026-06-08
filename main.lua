@@ -585,6 +585,8 @@ local function ToggleFly(state)
     end
 end
 
+local noclipLoop = nil
+
 local function ToggleNoclip(state)
     _G.Noclip = state
     
@@ -597,30 +599,42 @@ local function ToggleNoclip(state)
     if not char then return end
 
     if state then
+        
         noclipLoop = RunService.Heartbeat:Connect(function()
             pcall(function()
                 if not char or not char.Parent then return end
+                
+                local root = char:FindFirstChild("HumanoidRootPart")
+                if root then 
+                    root.CanCollide = false 
+                end
+
                 for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    if (part:IsA("BasePart") or part:IsA("MeshPart")) and part ~= root then
                         part.CanCollide = false
                     end
                 end
             end)
         end)
-        
+
+        print("[Astro] Noclip Activado - Modo Agresivo")
     else
-        for _, part in ipairs(char:GetDescendants()) do
-            if part:IsA("BasePart") or part:IsA("MeshPart") then
-                part.CanCollide = true
+        
+        pcall(function()
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.CanCollide = true
+                end
             end
-        end
+        end)
 
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.08)
+            task.wait(0.1)
             hum:ChangeState(Enum.HumanoidStateType.Running)
         end
+
         
     end
 end
