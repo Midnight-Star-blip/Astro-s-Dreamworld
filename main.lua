@@ -715,6 +715,55 @@ end
 
 
 
+local fullbrightEnabled = false
+local oldAmbient = nil
+local oldBrightness = nil
+local oldClockTime = nil
+local lightingConn = nil
+
+local function ToggleFullbright(state)
+    fullbrightEnabled = state
+    
+    local Lighting = game:GetService("Lighting")
+    
+    if state then
+        oldAmbient = Lighting.Ambient
+        oldBrightness = Lighting.Brightness
+        oldClockTime = Lighting.ClockTime
+        
+        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+        Lighting.Brightness = 2
+        Lighting.ClockTime = 12
+        Lighting.FogEnd = 100000
+        Lighting.GlobalShadows = false
+        Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+        
+        
+        lightingConn = Lighting.Changed:Connect(function()
+            if fullbrightEnabled then
+                Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+                Lighting.Brightness = 2
+                Lighting.ClockTime = 12
+                Lighting.GlobalShadows = false
+            end
+        end)
+        
+    else
+        if lightingConn then
+            lightingConn:Disconnect()
+            lightingConn = nil
+        end
+        
+        if oldAmbient then Lighting.Ambient = oldAmbient end
+        if oldBrightness then Lighting.Brightness = oldBrightness end
+        if oldClockTime then Lighting.ClockTime = oldClockTime end
+        
+        Lighting.GlobalShadows = true
+        Lighting.FogEnd = 100000
+    end
+end
+
+
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
 	ToggleKey = Enum.KeyCode.V
@@ -815,5 +864,7 @@ end)
 local EnvironTab = Ventana:CreateTab("Environment ")
 EnvironTab:CreateSection("Environment")
 
-
+EnvironTab:CreateToggle("Fullbright", false, function(state)
+    ToggleFullbright(state)
+end)
 
