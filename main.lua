@@ -714,8 +714,6 @@ local function ToggleTPWalk(state)
 end
 
 
-
-
 local fullbrightEnabled = false
 local lightingConn = nil
 
@@ -726,19 +724,19 @@ local function ToggleFullbright(state)
     
     if state then
         
-        Lighting.Ambient = Color3.fromRGB(140, 140, 140)
+        Lighting.Ambient = Color3.fromRGB(110, 110, 120)
         Lighting.Brightness = 0.5
         Lighting.ClockTime = 14
         Lighting.FogEnd = 99999
         Lighting.GlobalShadows = false
-        Lighting.OutdoorAmbient = Color3.fromRGB(130, 130, 150)
+        Lighting.OutdoorAmbient = Color3.fromRGB(100, 100, 120)
         
         if lightingConn then lightingConn:Disconnect() end
         
         lightingConn = Lighting.Changed:Connect(function()
             if fullbrightEnabled then
-                Lighting.Ambient = Color3.fromRGB(140, 140, 140)
-                Lighting.Brightness = 0.9
+                Lighting.Ambient = Color3.fromRGB(110, 110, 120)
+                Lighting.Brightness = 0.5
                 Lighting.GlobalShadows = false
             end
         end)
@@ -757,6 +755,9 @@ local function ToggleFullbright(state)
         Lighting.FogEnd = 100000
     end
 end
+
+
+
 
 
 local Ventana = AstroUI.CreateWindow({
