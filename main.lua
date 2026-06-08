@@ -522,6 +522,7 @@ local FlyState = {
     attachment = nil,
 }
 
+local flyLoop = nil
 local noclipLoop = nil
 
 local function ToggleFly(state)
@@ -538,6 +539,7 @@ local function ToggleFly(state)
     if FlyState.lv then FlyState.lv:Destroy() end
     if FlyState.av then FlyState.av:Destroy() end
     if FlyState.attachment then FlyState.attachment:Destroy() end
+    if flyLoop then flyLoop:Disconnect() flyLoop = nil end
 
     if state then
         FlyState.attachment = Instance.new("Attachment", root)
@@ -556,38 +558,32 @@ local function ToggleFly(state)
         hum.PlatformStand = true
         hum:ChangeState(Enum.HumanoidStateType.Physics)
 
-        task.spawn(function()
-            while _G.Fly and task.wait() do
-                pcall(function()
-                    if not root or not root.Parent then return end
-                    local camera = workspace.CurrentCamera
-                    local moveDir = Vector3.zero
+        flyLoop = RunService.Heartbeat:Connect(function()
+            pcall(function()
+                if not root or not root.Parent then return end
+                local camera = workspace.CurrentCamera
+                local moveDir = Vector3.zero
 
-                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += camera.CFrame.LookVector end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= camera.CFrame.LookVector end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= camera.CFrame.RightVector end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0,1,0) end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0,1,0) end
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += camera.CFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= camera.CFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= camera.CFrame.RightVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0,1,0) end
+                if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0,1,0) end
 
-                    local targetVel = moveDir.Magnitude > 0 and (moveDir.Unit * FlyState.speed) or Vector3.zero
-                    FlyState.lv.VectorVelocity = FlyState.lv.VectorVelocity:Lerp(targetVel, FlyState.accel)
+                local targetVel = moveDir.Magnitude > 0 and (moveDir.Unit * FlyState.speed) or Vector3.zero
+                FlyState.lv.VectorVelocity = FlyState.lv.VectorVelocity:Lerp(targetVel, FlyState.accel)
 
-                    local camRot = camera.CFrame - camera.CFrame.Position
-                    root.CFrame = CFrame.new(root.Position) * camRot
-                end)
-            end
+                local camRot = camera.CFrame - camera.CFrame.Position
+                root.CFrame = CFrame.new(root.Position) * camRot
+            end)
         end)
 
-        
     else
         hum.PlatformStand = false
         hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-        
     end
 end
-
-local noclipLoop = nil
 
 local function ToggleNoclip(state)
     _G.Noclip = state
@@ -601,11 +597,9 @@ local function ToggleNoclip(state)
     if not char then return end
 
     if state then
-        
         noclipLoop = RunService.Heartbeat:Connect(function()
             pcall(function()
-                if not char.Parent then return end
-                
+                if not char or not char.Parent then return end
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
                         part.CanCollide = false
@@ -613,10 +607,8 @@ local function ToggleNoclip(state)
                 end
             end)
         end)
-
         
     else
-        
         for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") or part:IsA("MeshPart") then
                 part.CanCollide = true
@@ -626,14 +618,12 @@ local function ToggleNoclip(state)
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.1)
+            task.wait(0.08)
             hum:ChangeState(Enum.HumanoidStateType.Running)
         end
-
         
     end
 end
-
 
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
