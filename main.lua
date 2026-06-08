@@ -587,6 +587,8 @@ local function ToggleFly(state)
     end
 end
 
+local noclipLoop = nil
+
 local function ToggleNoclip(state)
     _G.Noclip = state
     if noclipLoop then noclipLoop:Disconnect() end
@@ -595,10 +597,23 @@ local function ToggleNoclip(state)
         noclipLoop = RunService.Stepped:Connect(function()
             pcall(function()
                 local char = localPlayer.Character
-                if char then
-                    for _, part in ipairs(char:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = false
+                if not char then return end
+                
+                for _, part in ipairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") or part:IsA("MeshPart") then
+                        part.CanCollide = false
+                    end
+                end
+                
+                
+                local root = char:FindFirstChild("HumanoidRootPart")
+                if root then
+                    for _, obj in ipairs(workspace:GetDescendants()) do
+                        if obj:IsA("BasePart") and obj.CanCollide then
+                            local dist = (obj.Position - root.Position).Magnitude
+                            if dist < 25 then  
+                                obj.CanCollide = false
+                            end
                         end
                     end
                 end
@@ -610,7 +625,7 @@ local function ToggleNoclip(state)
             local char = localPlayer.Character
             if char then
                 for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") then
+                    if part:IsA("BasePart") or part:IsA("MeshPart") then
                         part.CanCollide = true
                     end
                 end
