@@ -694,4 +694,7 @@ end)
 local EnvironTab = Ventana:CreateTab("Environment ")
 EnvironTab:CreateSection("Environment")
 
-EnviroTab = CreateToggle("Fullbright",false,function(state))
+EnviroTab = CreateToggle("Fullbright",false,function(state)
+
+end)
+
