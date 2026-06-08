@@ -599,11 +599,12 @@ local function ToggleNoclip(state)
         for _, obj in ipairs(workspace:GetDescendants()) do
             if (obj.Name == "NoClip_Collider" or obj.Name == "NoClip" or 
                 obj.Name == "Wall" or obj.Name == "ThinWall" or 
-                obj.Name == "LongWindowWall" or obj.Parent and obj.Parent.Name == "Walls") and
+                obj.Name == "LongWindowWall" or 
+                (obj.Parent and (obj.Parent.Name == "Walls" or obj.Parent.Name == "Wall"))) and
                (obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Part")) then
                 
-                pcall(function() obj.CanCollide = false end)  
-                pcall(function() obj:Destroy() end)           
+                pcall(function() obj.CanCollide = false end)
+                pcall(function() obj:Destroy() end)
             end
         end
     end
