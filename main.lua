@@ -715,10 +715,8 @@ end
 
 
 
+
 local fullbrightEnabled = false
-local oldAmbient = nil
-local oldBrightness = nil
-local oldClockTime = nil
 local lightingConn = nil
 
 local function ToggleFullbright(state)
@@ -727,23 +725,20 @@ local function ToggleFullbright(state)
     local Lighting = game:GetService("Lighting")
     
     if state then
-        oldAmbient = Lighting.Ambient
-        oldBrightness = Lighting.Brightness
-        oldClockTime = Lighting.ClockTime
         
-        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-        Lighting.Brightness = 2
-        Lighting.ClockTime = 12
-        Lighting.FogEnd = 100000
+        Lighting.Ambient = Color3.fromRGB(180, 180, 180)
+        Lighting.Brightness = 1.5
+        Lighting.ClockTime = 14
+        Lighting.FogEnd = 99999
         Lighting.GlobalShadows = false
-        Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+        Lighting.OutdoorAmbient = Color3.fromRGB(160, 160, 180)
         
         
+        if lightingConn then lightingConn:Disconnect() end
         lightingConn = Lighting.Changed:Connect(function()
             if fullbrightEnabled then
-                Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-                Lighting.Brightness = 2
-                Lighting.ClockTime = 12
+                Lighting.Ambient = Color3.fromRGB(180, 180, 180)
+                Lighting.Brightness = 1.5
                 Lighting.GlobalShadows = false
             end
         end)
@@ -754,10 +749,10 @@ local function ToggleFullbright(state)
             lightingConn = nil
         end
         
-        if oldAmbient then Lighting.Ambient = oldAmbient end
-        if oldBrightness then Lighting.Brightness = oldBrightness end
-        if oldClockTime then Lighting.ClockTime = oldClockTime end
         
+        Lighting.Ambient = Color3.fromRGB(70, 70, 70)
+        Lighting.Brightness = 1
+        Lighting.ClockTime = 14
         Lighting.GlobalShadows = true
         Lighting.FogEnd = 100000
     end
