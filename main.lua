@@ -12,7 +12,7 @@ _G.ESPItems = false
 _G.ESPGenerators = false
 _G.ESPElevator = false
 _G.AutoSkillcheck = false
-_G.HideCircleMinigame = true   
+_G.HideCircleMinigame = true   --change these ass names
 _G.Fly = false
 _G.Noclip = false
 
@@ -691,3 +691,7 @@ local instantToggle = AutoTab:CreateToggle("Instant Skillcheck", false, function
     ApplyInstantSkillcheck(state)
 end)
 
+local EnvironTab = Ventana:CreateTab("Environment ")
+EnvironTab:CreateSection("Environment")
+
+EnviroTab = CreateToggle("Fullbright",false,function(state))
