@@ -586,6 +586,7 @@ local function ToggleFly(state)
 end
 
 local noclipLoop = nil
+local originalCollisions = {}  
 
 local function ToggleNoclip(state)
     _G.Noclip = state
@@ -600,17 +601,23 @@ local function ToggleNoclip(state)
 
     if state then
         
+        originalCollisions = {}
+        
         noclipLoop = RunService.Heartbeat:Connect(function()
             pcall(function()
                 if not char or not char.Parent then return end
                 
                 local root = char:FindFirstChild("HumanoidRootPart")
-                if root then 
-                    root.CanCollide = false 
+                if root then
+                    originalCollisions[root] = root.CanCollide
+                    root.CanCollide = false
                 end
 
                 for _, part in ipairs(char:GetDescendants()) do
-                    if (part:IsA("BasePart") or part:IsA("MeshPart")) and part ~= root then
+                    if part:IsA("BasePart") or part:IsA("MeshPart") then
+                        if not originalCollisions[part] then
+                            originalCollisions[part] = part.CanCollide
+                        end
                         part.CanCollide = false
                     end
                 end
@@ -620,10 +627,15 @@ local function ToggleNoclip(state)
         
     else
         
+        if noclipLoop then 
+            noclipLoop:Disconnect() 
+            noclipLoop = nil 
+        end
+
         pcall(function()
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    part.CanCollide = true
+            for part, canCollide in pairs(originalCollisions) do
+                if part and part.Parent then
+                    part.CanCollide = canCollide
                 end
             end
         end)
@@ -631,13 +643,16 @@ local function ToggleNoclip(state)
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.1)
+            task.wait(0.15)
             hum:ChangeState(Enum.HumanoidStateType.Running)
+            hum:ChangeState(Enum.HumanoidStateType.GettingUp)
         end
 
         
     end
 end
+
+
 
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
