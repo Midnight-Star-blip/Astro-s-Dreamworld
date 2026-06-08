@@ -588,68 +588,54 @@ local function ToggleFly(state)
 end
 
 local noclipLoop = nil
-local originalCollisions = {}
 
 local function ToggleNoclip(state)
     _G.Noclip = state
     if noclipLoop then noclipLoop:Disconnect() end
 
     if state then
-        originalCollisions = {}
-        local char = localPlayer.Character
-        if char then
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    originalCollisions[part] = part.CanCollide
-                    part.CanCollide = false
-                end
-            end
-        end
-
         noclipLoop = RunService.Heartbeat:Connect(function()
             pcall(function()
                 local char = localPlayer.Character
                 if not char then return end
-                local root = char:FindFirstChild("HumanoidRootPart")
-                if not root then return end
-
+                
+                
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
                         part.CanCollide = false
                     end
                 end
+                
+                
+                local root = char:FindFirstChild("HumanoidRootPart")
+                if root then
+                    root.CanCollide = false
+                end
             end)
         end)
-
-        print("[Astro] Noclip Activado")
-    else
         
+    else
         if noclipLoop then noclipLoop:Disconnect() end
-
+        
+        
         local char = localPlayer.Character
         if char then
-            
             for _, part in ipairs(char:GetDescendants()) do
                 if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    part.CanCollide = (originalCollisions[part] ~= nil) and originalCollisions[part] or true
+                    part.CanCollide = true
                 end
             end
-
             
             local hum = char:FindFirstChildWhichIsA("Humanoid")
             if hum then
-                hum:ChangeState(Enum.HumanoidStateType.Running)
                 hum.PlatformStand = false
                 task.wait(0.1)
-                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+                hum:ChangeState(Enum.HumanoidStateType.Running)
             end
         end
-
-        originalCollisions = {}
         
     end
 end
-
 
 
 
