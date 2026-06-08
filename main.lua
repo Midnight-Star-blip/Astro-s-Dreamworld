@@ -403,45 +403,41 @@ task.spawn(function()
 				
 				
 								
+								
 				if _G.ESPGenerators then
 					local gensFolder = sala:FindFirstChild("Generators")
 					if gensFolder then
 						for _, gen in ipairs(gensFolder:GetChildren()) do
 							pcall(function()
-								if not (gen.Name == "Generator" or string.find(gen.Name:lower(), "generator")) then 
+								
+								if not (gen.Name == "Generator" or gen:FindFirstChild("BaseMachine")) then 
 									return 
 								end
 								
 								local isCompleted = false
 								
 								
-								local lightPart = gen:FindFirstChild("Light")
-								if lightPart and lightPart:IsA("MeshPart") and lightPart.Material == Enum.Material.Neon then
-									local color = lightPart.Color
-									
-									if color.G > 0.5 and color.R < 0.4 then
-										isCompleted = true
+								local baseMachine = gen:FindFirstChild("BaseMachine") or gen
+								
+								for _, obj in ipairs(baseMachine:GetDescendants()) do
+									if obj.Name == "Light" and obj:IsA("MeshPart") and obj.Material == Enum.Material.Neon then
+										local c = obj.Color
+										
+										if c.G > 0.5 and c.R < 0.4 then
+											isCompleted = true
+											break
+										end
 									end
 								end
 								
 								
 								if not isCompleted then
-									for _, obj in ipairs(gen:GetDescendants()) do
-										if obj:IsA("Light") then
-											if obj.Color.G > 0.7 then
-												isCompleted = true
-												break
-											end
-										elseif obj:IsA("BasePart") and obj.Material == Enum.Material.Neon then
+									for _, obj in ipairs(baseMachine:GetDescendants()) do
+										if obj:IsA("BasePart") and obj.Material == Enum.Material.Neon then
 											if obj.Color.G > 0.5 and obj.Color.R < 0.4 then
 												isCompleted = true
 												break
 											end
-										elseif (obj:IsA("NumberValue") or obj:IsA("IntValue")) and 
-										       (obj.Name == "Progress" or obj.Name == "Ichor" or obj.Name == "Fill") and 
-										       obj.Value >= 100 then
-											isCompleted = true
-											break
 										end
 									end
 								end
