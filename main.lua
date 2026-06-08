@@ -684,7 +684,7 @@ local function ToggleTPWalk(state)
 
     if not state then return end
 
-    tpWalkLoop = RunService.Heartbeat:Connect(function(dt)
+    tpWalkLoop = RunService.Heartbeat:Connect(function()
         local char = localPlayer.Character
         if not char then return end
         local root = char:FindFirstChild("HumanoidRootPart")
@@ -700,8 +700,9 @@ local function ToggleTPWalk(state)
 
         if moveDir.Magnitude > 0 then
             moveDir = moveDir.Unit
-            local newPosition = root.Position + (moveDir * tpWalkSpeed)
-            root.CFrame = CFrame.new(newPosition, newPosition + camera.CFrame.LookVector)
+            
+            local newPos = root.Position + moveDir * tpWalkSpeed
+            root.CFrame = CFrame.new(newPos) * root.CFrame.Rotation
         end
     end)
 end
@@ -734,7 +735,7 @@ PlayerTab:CreateToggle("TP Walk", false, function(state)
     ToggleTPWalk(state)
 end)
 
-PlayerTab:CreateSlider("Teleport Walk Speed", 1, 15, 2, function(value)
+PlayerTab:CreateSlider("Teleport Walk Speed", 1, 12, 2, function(value)
     tpWalkSpeed = value
 end)
 
