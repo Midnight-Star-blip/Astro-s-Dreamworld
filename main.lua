@@ -672,7 +672,7 @@ local function ToggleNoclip(state)
 end
 
 local tpWalkLoop = nil
-local tpWalkSpeed = 1.4   
+local tpWalkSpeed = 1.8
 
 local function ToggleTPWalk(state)
     _G.TPWalk = state
@@ -699,15 +699,19 @@ local function ToggleTPWalk(state)
         if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
 
         if moveDir.Magnitude > 0 then
-            
-            moveDir = Vector3.new(moveDir.X, 0, moveDir.Z).Unit
+            moveDir = Vector3.new(moveDir.X, 0, moveDir.Z).Unit   
 
             local targetPos = root.Position + moveDir * tpWalkSpeed
+
             
+            local newPos = root.Position:Lerp(targetPos, 0.72)
+
             
-            local newPos = root.Position:Lerp(targetPos, 0.75)
-            
-            root.CFrame = CFrame.new(newPos, newPos + camera.CFrame.LookVector * Vector3.new(1, 0, 1))
+            local currentLook = root.CFrame.LookVector
+            local desiredLook = moveDir
+            local newLook = currentLook:Lerp(desiredLook, 0.35)  
+
+            root.CFrame = CFrame.new(newPos) * CFrame.lookAt(Vector3.new(), newLook)
         end
     end)
 end
@@ -738,7 +742,7 @@ PlayerTab:CreateToggle("TP Walk", false, function(state)
     ToggleTPWalk(state)
 end)
 
-PlayerTab:CreateSlider("Teleport Walk Speed", 0.5, 6, 1.4, function(value)
+PlayerTab:CreateSlider("Teleport Walk Speed", 0.8, 4.5, 1.65, function(value)
     tpWalkSpeed = value
 end)
 
