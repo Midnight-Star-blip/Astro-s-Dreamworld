@@ -726,19 +726,19 @@ local function ToggleFullbright(state)
     
     if state then
         
-        Lighting.Ambient = Color3.fromRGB(180, 180, 180)
-        Lighting.Brightness = 1.5
+        Lighting.Ambient = Color3.fromRGB(140, 140, 140)
+        Lighting.Brightness = 0.9
         Lighting.ClockTime = 14
         Lighting.FogEnd = 99999
         Lighting.GlobalShadows = false
-        Lighting.OutdoorAmbient = Color3.fromRGB(160, 160, 180)
-        
+        Lighting.OutdoorAmbient = Color3.fromRGB(130, 130, 150)
         
         if lightingConn then lightingConn:Disconnect() end
+        
         lightingConn = Lighting.Changed:Connect(function()
             if fullbrightEnabled then
-                Lighting.Ambient = Color3.fromRGB(180, 180, 180)
-                Lighting.Brightness = 1.5
+                Lighting.Ambient = Color3.fromRGB(140, 140, 140)
+                Lighting.Brightness = 0.9
                 Lighting.GlobalShadows = false
             end
         end)
