@@ -588,6 +588,49 @@ end
 
 local noclipLoop = nil
 local charAddedConn = nil
+local _collisionDisableCount = 0
+local _partOriginalCollision = {}
+
+local function DisableAllCollisions(char)
+    _collisionDisableCount += 1
+    if _collisionDisableCount > 1 then return end
+
+    pcall(function()
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") or part:IsA("MeshPart") then
+                _partOriginalCollision[part] = part.CanCollide
+                part.CanCollide = false
+                part.Massless = true
+            end
+        end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if root then
+            root.CanCollide = false
+            root.Massless = true
+        end
+    end)
+end
+
+local function RestoreAllCollisions(char)
+    _collisionDisableCount = math.max(0, _collisionDisableCount - 1)
+    if _collisionDisableCount > 0 then return end
+
+    pcall(function()
+        for part, original in pairs(_partOriginalCollision) do
+            if part and part.Parent then
+                part.CanCollide = original
+                part.Massless = false
+            end
+        end
+        table.clear(_partOriginalCollision)
+
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if root then
+            root.CanCollide = true
+            root.Massless = false
+        end
+    end)
+end
 
 local function ToggleNoclip(state)
     _G.Noclip = state
@@ -596,71 +639,41 @@ local function ToggleNoclip(state)
     if charAddedConn then charAddedConn:Disconnect() charAddedConn = nil end
 
     local function forceNoclip(char)
-        pcall(function()
-            local root = char:FindFirstChild("HumanoidRootPart")
-            if root then
-                root.CanCollide = false
-                root.Massless = true
-                root.Velocity = Vector3.new(root.Velocity.X, math.max(root.Velocity.Y, -5), root.Velocity.Z)
-            end
-
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    part.CanCollide = false
-                    part.Massless = true
-                end
-            end
-        end)
+        if not char then return end
+        DisableAllCollisions(char)
     end
 
     if state then
-        
         local char = localPlayer.Character
         if char then forceNoclip(char) end
 
-        
         noclipLoop = RunService.Stepped:Connect(function()
             local char = localPlayer.Character
-            if char then
-                forceNoclip(char)
-            end
+            if char then forceNoclip(char) end
         end)
 
-        
         charAddedConn = localPlayer.CharacterAdded:Connect(function(newChar)
             task.wait(0.4)
             forceNoclip(newChar)
         end)
 
     else
-        
-        pcall(function()
-            local char = localPlayer.Character
-            if not char then return end
-
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    part.CanCollide = true
-                    part.Massless = false
-                end
-            end
-
-            local root = char:FindFirstChild("HumanoidRootPart")
-            if root then
-                root.CanCollide = true
-                root.Massless = false
-                root.Velocity = Vector3.new(0, -25, 0) 
-            end
+        local char = localPlayer.Character
+        if char then
+            RestoreAllCollisions(char)
 
             local hum = char:FindFirstChildWhichIsA("Humanoid")
             if hum then
                 hum.PlatformStand = false
-                task.wait(0.05)
+                task.wait(0.1)
                 hum:ChangeState(Enum.HumanoidStateType.Running)
-                task.wait(0.15)
-                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
             end
-        end)
+
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.Velocity = Vector3.new(0, -30, 0)
+            end
+        end
     end
 end
 
