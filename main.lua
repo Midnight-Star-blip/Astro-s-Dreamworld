@@ -594,10 +594,11 @@ local function ToggleNoclip(state)
     if noclipLoop then noclipLoop:Disconnect() end
 
     if state then
-        noclipLoop = RunService.Stepped:Connect(function()
+        noclipLoop = RunService.Heartbeat:Connect(function()  
             pcall(function()
                 local char = localPlayer.Character
                 if not char then return end
+                
                 
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
@@ -609,9 +610,9 @@ local function ToggleNoclip(state)
                 local root = char:FindFirstChild("HumanoidRootPart")
                 if root then
                     for _, obj in ipairs(workspace:GetDescendants()) do
-                        if obj:IsA("BasePart") and obj.CanCollide then
+                        if (obj:IsA("BasePart") or obj:IsA("MeshPart")) and obj.CanCollide then
                             local dist = (obj.Position - root.Position).Magnitude
-                            if dist < 25 then  
+                            if dist < 35 then  
                                 obj.CanCollide = false
                             end
                         end
@@ -621,6 +622,7 @@ local function ToggleNoclip(state)
         end)
         
     else
+        if noclipLoop then noclipLoop:Disconnect() end
         pcall(function()
             local char = localPlayer.Character
             if char then
@@ -634,7 +636,6 @@ local function ToggleNoclip(state)
         
     end
 end
-
 
 
 
