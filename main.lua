@@ -587,84 +587,78 @@ end
 
 
 local noclipLoop = nil
-local characterConnection = nil
+local charAddedConn = nil
 
 local function ToggleNoclip(state)
     _G.Noclip = state
 
-    if noclipLoop then
-        noclipLoop:Disconnect()
-        noclipLoop = nil
-    end
-    if characterConnection then
-        characterConnection:Disconnect()
-        characterConnection = nil
-    end
+    if noclipLoop then noclipLoop:Disconnect() noclipLoop = nil end
+    if charAddedConn then charAddedConn:Disconnect() charAddedConn = nil end
 
-    local function applyNoclip(char)
+    local function forceNoclip(char)
         pcall(function()
-            for _, part in ipairs(char:GetDescendants()) do
-                if (part:IsA("BasePart") or part:IsA("MeshPart")) and part.CanCollide then
-                    part.CanCollide = false
-                    part.Massless = true
-                end
-            end
-            
             local root = char:FindFirstChild("HumanoidRootPart")
             if root then
                 root.CanCollide = false
                 root.Massless = true
-                root.Velocity = Vector3.new(0, 0, 0)  
+                root.Velocity = Vector3.new(root.Velocity.X, math.max(root.Velocity.Y, -5), root.Velocity.Z)
+            end
+
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.CanCollide = false
+                    part.Massless = true
+                end
             end
         end)
-    end
-
-    local char = localPlayer.Character
-    if char then
-        applyNoclip(char)
     end
 
     if state then
         
+        local char = localPlayer.Character
+        if char then forceNoclip(char) end
+
+        
         noclipLoop = RunService.Stepped:Connect(function()
-            local currentChar = localPlayer.Character
-            if currentChar then
-                applyNoclip(currentChar)
+            local char = localPlayer.Character
+            if char then
+                forceNoclip(char)
             end
         end)
 
         
-        characterConnection = localPlayer.CharacterAdded:Connect(function(newChar)
-            task.wait(0.3)
-            applyNoclip(newChar)
+        charAddedConn = localPlayer.CharacterAdded:Connect(function(newChar)
+            task.wait(0.4)
+            forceNoclip(newChar)
         end)
 
     else
         
         pcall(function()
-            local currentChar = localPlayer.Character
-            if currentChar then
-                for _, part in ipairs(currentChar:GetDescendants()) do
-                    if part:IsA("BasePart") or part:IsA("MeshPart") then
-                        part.CanCollide = true
-                        part.Massless = false
-                    end
-                end
-                
-                local root = currentChar:FindFirstChild("HumanoidRootPart")
-                if root then
-                    root.CanCollide = true
-                    root.Massless = false
-                    root.Velocity = Vector3.new(0, -10, 0)  
-                end
+            local char = localPlayer.Character
+            if not char then return end
 
-                local hum = currentChar:FindFirstChildWhichIsA("Humanoid")
-                if hum then
-                    hum.PlatformStand = false
-                    hum:ChangeState(Enum.HumanoidStateType.Running)
-                    task.wait(0.1)
-                    hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.CanCollide = true
+                    part.Massless = false
                 end
+            end
+
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CanCollide = true
+                root.Massless = false
+                root.Velocity = Vector3.new(0, -25, 0) 
+            end
+
+            local hum = char:FindFirstChildWhichIsA("Humanoid")
+            if hum then
+                hum.PlatformStand = false
+                task.wait(0.05)
+                hum:ChangeState(Enum.HumanoidStateType.Running)
+                task.wait(0.15)
+                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
             end
         end)
     end
