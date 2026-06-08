@@ -584,8 +584,88 @@ local function ToggleFly(state)
         hum:ChangeState(Enum.HumanoidStateType.GettingUp)
     end
 end
+local noclipLoop = nil
+local charConn = nil
 
+local function ToggleNoclip(state)
+    _G.Noclip = state
 
+    if noclipLoop then noclipLoop:Disconnect() noclipLoop = nil end
+    if charConn then charConn:Disconnect() charConn = nil end
+
+    local function DestroyAntiNoclip()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if (obj.Name == "NoClip_Collider" or obj.Name == "NoClip") and 
+               (obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Part")) then
+                pcall(function() obj:Destroy() end)
+            end
+        end
+    end
+
+    local function ApplyNoclip(char)
+        pcall(function()
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.CanCollide = false
+                    part.Massless = true
+                end
+            end
+
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CanCollide = false
+                root.Massless = true
+            end
+        end)
+    end
+
+    if state then
+        DestroyAntiNoclip()  
+
+        local char = localPlayer.Character
+        if char then ApplyNoclip(char) end
+
+        noclipLoop = RunService.Stepped:Connect(function()
+            local char = localPlayer.Character
+            if char then 
+                ApplyNoclip(char)
+                DestroyAntiNoclip()  
+            end
+        end)
+
+        charConn = localPlayer.CharacterAdded:Connect(function(newChar)
+            task.wait(0.5)
+            ApplyNoclip(newChar)
+            DestroyAntiNoclip()
+        end)
+
+    else
+        
+        local char = localPlayer.Character
+        if char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.CanCollide = true
+                    part.Massless = false
+                end
+            end
+
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CanCollide = true
+                root.Massless = false
+                root.Velocity = Vector3.new(0, -40, 0)
+            end
+
+            local hum = char:FindFirstChildWhichIsA("Humanoid")
+            if hum then
+                hum.PlatformStand = false
+                task.wait(0.1)
+                hum:ChangeState(Enum.HumanoidStateType.Running)
+            end
+        end
+    end
+end
 
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
