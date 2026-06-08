@@ -529,60 +529,88 @@ localPlayer.CharacterAdded:Connect(getCharacter)
 if localPlayer.Character then getCharacter() end
 
 
+
+local RunService = game:GetService("RunService")
+local character, rootPart, humanoid = nil, nil, nil
+
+local flyVelocity, flyGyro = nil, nil
+local noclipLoop = nil
+local flyConnection = nil
+
+local function refreshCharacter()
+    character = localPlayer.Character
+    if character then
+        rootPart = character:FindFirstChild("HumanoidRootPart")
+        humanoid = character:FindFirstChild("Humanoid")
+    end
+end
+
+localPlayer.CharacterAdded:Connect(refreshCharacter)
+refreshCharacter()
+
+
 local function ToggleFly(state)
     _G.Fly = state
 
+    
     if flyVelocity then flyVelocity:Destroy() end
+    if flyGyro then flyGyro:Destroy() end
     if flyConnection then flyConnection:Disconnect() end
 
     if state then
-        getCharacter()
+        refreshCharacter()
         if not rootPart then return end
 
-        flyVelocity = Instance.new("BodyVelocity")
-        flyVelocity.Name = "AstroFlyVelocity"
-        flyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
-        flyVelocity.Velocity = Vector3.new(0, 0, 0)
+        
+        flyVelocity = Instance.new("AlignPosition")
+        flyVelocity.Name = "AstroFly"
+        flyVelocity.MaxForce = 999999999
+        flyVelocity.Responsiveness = 25
         flyVelocity.Parent = rootPart
 
-        local camera = workspace.CurrentCamera
-        local keys = {W=false, A=false, S=false, D=false, Space=false, LeftShift=false}
+        flyGyro = Instance.new("AlignOrientation")
+        flyGyro.Name = "AstroFlyGyro"
+        flyGyro.MaxTorque = 999999999
+        flyGyro.Responsiveness = 30
+        flyGyro.Parent = rootPart
 
-        flyConnection = UserInputService.InputBegan:Connect(function(inp, gp)
+        local camera = workspace.CurrentCamera
+        local keys = {W=false,A=false,S=false,D=false,Space=false,LeftShift=false}
+
+        flyConnection = UserInputService.InputBegan:Connect(function(i, gp)
             if gp then return end
-            local k = inp.KeyCode.Name
+            local k = i.KeyCode.Name
             if keys[k] ~= nil then keys[k] = true end
         end)
 
-        UserInputService.InputEnded:Connect(function(inp)
-            local k = inp.KeyCode.Name
+        UserInputService.InputEnded:Connect(function(i)
+            local k = i.KeyCode.Name
             if keys[k] ~= nil then keys[k] = false end
         end)
 
         task.spawn(function()
             while _G.Fly and task.wait() do
                 pcall(function()
-                    if not rootPart or not rootPart.Parent then 
-                        getCharacter()
-                        return 
-                    end
+                    refreshCharacter()
+                    if not rootPart then return end
 
-                    local move = Vector3.new(0,0,0)
+                    local moveDir = Vector3.new(0,0,0)
                     local camLook = camera.CFrame.LookVector
                     local camRight = camera.CFrame.RightVector
 
-                    if keys.W then move += camLook end
-                    if keys.S then move -= camLook end
-                    if keys.A then move -= camRight end
-                    if keys.D then move += camRight end
-                    if keys.Space then move += Vector3.new(0,1,0) end
-                    if keys.LeftShift then move -= Vector3.new(0,1,0) end
+                    if keys.W then moveDir += camLook end
+                    if keys.S then moveDir -= camLook end
+                    if keys.A then moveDir -= camRight end
+                    if keys.D then moveDir += camRight end
+                    if keys.Space then moveDir += Vector3.new(0,1,0) end
+                    if keys.LeftShift then moveDir -= Vector3.new(0,1,0) end
 
-                    if move.Magnitude > 0 then
-                        move = move.Unit * _G.FlySpeed
+                    if moveDir.Magnitude > 0 then
+                        moveDir = moveDir.Unit * _G.FlySpeed
                     end
 
-                    flyVelocity.Velocity = move
+                    flyVelocity.Position = rootPart.Position + moveDir
+                    flyGyro.CFrame = camera.CFrame
                 end)
             end
         end)
@@ -593,18 +621,17 @@ local function ToggleFly(state)
     end
 end
 
-
 local function ToggleNoclip(state)
     _G.Noclip = state
 
-    if noclipConnection then noclipConnection:Disconnect() end
+    if noclipLoop then noclipLoop:Disconnect() end
 
     if state then
-        noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+        noclipLoop = RunService.Stepped:Connect(function()
             pcall(function()
-                if character and character.Parent then
+                if character then
                     for _, part in ipairs(character:GetDescendants()) do
-                        if part:IsA("BasePart") then
+                        if part:IsA("BasePart") and part.CanCollide then
                             part.CanCollide = false
                         end
                     end
