@@ -404,12 +404,14 @@ task.spawn(function()
 				
 								
 								
+								
 				if _G.ESPGenerators then
 					local gensFolder = sala:FindFirstChild("Generators")
 					if gensFolder then
 						for _, gen in ipairs(gensFolder:GetChildren()) do
 							pcall(function()
-								if not (gen.Name == "Generator" or string.find(gen.Name:lower(), "generator") or gen:FindFirstChild("BaseMachine")) then 
+								
+								if gen.Name ~= "Generator" and not gen:FindFirstChild("BaseMachine") then 
 									return 
 								end
 								
@@ -418,26 +420,25 @@ task.spawn(function()
 								
 								local baseMachine = gen:FindFirstChild("BaseMachine") or gen
 								
-								for _, obj in ipairs(baseMachine:GetDescendants()) do
-									if obj.Name == "Light" and obj:IsA("MeshPart") then
-										if obj.Material == Enum.Material.Neon then
-											local c = obj.Color
-											if c.G > 0.45 and c.R < 0.45 then  
-												isCompleted = true
-												break
-											end
-										end
+								
+								local lightPart = baseMachine:FindFirstChild("Light")
+								if lightPart and lightPart:IsA("MeshPart") and lightPart.Material == Enum.Material.Neon then
+									local c = lightPart.Color
+									if c.G > 0.45 and c.R < 0.45 then  
+										isCompleted = true
 									end
 								end
 								
 								
 								if not isCompleted then
 									for _, obj in ipairs(baseMachine:GetDescendants()) do
-										if obj:IsA("BasePart") and obj.Material == Enum.Material.Neon then
-											local c = obj.Color
-											if c.G > 0.5 and c.R < 0.4 then
-												isCompleted = true
-												break
+										if obj:IsA("MeshPart") or obj:IsA("Part") then
+											if obj.Material == Enum.Material.Neon then
+												local c = obj.Color
+												if c.G > 0.5 and c.R < 0.4 then
+													isCompleted = true
+													break
+												end
 											end
 										end
 									end
@@ -446,24 +447,9 @@ task.spawn(function()
 								
 								if not isCompleted then
 									if baseMachine:FindFirstChild("IchorSpout") or baseMachine:FindFirstChild("FakeValve") then
-										local spout = baseMachine:FindFirstChild("IchorSpout")
-										if spout and spout:IsA("BasePart") and spout.Transparency < 0.5 then
+										local spout = baseMachine:FindFirstChild("IchorSpout") or baseMachine:FindFirstChild("FakeValve")
+										if spout and spout.Transparency < 0.6 then
 											isCompleted = true
-										end
-									end
-								end
-								
-								
-								if not isCompleted then
-									for _, v in ipairs(baseMachine:GetDescendants()) do
-										if v:IsA("BoolValue") and (v.Name:find("Complete") or v.Name:find("Done") or v.Name == "Finished") and v.Value == true then
-											isCompleted = true
-											break
-										elseif (v:IsA("NumberValue") or v:IsA("IntValue")) and 
-										       (v.Name:find("Progress") or v.Name:find("Ichor") or v.Name == "Fill") and 
-										       v.Value >= 90 then
-											isCompleted = true
-											break
 										end
 									end
 								end
