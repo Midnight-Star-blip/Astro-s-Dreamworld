@@ -672,7 +672,7 @@ local function ToggleNoclip(state)
 end
 
 local tpWalkLoop = nil
-local tpWalkSpeed = 0.95   
+local tpWalkSpeed = 0.50   
 
 local function ToggleTPWalk(state)
     _G.TPWalk = state
@@ -739,7 +739,7 @@ PlayerTab:CreateToggle("TP Walk", false, function(state)
     ToggleTPWalk(state)
 end)
 
-PlayerTab:CreateSlider("Teleport Walk Speed", 0.4, 2.5, 0.95, function(value)
+PlayerTab:CreateSlider("Teleport Walk Speed", 0.4, 2.5, 0.50, function(value)
     tpWalkSpeed = value
 end)
 
