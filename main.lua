@@ -672,7 +672,7 @@ local function ToggleNoclip(state)
 end
 
 local tpWalkLoop = nil
-local tpWalkSpeed = 0.50   
+local tpWalkSpeed = 0.7   
 
 local function ToggleTPWalk(state)
     _G.TPWalk = state
@@ -702,7 +702,7 @@ local function ToggleTPWalk(state)
             moveDir = Vector3.new(moveDir.X, 0, moveDir.Z).Unit
 
             local targetPos = root.Position + moveDir * tpWalkSpeed
-            local newPos = root.Position:Lerp(targetPos, 0.65)   
+            local newPos = root.Position:Lerp(targetPos, 0.65)
 
             local currentLook = root.CFrame.LookVector
             local targetLook = moveDir
@@ -735,12 +735,34 @@ PlayerTab:CreateToggle("Noclip", false, function(state)
     ToggleNoclip(state)
 end)
 
+
 PlayerTab:CreateToggle("TP Walk", false, function(state)
     ToggleTPWalk(state)
 end)
 
-PlayerTab:CreateSlider("Teleport Walk Speed", 0.4, 2.5, 0.50, function(value)
-    tpWalkSpeed = value
+local tpWalkInput = create("Frame", {Size = UDim2.new(1, 0, 0, 50), BackgroundColor3 = Ventana.Theme.PanelLight, BorderSizePixel = 0, Parent = PlayerTab.Page}, {corner(8), stroke(Ventana.Theme.SoftStroke, 1, 0.7)})
+create("TextLabel", {Position = UDim2.fromOffset(12, 8), Size = UDim2.new(1, -100, 0, 20), BackgroundTransparency = 1, Text = "TP Walk Speed", TextColor3 = Ventana.Theme.Text, Font = Ventana.Theme.DisplayFont, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Left, Parent = tpWalkInput})
+
+local inputBox = create("TextBox", {
+    Position = UDim2.new(1, -95, 0.5, -12),
+    Size = UDim2.fromOffset(85, 24),
+    BackgroundColor3 = Color3.fromRGB(40, 40, 55),
+    Text = tostring(tpWalkSpeed),
+    TextColor3 = Ventana.Theme.Text,
+    Font = Enum.Font.Gotham,
+    TextSize = 14,
+    ClearTextOnFocus = false,
+    Parent = tpWalkInput
+}, {corner(6)})
+
+inputBox.FocusLost:Connect(function(enterPressed)
+    local num = tonumber(inputBox.Text)
+    if num then
+        tpWalkSpeed = math.clamp(num, 0.3, 5)
+        inputBox.Text = tostring(tpWalkSpeed)
+    else
+        inputBox.Text = tostring(tpWalkSpeed)
+    end
 end)
 
 local VisualsTab = Ventana:CreateTab("Visuals")
