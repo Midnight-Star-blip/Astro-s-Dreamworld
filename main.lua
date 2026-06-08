@@ -586,7 +586,7 @@ local function ToggleFly(state)
 end
 
 local noclipLoop = nil
-local originalCollisions = {}  
+local originalCollisions = {}
 
 local function ToggleNoclip(state)
     _G.Noclip = state
@@ -613,12 +613,26 @@ local function ToggleNoclip(state)
                     root.CanCollide = false
                 end
 
+                
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
                         if not originalCollisions[part] then
                             originalCollisions[part] = part.CanCollide
                         end
                         part.CanCollide = false
+                    end
+                end
+
+                
+                local rootPos = root and root.Position or char:GetPivot().Position
+                for _, part in ipairs(workspace:GetDescendants()) do
+                    if (part:IsA("BasePart") or part:IsA("MeshPart")) and part.CanCollide then
+                        if (part.Position - rootPos).Magnitude < 35 then  -- Radio de 35 studs
+                            if not originalCollisions[part] then
+                                originalCollisions[part] = part.CanCollide
+                            end
+                            part.CanCollide = false
+                        end
                     end
                 end
             end)
@@ -633,9 +647,9 @@ local function ToggleNoclip(state)
         end
 
         pcall(function()
-            for part, canCollide in pairs(originalCollisions) do
+            for part, wasCollidable in pairs(originalCollisions) do
                 if part and part.Parent then
-                    part.CanCollide = canCollide
+                    part.CanCollide = wasCollidable
                 end
             end
         end)
@@ -643,9 +657,8 @@ local function ToggleNoclip(state)
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.15)
+            task.wait(0.12)
             hum:ChangeState(Enum.HumanoidStateType.Running)
-            hum:ChangeState(Enum.HumanoidStateType.GettingUp)
         end
 
         
