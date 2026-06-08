@@ -595,8 +595,10 @@ local function ToggleNoclip(state)
 
     local function DestroyAntiNoclip()
         for _, obj in ipairs(workspace:GetDescendants()) do
-            if (obj.Name == "NoClip_Collider" or obj.Name == "NoClip" or 
-                obj.Name == "InvisWall" or obj.Name == "Inviswall") and
+            if (obj.Name == "NoClip_Collider" or 
+                obj.Name == "NoClip" or 
+                obj.Name == "InvisWall" or 
+                obj.Name == "Inviswall") and
                (obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Part")) then
                 
                 pcall(function() obj.CanCollide = false end)
@@ -623,7 +625,7 @@ local function ToggleNoclip(state)
     end
 
     if state then
-        DestroyAntiNoclip() 
+        DestroyAntiNoclip()
 
         local char = localPlayer.Character
         if char then ApplyNoclip(char) end
@@ -632,7 +634,7 @@ local function ToggleNoclip(state)
             local char = localPlayer.Character
             if char then
                 ApplyNoclip(char)
-                DestroyAntiNoclip() 
+                DestroyAntiNoclip()
             end
         end)
 
@@ -643,7 +645,6 @@ local function ToggleNoclip(state)
         end)
 
     else
-    
         local char = localPlayer.Character
         if char then
             for _, part in ipairs(char:GetDescendants()) do
