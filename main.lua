@@ -636,7 +636,7 @@ PlayerTab:CreateToggle("Fly", false, function(state)
     ToggleFly(state)
 end)
 
-PlayerTab:CreateSlider("Fly Speed", 20, 150, 50, function(value)
+PlayerTab:CreateSlider("Fly Speed", 20, 150, 70, function(value)
     FlyState.speed  = value
 end)
 
