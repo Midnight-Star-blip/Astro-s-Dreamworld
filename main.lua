@@ -304,31 +304,42 @@ end
 
 local espTable = {}
 
+
 local function makeESP(obj, txt, col)
 	if not obj then return end
 	
-	local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or obj
-	if not targetModel then return end
 	
-	if targetModel:FindFirstChild("AstroHighlight") or obj:FindFirstChild("AstroTag") then return end
+	local p = obj:IsA("BasePart") and obj 
+		or obj:FindFirstChildOfClass("MeshPart") 
+		or obj:FindFirstChildOfClass("Part") 
+		or obj:FindFirstChild("HumanoidRootPart")
+	if not p then return end
+	
+	
+	local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or p
+	
+	
+	if targetModel:FindFirstChild("AstroHighlight") or p:FindFirstChild("AstroTag") then return end
+	
 	
 	local hl = Instance.new("Highlight")
 	hl.Name = "AstroHighlight"
-	hl.FillColor = col
-	hl.FillTransparency = 0.75
-	hl.OutlineColor = col
-	hl.OutlineTransparency = 0
-	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	hl.FillColor = col             
+	hl.FillTransparency = 0.7      
+	hl.OutlineColor = col          
+	hl.OutlineTransparency = 0     
+	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop 
 	hl.Adornee = targetModel
 	hl.Parent = targetModel
 	
+	
 	local bb = Instance.new("BillboardGui") 
 	bb.Name = "AstroTag"
-	bb.Size = UDim2.new(0, 180, 0, 40)
+	bb.Size = UDim2.new(0, 200, 0, 50)
 	bb.AlwaysOnTop = true
-	bb.StudsOffset = Vector3.new(0, 3.5, 0)
-	bb.Adornee = obj
-	bb.Parent = obj
+	bb.StudsOffset = Vector3.new(0, 4, 0) 
+	bb.Adornee = p
+	bb.Parent = p
 	
 	local l = Instance.new("TextLabel") 
 	l.Size = UDim2.new(1, 0, 1, 0)
@@ -336,12 +347,13 @@ local function makeESP(obj, txt, col)
 	l.Text = txt
 	l.TextColor3 = col
 	l.Font = Enum.Font.GothamBold
-	l.TextSize = 13
+	l.TextSize = 14
 	l.Parent = bb
 	
 	table.insert(espTable, hl) 
 	table.insert(espTable, bb)
 end
+
 
 local function clearESP() 
 	for _, v in ipairs(espTable) do 
@@ -352,42 +364,39 @@ end
 
 
 task.spawn(function()
-	while task.wait(0.6) do
+	while task.wait(0.7) do  
+		
 		clearESP()
+		
 		local room = workspace:FindFirstChild("CurrentRoom")
 		if room then
+			
 			for _, sala in ipairs(room:GetChildren()) do
 				
 				
 				if _G.ESPTwisteds then
 					local monFolder = sala:FindFirstChild("Monsters")
 					if monFolder then
-						for _, monster in ipairs(monFolder:GetChildren()) do
-							pcall(function()
-								local rootPart = monster:FindFirstChild("HumanoidRootPart") 
-									or monster:FindFirstChildOfClass("MeshPart") 
-									or monster:FindFirstChildOfClass("Part")
-								
-								if rootPart then
-									local nombreLimpio = string.gsub(monster.Name, "Monster", "")
-									nombreLimpio = string.gsub(nombreLimpio, "Character", "")
-									makeESP(rootPart, "[Twisted] " .. nombreLimpio, Color3.fromRGB(255, 50, 50))
+						for _, parte in ipairs(monFolder:GetDescendants()) do
+							if parte:IsA("BasePart") then
+								local carpetaMadre = parte:FindFirstAncestorOfClass("Folder")
+								if carpetaMadre and carpetaMadre.Name ~= "Monsters" then
+									local nombreTwisted = string.gsub(carpetaMadre.Name, "Monster", "")
+									makeESP(parte, "[Twisted] " .. nombreTwisted, Color3.fromRGB(255, 50, 50))
 								end
-							end)
+							end
 						end
 					end
 				end
-
+				
 				
 				if _G.ESPItems then
 					local itemsFolder = sala:FindFirstChild("Items")
 					if itemsFolder then
 						for _, item in ipairs(itemsFolder:GetChildren()) do
-							pcall(function()
-								if item.Name == "ResearchCapsule" then 
-									makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
-								end
-							end)
+							if item.Name == "ResearchCapsule" then 
+								makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
+							end
 						end
 					end
 				end
@@ -398,8 +407,46 @@ task.spawn(function()
 					if gensFolder then
 						for _, gen in ipairs(gensFolder:GetChildren()) do
 							pcall(function()
-								if gen.Name == "Generator" then 
-									makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128)) 
+								if gen.Name == "Generator" or string.find(gen.Name:lower(), "generator") then
+									
+									local isCompleted = false
+									
+									
+									local light = gen:FindFirstChildWhichIsA("Light") 
+												or gen:FindFirstChild("Light") 
+												or gen:FindFirstChild("TopLight") 
+												or gen:FindFirstChild("Indicator") 
+												or gen:FindFirstChild("Neon") 
+												or gen:FindFirstChild("Glow")
+									
+									if light then
+										if light:IsA("Light") then
+											if light.Color.G > 0.8 then  
+												isCompleted = true
+											end
+										elseif light:IsA("BasePart") and light.Color then
+											if light.Color.G > 0.8 then
+												isCompleted = true
+											end
+										end
+									end
+									
+									
+									if not isCompleted then
+										for _, v in ipairs(gen:GetDescendants()) do
+											if v:IsA("NumberValue") or v:IsA("IntValue") then
+												if (v.Name == "Progress" or v.Name == "Completed" or v.Name == "Fill") and v.Value >= 100 then
+													isCompleted = true
+													break
+												end
+											end
+										end
+									end
+									
+									
+									if not isCompleted then
+										makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
+									end
 								end
 							end)
 						end
@@ -414,17 +461,16 @@ task.spawn(function()
 			local elevators = workspace:FindFirstChild("Elevators")
 			if elevators then
 				for _, elev in ipairs(elevators:GetChildren()) do
-					pcall(function()
-						if elev.Name == "Elevator" then 
-							makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220)) 
-						end
-					end)
+					if elev.Name == "Elevator" then 
+						makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220)) 
+					end
 				end
 			end
 		end
 		
 	end
 end)
+
 
 
 local S = { skillcheckOrigCB = nil }
