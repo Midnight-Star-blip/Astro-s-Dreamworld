@@ -15,7 +15,7 @@ _G.AutoSkillcheck = false
 _G.HideCircleMinigame = true   
 _G.Fly = false
 _G.Noclip = false
-_G.FlySpeed = 50
+FlyState.speed = 50
 
 local AstroUI = {}
 
@@ -511,8 +511,6 @@ end
 
 
 
-
-
 local RunService = game:GetService("RunService")
 
 local FlyState = {
@@ -531,6 +529,7 @@ local function ToggleFly(state)
     
     local char = localPlayer.Character
     if not char then return end
+    
     local root = char:FindFirstChild("HumanoidRootPart")
     local hum = char:FindFirstChildWhichIsA("Humanoid")
     if not root or not hum then return end
@@ -560,7 +559,7 @@ local function ToggleFly(state)
         task.spawn(function()
             while _G.Fly and task.wait() do
                 pcall(function()
-                    if not root.Parent then return end
+                    if not root or not root.Parent then return end
                     local camera = workspace.CurrentCamera
                     local moveDir = Vector3.zero
 
@@ -620,6 +619,11 @@ local function ToggleNoclip(state)
         
     end
 end
+
+
+
+
+
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
 	ToggleKey = Enum.KeyCode.V
