@@ -511,127 +511,101 @@ end
 
 
 
-local character = nil
-local rootPart = nil
-local humanoid = nil
-local flyVelocity = nil
-local flyConnection = nil
-local noclipConnection = nil
-
-local function getCharacter()
-    character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-    rootPart = character:WaitForChild("HumanoidRootPart", 3)
-    humanoid = character:WaitForChild("Humanoid", 3)
-    return character
-end
-
-localPlayer.CharacterAdded:Connect(getCharacter)
-if localPlayer.Character then getCharacter() end
-
-
-
+l
 local RunService = game:GetService("RunService")
-local character, rootPart, humanoid = nil, nil, nil
 
-local flyVelocity, flyGyro = nil, nil
-local noclipLoop = nil
-local flyConnection = nil
-
-local function refreshCharacter()
-    character = localPlayer.Character
-    if character then
-        rootPart = character:FindFirstChild("HumanoidRootPart")
-        humanoid = character:FindFirstChild("Humanoid")
-    end
-end
-
-localPlayer.CharacterAdded:Connect(refreshCharacter)
-refreshCharacter()
-
+local FlyState = {
+    flying = false,
+    speed = 70,
+    accel = 0.15,
+    lv = nil,
+    av = nil,
+    attachment = nil,
+}
 
 local function ToggleFly(state)
     _G.Fly = state
-
-    
-    if flyVelocity then flyVelocity:Destroy() end
-    if flyGyro then flyGyro:Destroy() end
-    if flyConnection then flyConnection:Disconnect() end
+    local char = localPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    local hum = char:FindFirstChildWhichIsA("Humanoid")
+    if not root or not hum then return end
 
     if state then
-        refreshCharacter()
-        if not rootPart then return end
+        
+        if FlyState.lv then FlyState.lv:Destroy() end
+        if FlyState.av then FlyState.av:Destroy() end
+        if FlyState.attachment then FlyState.attachment:Destroy() end
+
+        FlyState.attachment = Instance.new("Attachment", root)
+        
+        FlyState.lv = Instance.new("LinearVelocity", root)
+        FlyState.lv.MaxForce = 9e10
+        FlyState.lv.VelocityConstraintMode = Enum.VelocityConstraintMode.Vector
+        FlyState.lv.VectorVelocity = Vector3.zero
+        FlyState.lv.Attachment0 = FlyState.attachment
+
+        FlyState.av = Instance.new("AngularVelocity", root)
+        FlyState.av.MaxTorque = 9e10
+        FlyState.av.AngularVelocity = Vector3.zero
+        FlyState.av.Attachment0 = FlyState.attachment
+
+        hum.PlatformStand = true
+        hum:ChangeState(Enum.HumanoidStateType.Physics)
 
         
-        flyVelocity = Instance.new("AlignPosition")
-        flyVelocity.Name = "AstroFly"
-        flyVelocity.MaxForce = 999999999
-        flyVelocity.Responsiveness = 25
-        flyVelocity.Parent = rootPart
-
-        flyGyro = Instance.new("AlignOrientation")
-        flyGyro.Name = "AstroFlyGyro"
-        flyGyro.MaxTorque = 999999999
-        flyGyro.Responsiveness = 30
-        flyGyro.Parent = rootPart
-
-        local camera = workspace.CurrentCamera
-        local keys = {W=false,A=false,S=false,D=false,Space=false,LeftShift=false}
-
-        flyConnection = UserInputService.InputBegan:Connect(function(i, gp)
-            if gp then return end
-            local k = i.KeyCode.Name
-            if keys[k] ~= nil then keys[k] = true end
-        end)
-
-        UserInputService.InputEnded:Connect(function(i)
-            local k = i.KeyCode.Name
-            if keys[k] ~= nil then keys[k] = false end
-        end)
-
         task.spawn(function()
             while _G.Fly and task.wait() do
                 pcall(function()
-                    refreshCharacter()
-                    if not rootPart then return end
+                    if not root.Parent then return end
+                    local camera = workspace.CurrentCamera
+                    local moveDir = Vector3.zero
 
-                    local moveDir = Vector3.new(0,0,0)
-                    local camLook = camera.CFrame.LookVector
-                    local camRight = camera.CFrame.RightVector
+                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir += camera.CFrame.LookVector end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir -= camera.CFrame.LookVector end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir -= camera.CFrame.RightVector end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir += camera.CFrame.RightVector end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0,1,0) end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0,1,0) end
 
-                    if keys.W then moveDir += camLook end
-                    if keys.S then moveDir -= camLook end
-                    if keys.A then moveDir -= camRight end
-                    if keys.D then moveDir += camRight end
-                    if keys.Space then moveDir += Vector3.new(0,1,0) end
-                    if keys.LeftShift then moveDir -= Vector3.new(0,1,0) end
+                    local targetVel = moveDir.Magnitude > 0 and (moveDir.Unit * FlyState.speed) or Vector3.zero
+                    FlyState.lv.VectorVelocity = FlyState.lv.VectorVelocity:Lerp(targetVel, FlyState.accel)
 
-                    if moveDir.Magnitude > 0 then
-                        moveDir = moveDir.Unit * _G.FlySpeed
-                    end
-
-                    flyVelocity.Position = rootPart.Position + moveDir
-                    flyGyro.CFrame = camera.CFrame
+                    
+                    local camRot = camera.CFrame - camera.CFrame.Position
+                    root.CFrame = CFrame.new(root.Position) * camRot
                 end)
             end
         end)
 
         
     else
+        if FlyState.lv then FlyState.lv:Destroy() end
+        if FlyState.av then FlyState.av:Destroy() end
+        if FlyState.attachment then FlyState.attachment:Destroy() end
+        FlyState.lv = nil; FlyState.av = nil; FlyState.attachment = nil
+
+        if hum then
+            hum.PlatformStand = false
+            hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+        end
         
     end
 end
 
+local noclipLoop = nil
+
 local function ToggleNoclip(state)
     _G.Noclip = state
-
     if noclipLoop then noclipLoop:Disconnect() end
 
     if state then
         noclipLoop = RunService.Stepped:Connect(function()
             pcall(function()
-                if character then
-                    for _, part in ipairs(character:GetDescendants()) do
-                        if part:IsA("BasePart") and part.CanCollide then
+                local char = localPlayer.Character
+                if char then
+                    for _, part in ipairs(char:GetDescendants()) do
+                        if part:IsA("BasePart") then
                             part.CanCollide = false
                         end
                     end
@@ -641,8 +615,9 @@ local function ToggleNoclip(state)
         
     else
         pcall(function()
-            if character then
-                for _, part in ipairs(character:GetDescendants()) do
+            local char = localPlayer.Character
+            if char then
+                for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") then
                         part.CanCollide = true
                     end
