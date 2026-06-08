@@ -739,45 +739,44 @@ PlayerTab:CreateToggle("TP Walk", false, function(state)
     ToggleTPWalk(state)
 end)
 
-local tpWalkRow = create("Frame", {
-    Size = UDim2.new(1, 0, 0, 50),
+
+local speedRow = create("Frame", {
+    Size = UDim2.new(1, 0, 0, 52),
     BackgroundColor3 = Ventana.Theme.PanelLight,
     BorderSizePixel = 0,
     Parent = PlayerTab.Page
 }, {corner(8), stroke(Ventana.Theme.SoftStroke, 1, 0.7)})
 
 create("TextLabel", {
-    Position = UDim2.fromOffset(12, 8),
-    Size = UDim2.new(1, -120, 0, 20),
+    Position = UDim2.fromOffset(14, 10),
+    Size = UDim2.new(1, -130, 0, 20),
     BackgroundTransparency = 1,
     Text = "TP Walk Speed",
     TextColor3 = Ventana.Theme.Text,
     Font = Ventana.Theme.DisplayFont,
-    TextSize = 16,
+    TextSize = 17,
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = tpWalkRow
+    Parent = speedRow
 })
 
 local inputBox = create("TextBox", {
-    Position = UDim2.new(1, -105, 0.5, -12),
-    Size = UDim2.fromOffset(90, 26),
-    BackgroundColor3 = Color3.fromRGB(35, 35, 50),
+    Position = UDim2.new(1, -110, 0.5, -13),
+    Size = UDim2.fromOffset(95, 28),
+    BackgroundColor3 = Color3.fromRGB(30, 30, 45),
     Text = tostring(tpWalkSpeed),
-    TextColor3 = Ventana.Theme.Text,
+    TextColor3 = Color3.fromRGB(255, 255, 255),
     Font = Enum.Font.GothamSemibold,
-    TextSize = 15,
+    TextSize = 16,
     ClearTextOnFocus = false,
-    Parent = tpWalkRow
-}, {corner(6), stroke(Ventana.Theme.SoftStroke, 1, 0.6)})
+    Parent = speedRow
+}, {corner(6), stroke(Ventana.Theme.Accent, 1, 0.5)})
 
 inputBox.FocusLost:Connect(function()
     local num = tonumber(inputBox.Text)
     if num then
         tpWalkSpeed = math.clamp(num, 0.3, 5)
-        inputBox.Text = tostring(tpWalkSpeed)
-    else
-        inputBox.Text = tostring(tpWalkSpeed)
     end
+    inputBox.Text = tostring(tpWalkSpeed)
 end)
 
 
