@@ -586,7 +586,6 @@ local function ToggleFly(state)
 end
 
 local noclipLoop = nil
-local originalCollisions = {}
 
 local function ToggleNoclip(state)
     _G.Noclip = state
@@ -601,38 +600,20 @@ local function ToggleNoclip(state)
 
     if state then
         
-        originalCollisions = {}
-        
-        noclipLoop = RunService.Heartbeat:Connect(function()
+        noclipLoop = RunService.Stepped:Connect(function()
             pcall(function()
                 if not char or not char.Parent then return end
                 
                 local root = char:FindFirstChild("HumanoidRootPart")
                 if root then
-                    originalCollisions[root] = root.CanCollide
                     root.CanCollide = false
+                    root.Massless = true
                 end
 
-                
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") or part:IsA("MeshPart") then
-                        if not originalCollisions[part] then
-                            originalCollisions[part] = part.CanCollide
-                        end
                         part.CanCollide = false
-                    end
-                end
-
-                
-                local rootPos = root and root.Position or char:GetPivot().Position
-                for _, part in ipairs(workspace:GetDescendants()) do
-                    if (part:IsA("BasePart") or part:IsA("MeshPart")) and part.CanCollide then
-                        if (part.Position - rootPos).Magnitude < 35 then  -- Radio de 35 studs
-                            if not originalCollisions[part] then
-                                originalCollisions[part] = part.CanCollide
-                            end
-                            part.CanCollide = false
-                        end
+                        part.Massless = true
                     end
                 end
             end)
@@ -647,9 +628,16 @@ local function ToggleNoclip(state)
         end
 
         pcall(function()
-            for part, wasCollidable in pairs(originalCollisions) do
-                if part and part.Parent then
-                    part.CanCollide = wasCollidable
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CanCollide = true
+                root.Massless = false
+            end
+
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    part.CanCollide = true
+                    part.Massless = false
                 end
             end
         end)
@@ -657,14 +645,13 @@ local function ToggleNoclip(state)
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.12)
+            task.wait(0.1)
             hum:ChangeState(Enum.HumanoidStateType.Running)
         end
 
         
     end
 end
-
 
 
 local Ventana = AstroUI.CreateWindow({
