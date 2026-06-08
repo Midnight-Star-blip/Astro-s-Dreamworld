@@ -15,7 +15,7 @@ _G.AutoSkillcheck = false
 _G.HideCircleMinigame = true   
 _G.Fly = false
 _G.Noclip = false
-FlyState.speed = 50
+
 
 local AstroUI = {}
 
