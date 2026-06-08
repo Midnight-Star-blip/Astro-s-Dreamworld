@@ -727,7 +727,7 @@ local function ToggleFullbright(state)
     if state then
         
         Lighting.Ambient = Color3.fromRGB(140, 140, 140)
-        Lighting.Brightness = 0.9
+        Lighting.Brightness = 0.5
         Lighting.ClockTime = 14
         Lighting.FogEnd = 99999
         Lighting.GlobalShadows = false
