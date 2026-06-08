@@ -511,7 +511,8 @@ end
 
 
 
-l
+
+
 local RunService = game:GetService("RunService")
 
 local FlyState = {
@@ -523,20 +524,23 @@ local FlyState = {
     attachment = nil,
 }
 
+local noclipLoop = nil
+
 local function ToggleFly(state)
     _G.Fly = state
+    
     local char = localPlayer.Character
     if not char then return end
     local root = char:FindFirstChild("HumanoidRootPart")
     local hum = char:FindFirstChildWhichIsA("Humanoid")
     if not root or not hum then return end
 
-    if state then
-        
-        if FlyState.lv then FlyState.lv:Destroy() end
-        if FlyState.av then FlyState.av:Destroy() end
-        if FlyState.attachment then FlyState.attachment:Destroy() end
+    
+    if FlyState.lv then FlyState.lv:Destroy() end
+    if FlyState.av then FlyState.av:Destroy() end
+    if FlyState.attachment then FlyState.attachment:Destroy() end
 
+    if state then
         FlyState.attachment = Instance.new("Attachment", root)
         
         FlyState.lv = Instance.new("LinearVelocity", root)
@@ -553,7 +557,6 @@ local function ToggleFly(state)
         hum.PlatformStand = true
         hum:ChangeState(Enum.HumanoidStateType.Physics)
 
-        
         task.spawn(function()
             while _G.Fly and task.wait() do
                 pcall(function()
@@ -571,7 +574,6 @@ local function ToggleFly(state)
                     local targetVel = moveDir.Magnitude > 0 and (moveDir.Unit * FlyState.speed) or Vector3.zero
                     FlyState.lv.VectorVelocity = FlyState.lv.VectorVelocity:Lerp(targetVel, FlyState.accel)
 
-                    
                     local camRot = camera.CFrame - camera.CFrame.Position
                     root.CFrame = CFrame.new(root.Position) * camRot
                 end)
@@ -580,20 +582,11 @@ local function ToggleFly(state)
 
         
     else
-        if FlyState.lv then FlyState.lv:Destroy() end
-        if FlyState.av then FlyState.av:Destroy() end
-        if FlyState.attachment then FlyState.attachment:Destroy() end
-        FlyState.lv = nil; FlyState.av = nil; FlyState.attachment = nil
-
-        if hum then
-            hum.PlatformStand = false
-            hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end
+        hum.PlatformStand = false
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
         
     end
 end
-
-local noclipLoop = nil
 
 local function ToggleNoclip(state)
     _G.Noclip = state
@@ -627,7 +620,6 @@ local function ToggleNoclip(state)
         
     end
 end
-
 local Ventana = AstroUI.CreateWindow({
 	Title = "Astro's Dreamworld 😴 | Dandy's World",
 	ToggleKey = Enum.KeyCode.V
