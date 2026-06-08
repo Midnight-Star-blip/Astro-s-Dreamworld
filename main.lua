@@ -1,11 +1,9 @@
-return(function(TXtnf, ...)
-local vB145Y = {"YdguMWZajIndkTL";"R3zZliMelOR";"o6QzDn4wklib0r";"Jh9tRKdFN8udZf0JA";"EN1k2BbtBx9Ly";"gBL5d4f1";"ND7PtF";"KT5UbQM";"ba4Scjp8sbzRiL8bt";"nNX3e";"zw0f9thKNHoIvkni";"NiUqYy"}
-local n3qXqe0X = function(...)
-local Players = game:GetService(loadstring(base64decode("UGxheWVycw=="))())
-local TweenService = game:GetService(loadstring(base64decode("VHdlZW5TZXJ2aWNl"))())
-local UserInputService = game:GetService(loadstring(base64decode("VXNlcklucHV0U2VydmljZQ=="))())
-local VirtualInputManager = game:GetService(loadstring(base64decode("VmlydHVhbElucHV0TWFuYWdlcg=="))())
-local ReplicatedStorage = game:GetService(loadstring(base64decode("UmVwbGljYXRlZFN0b3JhZ2U="))())
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local localPlayer = Players.LocalPlayer
 
 
@@ -54,9 +52,9 @@ local function create(className, props, children)
 	return instance
 end
 
-local function corner(radius) return create(loadstring(base64decode("VUlDb3JuZXI="))(), {CornerRadius = UDim.new(0, radius or 8)}) end
-local function stroke(color, thickness, transparency) return create(loadstring(base64decode("VUlTdHJva2U="))(), {Color = color, Thickness = thickness or 1, Transparency = transparency or 0}) end
-local function gradient(rotation, colors) return create(loadstring(base64decode("VUlHcmFkaWVudA=="))(), {Rotation = rotation or 90, Color = ColorSequence.new(colors)}) end
+local function corner(radius) return create("UICorner", {CornerRadius = UDim.new(0, radius or 8)}) end
+local function stroke(color, thickness, transparency) return create("UIStroke", {Color = color, Thickness = thickness or 1, Transparency = transparency or 0}) end
+local function gradient(rotation, colors) return create("UIGradient", {Rotation = rotation or 90, Color = ColorSequence.new(colors)}) end
 
 local function tween(object, goal, duration)
 	local info = TweenInfo.new(duration or 0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -66,7 +64,7 @@ local function tween(object, goal, duration)
 end
 
 local function applyButtonHover(button, theme, isActive)
-	local buttonGradient = button:FindFirstChildOfClass(loadstring(base64decode("VUlHcmFkaWVudA=="))())
+	local buttonGradient = button:FindFirstChildOfClass("UIGradient")
 	local function setNormal()
 		button.BackgroundColor3 = isActive and theme.Hover or theme.Accent
 		if buttonGradient then
@@ -85,29 +83,29 @@ end
 function AstroUI.CreateWindow(options)
 	options = options or {}
 	local theme = options.Theme or AstroUI.Theme
-	local targetParent = game:GetService(loadstring(base64decode("Q29yZUd1aQ=="))())
+	local targetParent = game:GetService("CoreGui")
 	
 	
-	local oldGui = targetParent:FindFirstChild(options.Name or loadstring(base64decode("QXN0cm9VSUxpYnJhcnk="))())
+	local oldGui = targetParent:FindFirstChild(options.Name or "AstroUILibrary")
 	if oldGui then oldGui:Destroy() end
 
-	local screenGui = create(loadstring(base64decode("U2NyZWVuR3Vp"))(), {Name = options.Name or loadstring(base64decode("QXN0cm9VSUxpYnJhcnk="))(), ResetOnSpawn = false, IgnoreGuiInset = true, Parent = targetParent})
+	local screenGui = create("ScreenGui", {Name = options.Name or "AstroUILibrary", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = targetParent})
 	local self = setmetatable({Theme = theme, ScreenGui = screenGui, Pages = {}, TabButtons = {}, ActiveTab = nil}, Window)
 
-	self.Main = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("TWFpbg=="))(), AnchorPoint = Vector2.new(0.5, 0.5), Position = options.Position or UDim2.fromScale(0.5, 0.5), Size = options.Size or UDim2.fromOffset(824, 482), BackgroundTransparency = 1, BorderSizePixel = 0, Parent = screenGui})
-	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVyU2hhZG93"))(), Position = UDim2.fromOffset(32, 10), Size = UDim2.new(1, -2, 0, 345), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 0, Parent = self.Main}, {corner(14)})
-	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVyQmFjaw=="))(), Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, 0, 0, 345), BackgroundColor3 = theme.Header, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(14), stroke(theme.WhiteStroke, 1, 0.35), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 224))})})
-	self.Header = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("SGVhZGVy"))(), Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, -24, 0, 54), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 4, Parent = self.Main})
-	create(loadstring(base64decode("VGV4dExhYmVs"))(), {Name = loadstring(base64decode("VGl0bGU="))(), Position = UDim2.fromOffset(14, 0), Size = UDim2.new(0, 360, 1, 0), BackgroundTransparency = 1, Text = options.Title or loadstring(base64decode("QXN0cm8ncyBEcmVhbXdvcmxk"))(), TextColor3 = theme.HeaderText, Font = theme.DisplayFont, TextSize = 30, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = self.Header})
-	self.CloseButton = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Name = loadstring(base64decode("Q2xvc2U="))(), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -18, 0.5, 0), Size = UDim2.fromOffset(30, 30), BackgroundTransparency = 1, BorderSizePixel = 0, Text = loadstring(base64decode("eA=="))(), TextColor3 = theme.HeaderText, Font = Enum.Font.GothamBold, TextSize = 16, ZIndex = 5, Parent = self.Header})
-	create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Qm9keVNoYWRvdw=="))(), Position = UDim2.fromOffset(10, 54), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.42, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(16)})
-	self.Body = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Qm9keQ=="))(), Position = UDim2.fromOffset(0, 43), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Background, BorderSizePixel = 0, ZIndex = 2, Parent = self.Main}, {corner(16), stroke(theme.PanelStroke, 2, 0.18), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(78, 63, 168)), ColorSequenceKeypoint.new(0.55, theme.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 42, 125))})})
-	self.Sidebar = create(loadstring(base64decode("U2Nyb2xsaW5nRnJhbWU="))(), {Name = loadstring(base64decode("U2lkZWJhcg=="))(), Position = UDim2.fromOffset(18, 43), Size = UDim2.fromOffset(175, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, ZIndex = 3, Parent = self.Body}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(93, 78, 185)), ColorSequenceKeypoint.new(1, Color3.fromRGB(67, 55, 145))})})
+	self.Main = create("Frame", {Name = "Main", AnchorPoint = Vector2.new(0.5, 0.5), Position = options.Position or UDim2.fromScale(0.5, 0.5), Size = options.Size or UDim2.fromOffset(824, 482), BackgroundTransparency = 1, BorderSizePixel = 0, Parent = screenGui})
+	create("Frame", {Name = "HeaderShadow", Position = UDim2.fromOffset(32, 10), Size = UDim2.new(1, -2, 0, 345), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 0, Parent = self.Main}, {corner(14)})
+	create("Frame", {Name = "HeaderBack", Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, 0, 0, 345), BackgroundColor3 = theme.Header, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(14), stroke(theme.WhiteStroke, 1, 0.35), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(214, 214, 224))})})
+	self.Header = create("Frame", {Name = "Header", Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, -24, 0, 54), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 4, Parent = self.Main})
+	create("TextLabel", {Name = "Title", Position = UDim2.fromOffset(14, 0), Size = UDim2.new(0, 360, 1, 0), BackgroundTransparency = 1, Text = options.Title or "Astro's Dreamworld", TextColor3 = theme.HeaderText, Font = theme.DisplayFont, TextSize = 30, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = self.Header})
+	self.CloseButton = create("TextButton", {Name = "Close", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -18, 0.5, 0), Size = UDim2.fromOffset(30, 30), BackgroundTransparency = 1, BorderSizePixel = 0, Text = "x", TextColor3 = theme.HeaderText, Font = Enum.Font.GothamBold, TextSize = 16, ZIndex = 5, Parent = self.Header})
+	create("Frame", {Name = "BodyShadow", Position = UDim2.fromOffset(10, 54), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Shadow, BackgroundTransparency = 0.42, BorderSizePixel = 0, ZIndex = 1, Parent = self.Main}, {corner(16)})
+	self.Body = create("Frame", {Name = "Body", Position = UDim2.fromOffset(0, 43), Size = UDim2.new(1, -24, 0, 439), BackgroundColor3 = theme.Background, BorderSizePixel = 0, ZIndex = 2, Parent = self.Main}, {corner(16), stroke(theme.PanelStroke, 2, 0.18), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(78, 63, 168)), ColorSequenceKeypoint.new(0.55, theme.Background), ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 42, 125))})})
+	self.Sidebar = create("ScrollingFrame", {Name = "Sidebar", Position = UDim2.fromOffset(18, 43), Size = UDim2.fromOffset(175, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, ZIndex = 3, Parent = self.Body}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(93, 78, 185)), ColorSequenceKeypoint.new(1, Color3.fromRGB(67, 55, 145))})})
 
-	local sidebarLayout = create(loadstring(base64decode("VUlMaXN0TGF5b3V0"))(), {Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder, Parent = self.Sidebar})
-	create(loadstring(base64decode("VUlQYWRkaW5n"))(), {PaddingTop = UDim.new(0, 33), PaddingLeft = UDim.new(0, 17), PaddingRight = UDim.new(0, 17), Parent = self.Sidebar})
-	sidebarLayout:GetPropertyChangedSignal(loadstring(base64decode("QWJzb2x1dGVDb250ZW50U2l6ZQ=="))()):Connect(function() self.Sidebar.CanvasSize = UDim2.fromOffset(0, sidebarLayout.AbsoluteContentSize.Y + 66) end)
-	self.Content = create(loadstring(base64decode("RnJhbWU="))(), {Name = loadstring(base64decode("Q29udGVudA=="))(), Position = UDim2.fromOffset(224, 43), Size = UDim2.fromOffset(573, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, ZIndex = 3, Parent = self.Body}, {corner(14), stroke(theme.SoftStroke, 1, 0.7), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(89, 75, 175)), ColorSequenceKeypoint.new(1, Color3.fromRGB(69, 57, 150))})})
+	local sidebarLayout = create("UIListLayout", {Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder, Parent = self.Sidebar})
+	create("UIPadding", {PaddingTop = UDim.new(0, 33), PaddingLeft = UDim.new(0, 17), PaddingRight = UDim.new(0, 17), Parent = self.Sidebar})
+	sidebarLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() self.Sidebar.CanvasSize = UDim2.fromOffset(0, sidebarLayout.AbsoluteContentSize.Y + 66) end)
+	self.Content = create("Frame", {Name = "Content", Position = UDim2.fromOffset(224, 43), Size = UDim2.fromOffset(573, 362), BackgroundColor3 = theme.Panel, BorderSizePixel = 0, ZIndex = 3, Parent = self.Body}, {corner(14), stroke(theme.SoftStroke, 1, 0.7), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(89, 75, 175)), ColorSequenceKeypoint.new(1, Color3.fromRGB(69, 57, 150))})})
 	
 	self.CloseButton.MouseButton1Click:Connect(function() 
 		self.ScreenGui.Enabled = false 
@@ -115,13 +113,13 @@ function AstroUI.CreateWindow(options)
 	
 	local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 	if isMobile then
-		local mobileBtn = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {
-			Name = loadstring(base64decode("QXN0cm9Nb2JpbGVUb2dnbGU="))(),
+		local mobileBtn = create("TextButton", {
+			Name = "AstroMobileToggle",
 			Size = UDim2.fromOffset(50, 50),
 			Position = UDim2.new(0.05, 0, 0.2, 0),
 			BackgroundColor3 = theme.Accent,
 			BackgroundTransparency = 0.3,
-			Text = loadstring(base64decode("QXN0cm8="))(),
+			Text = "Astro",
 			TextColor3 = theme.Text,
 			Font = Enum.Font.GothamBold,
 			TextSize = 14,
@@ -168,12 +166,12 @@ end
 
 function Window:CreateTab(name)
 	local theme = self.Theme
-	local page = create(loadstring(base64decode("U2Nyb2xsaW5nRnJhbWU="))(), {Name = name .. loadstring(base64decode("UGFnZQ=="))(), Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
-	local listLayout = create(loadstring(base64decode("VUlMaXN0TGF5b3V0"))(), {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
-	create(loadstring(base64decode("VUlQYWRkaW5n"))(), {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
-	listLayout:GetPropertyChangedSignal(loadstring(base64decode("QWJzb2x1dGVDb250ZW50U2l6ZQ=="))()):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
+	local page = create("ScrollingFrame", {Name = name .. "Page", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Active = true, CanvasSize = UDim2.fromOffset(0, 0), ScrollingDirection = Enum.ScrollingDirection.Y, ScrollingEnabled = true, ScrollBarThickness = 4, ScrollBarImageColor3 = theme.Accent, Visible = false, ZIndex = 4, Parent = self.Content})
+	local listLayout = create("UIListLayout", {Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = page})
+	create("UIPadding", {PaddingTop = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 18), Parent = page})
+	listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() page.CanvasSize = UDim2.fromOffset(0, listLayout.AbsoluteContentSize.Y + 34) end)
 	
-	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Name = name .. loadstring(base64decode("VGFi"))(), Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	local button = create("TextButton", {Name = name .. "Tab", Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = name, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 25, ZIndex = 4, Parent = self.Sidebar}, {corner(16), stroke(theme.SoftStroke, 1, 0.62), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
 	button.MouseButton1Click:Connect(function() 
 		self:SetActiveTab(name)
 	end)
@@ -194,12 +192,12 @@ end
 
 function Tab:CreateSection(text)
 	local theme = self.Window.Theme
-	return create(loadstring(base64decode("VGV4dExhYmVs"))(), {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
+	return create("TextLabel", {Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4, Parent = self.Page})
 end
 
 function Tab:CreateButton(text, callback)
 	local theme = self.Window.Theme
-	local button = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
+	local button = create("TextButton", {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 18, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.65), gradient(90, {ColorSequenceKeypoint.new(0, theme.ButtonTop), ColorSequenceKeypoint.new(1, theme.Accent)})})
 	applyButtonHover(button, theme, false)
 	button.MouseButton1Click:Connect(function() if callback then callback() end end)
 	return button
@@ -208,15 +206,15 @@ end
 function Tab:CreateToggle(text, defaultValue, callback)
 	local theme = self.Window.Theme
 	local value = defaultValue == true
-	local row = create(loadstring(base64decode("RnJhbWU="))(), {Size = UDim2.new(1, 0, 0, 42), BackgroundColor3 = theme.PanelLight, BorderSizePixel = 0, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.76), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(102, 86, 198)), ColorSequenceKeypoint.new(1, Color3.fromRGB(76, 63, 165))})})
-	create(loadstring(base64decode("VGV4dExhYmVs"))(), {Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -70, 1, 0), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = row})
-	local knob = create(loadstring(base64decode("RnJhbWU="))(), {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(46, 24), BackgroundColor3 = value and theme.Success or Color3.fromRGB(88, 94, 108), BorderSizePixel = 0, ZIndex = 5, Parent = row}, {corner(12), stroke(Color3.fromRGB(255, 255, 255), 1, 0.75)})
-	local dot = create(loadstring(base64decode("RnJhbWU="))(), {Position = value and UDim2.fromOffset(24, 3) or UDim2.fromOffset(3, 3), Size = UDim2.fromOffset(18, 18), BackgroundColor3 = theme.Text, BorderSizePixel = 0, ZIndex = 6, Parent = knob}, {corner(9)})
+	local row = create("Frame", {Size = UDim2.new(1, 0, 0, 42), BackgroundColor3 = theme.PanelLight, BorderSizePixel = 0, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.76), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(102, 86, 198)), ColorSequenceKeypoint.new(1, Color3.fromRGB(76, 63, 165))})})
+	create("TextLabel", {Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -70, 1, 0), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = row})
+	local knob = create("Frame", {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(46, 24), BackgroundColor3 = value and theme.Success or Color3.fromRGB(88, 94, 108), BorderSizePixel = 0, ZIndex = 5, Parent = row}, {corner(12), stroke(Color3.fromRGB(255, 255, 255), 1, 0.75)})
+	local dot = create("Frame", {Position = value and UDim2.fromOffset(24, 3) or UDim2.fromOffset(3, 3), Size = UDim2.fromOffset(18, 18), BackgroundColor3 = theme.Text, BorderSizePixel = 0, ZIndex = 6, Parent = knob}, {corner(9)})
 	local function render()
 		tween(knob, {BackgroundColor3 = value and theme.Success or Color3.fromRGB(88, 94, 108)})
 		tween(dot, {Position = value and UDim2.fromOffset(24, 3) or UDim2.fromOffset(3, 3)})
 	end
-	local hitbox = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Text = loadstring(base64decode(""))(), ZIndex = 7, Parent = row})
+	local hitbox = create("TextButton", {Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Text = "", ZIndex = 7, Parent = row})
 	hitbox.MouseButton1Click:Connect(function()
 		value = not value render() if callback then callback(value) end
 	end)
@@ -226,15 +224,15 @@ end
 function Tab:CreateSlider(text, minValue, maxValue, defaultValue, callback)
 	local theme = self.Window.Theme
 	local value = math.clamp(defaultValue or minValue, minValue, maxValue)
-	local frame = create(loadstring(base64decode("RnJhbWU="))(), {Size = UDim2.new(1, 0, 0, 62), BackgroundColor3 = theme.PanelLight, BorderSizePixel = 0, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.76), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(102, 86, 198)), ColorSequenceKeypoint.new(1, Color3.fromRGB(76, 63, 165))})})
-	local label = create(loadstring(base64decode("VGV4dExhYmVs"))(), {Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -24, 0, 32), BackgroundTransparency = 1, Text = text .. loadstring(base64decode("OiA="))() .. tostring(value), TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = frame})
-	local bar = create(loadstring(base64decode("RnJhbWU="))(), {Position = UDim2.fromOffset(12, 40), Size = UDim2.new(1, -24, 0, 8), BackgroundColor3 = Color3.fromRGB(72, 78, 92), BorderSizePixel = 0, ZIndex = 5, Parent = frame}, {corner(4), stroke(Color3.fromRGB(255, 255, 255), 1, 0.86)})
-	local fill = create(loadstring(base64decode("RnJhbWU="))(), {Size = UDim2.fromScale((value - minValue) / (maxValue - minValue), 1), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, ZIndex = 6, Parent = bar}, {corner(4), gradient(0, {ColorSequenceKeypoint.new(0, Color3.fromRGB(82, 218, 255)), ColorSequenceKeypoint.new(1, theme.ButtonTop)})})
+	local frame = create("Frame", {Size = UDim2.new(1, 0, 0, 62), BackgroundColor3 = theme.PanelLight, BorderSizePixel = 0, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.76), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(102, 86, 198)), ColorSequenceKeypoint.new(1, Color3.fromRGB(76, 63, 165))})})
+	local label = create("TextLabel", {Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -24, 0, 32), BackgroundTransparency = 1, Text = text .. ": " .. tostring(value), TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = frame})
+	local bar = create("Frame", {Position = UDim2.fromOffset(12, 40), Size = UDim2.new(1, -24, 0, 8), BackgroundColor3 = Color3.fromRGB(72, 78, 92), BorderSizePixel = 0, ZIndex = 5, Parent = frame}, {corner(4), stroke(Color3.fromRGB(255, 255, 255), 1, 0.86)})
+	local fill = create("Frame", {Size = UDim2.fromScale((value - minValue) / (maxValue - minValue), 1), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, ZIndex = 6, Parent = bar}, {corner(4), gradient(0, {ColorSequenceKeypoint.new(0, Color3.fromRGB(82, 218, 255)), ColorSequenceKeypoint.new(1, theme.ButtonTop)})})
 	local dragging = false
-	local function setFromX(aTUvDFHF)
-		local alpha = math.clamp((aTUvDFHF - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+	local function setFromX(x)
+		local alpha = math.clamp((x - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
 		value = math.floor(minValue + ((maxValue - minValue) * alpha))
-		label.Text = text .. loadstring(base64decode("OiA="))() .. tostring(value) fill.Size = UDim2.fromScale(alpha, 1) if callback then callback(value) end
+		label.Text = text .. ": " .. tostring(value) fill.Size = UDim2.fromScale(alpha, 1) if callback then callback(value) end
 	end
 	bar.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = true setFromX(input.Position.X) end end)
 	UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then setFromX(input.Position.X) end end)
@@ -248,31 +246,31 @@ function Tab:CreateKeybind(text, defaultKey, callback)
 	callback = callback or function() end
 	local isMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 	
-	local row = create(loadstring(base64decode("RnJhbWU="))(), {Size = UDim2.new(1, 0, 0, 42), BackgroundColor3 = theme.PanelLight, BorderSizePixel = 0, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.76), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(102, 86, 198)), ColorSequenceKeypoint.new(1, Color3.fromRGB(76, 63, 165))})})
-	create(loadstring(base64decode("VGV4dExhYmVs"))(), {Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -120, 1, 0), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = row})
-	local bindButton = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(100, 26), BackgroundColor3 = theme.Accent, Text = isMobile and loadstring(base64decode("TW9iaWxl"))() or (currentKey and currentKey.Name or loadstring(base64decode("Tm9uZQ=="))()), TextColor3 = theme.Text, Font = Enum.Font.GothamMedium, TextSize = 13, ZIndex = 5, Parent = row}, {corner(6), stroke(theme.SoftStroke, 1, 0.5)})
+	local row = create("Frame", {Size = UDim2.new(1, 0, 0, 42), BackgroundColor3 = theme.PanelLight, BorderSizePixel = 0, ZIndex = 4, Parent = self.Page}, {corner(7), stroke(theme.SoftStroke, 1, 0.76), gradient(90, {ColorSequenceKeypoint.new(0, Color3.fromRGB(102, 86, 198)), ColorSequenceKeypoint.new(1, Color3.fromRGB(76, 63, 165))})})
+	create("TextLabel", {Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -120, 1, 0), BackgroundTransparency = 1, Text = text, TextColor3 = theme.Text, Font = theme.DisplayFont, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 5, Parent = row})
+	local bindButton = create("TextButton", {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(100, 26), BackgroundColor3 = theme.Accent, Text = isMobile and "Mobile" or (currentKey and currentKey.Name or "None"), TextColor3 = theme.Text, Font = Enum.Font.GothamMedium, TextSize = 13, ZIndex = 5, Parent = row}, {corner(6), stroke(theme.SoftStroke, 1, 0.5)})
 
 	if isMobile then
-		local btn = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Size = UDim2.fromOffset(55, 55), Position = UDim2.new(0.8, 0, 0.3, 0), BackgroundColor3 = theme.Accent, Text = string.sub(text, 1, 3), TextColor3 = theme.Text, Font = Enum.Font.GothamBold, TextSize = 14, ZIndex = 10, Parent = self.Window.ScreenGui}, {corner(27), stroke(theme.SoftStroke, 2, 0.2)})
+		local btn = create("TextButton", {Size = UDim2.fromOffset(55, 55), Position = UDim2.new(0.8, 0, 0.3, 0), BackgroundColor3 = theme.Accent, Text = string.sub(text, 1, 3), TextColor3 = theme.Text, Font = Enum.Font.GothamBold, TextSize = 14, ZIndex = 10, Parent = self.Window.ScreenGui}, {corner(27), stroke(theme.SoftStroke, 2, 0.2)})
 		local mD, mS, mP = false, nil, nil
 		
-		btn.InputBegan:Connect(function(R5RqED13) 
-			if R5RqED13.UserInputType == Enum.UserInputType.Touch then 
+		btn.InputBegan:Connect(function(i) 
+			if i.UserInputType == Enum.UserInputType.Touch then 
 				mD = true 
-				mS = R5RqED13.Position 
+				mS = i.Position 
 				mP = btn.Position 
 			end 
 		end)
 		
-		UserInputService.InputChanged:Connect(function(R5RqED13) 
-			if mD and R5RqED13.UserInputType == Enum.UserInputType.Touch then 
-				local d = R5RqED13.Position - mS 
+		UserInputService.InputChanged:Connect(function(i) 
+			if mD and i.UserInputType == Enum.UserInputType.Touch then 
+				local d = i.Position - mS 
 				btn.Position = UDim2.new(mP.X.Scale, mP.X.Offset + d.X, mP.Y.Scale, mP.Y.Offset + d.Y) 
 			end 
 		end)
 		
-		UserInputService.InputEnded:Connect(function(R5RqED13) 
-			if R5RqED13.UserInputType == Enum.UserInputType.Touch then 
+		UserInputService.InputEnded:Connect(function(i) 
+			if i.UserInputType == Enum.UserInputType.Touch then 
 				mD = false 
 			end 
 		end)
@@ -283,19 +281,19 @@ function Tab:CreateKeybind(text, defaultKey, callback)
 	bindButton.MouseButton1Click:Connect(function() 
 		if not isMobile then 
 			listening = true 
-			bindButton.Text = loadstring(base64decode("Li4u"))() 
+			bindButton.Text = "..." 
 			bindButton.BackgroundColor3 = theme.Hover 
 		end 
 	end)
 
-	UserInputService.InputBegan:Connect(function(R5RqED13, p)
+	UserInputService.InputBegan:Connect(function(i, p)
 		if p then return end
-		if listening and R5RqED13.UserInputType == Enum.UserInputType.Keyboard then
-			currentKey = R5RqED13.KeyCode ~= Enum.KeyCode.Escape and R5RqED13.KeyCode or nil
-			bindButton.Text = currentKey and currentKey.Name or loadstring(base64decode("Tm9uZQ=="))() 
+		if listening and i.UserInputType == Enum.UserInputType.Keyboard then
+			currentKey = i.KeyCode ~= Enum.KeyCode.Escape and i.KeyCode or nil
+			bindButton.Text = currentKey and currentKey.Name or "None" 
 			listening = false 
 			bindButton.BackgroundColor3 = theme.Accent
-		elseif currentKey and R5RqED13.KeyCode == currentKey then 
+		elseif currentKey and i.KeyCode == currentKey then 
 			callback() 
 		end
 	end)
@@ -309,13 +307,13 @@ local espTable = {}
 local function makeESP(obj, txt, col)
 	if not obj then return end
 	
-	local targetModel = obj:IsA(loadstring(base64decode("TW9kZWw="))()) and obj or obj:FindFirstAncestorOfClass(loadstring(base64decode("TW9kZWw="))()) or obj
+	local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or obj
 	if not targetModel then return end
 	
-	if targetModel:FindFirstChild(loadstring(base64decode("QXN0cm9IaWdobGlnaHQ="))()) or obj:FindFirstChild(loadstring(base64decode("QXN0cm9UYWc="))()) then return end
+	if targetModel:FindFirstChild("AstroHighlight") or obj:FindFirstChild("AstroTag") then return end
 	
-	local hl = Instance.new(loadstring(base64decode("SGlnaGxpZ2h0"))())
-	hl.Name = loadstring(base64decode("QXN0cm9IaWdobGlnaHQ="))()
+	local hl = Instance.new("Highlight")
+	hl.Name = "AstroHighlight"
 	hl.FillColor = col
 	hl.FillTransparency = 0.75
 	hl.OutlineColor = col
@@ -324,15 +322,15 @@ local function makeESP(obj, txt, col)
 	hl.Adornee = targetModel
 	hl.Parent = targetModel
 	
-	local bb = Instance.new(loadstring(base64decode("QmlsbGJvYXJkR3Vp"))()) 
-	bb.Name = loadstring(base64decode("QXN0cm9UYWc="))()
+	local bb = Instance.new("BillboardGui") 
+	bb.Name = "AstroTag"
 	bb.Size = UDim2.new(0, 180, 0, 40)
 	bb.AlwaysOnTop = true
 	bb.StudsOffset = Vector3.new(0, 3.5, 0)
 	bb.Adornee = obj
 	bb.Parent = obj
 	
-	local l = Instance.new(loadstring(base64decode("VGV4dExhYmVs"))()) 
+	local l = Instance.new("TextLabel") 
 	l.Size = UDim2.new(1, 0, 1, 0)
 	l.BackgroundTransparency = 1
 	l.Text = txt
@@ -356,24 +354,24 @@ end
 task.spawn(function()
 	while task.wait(0.6) do
 		clearESP()
-		local room = workspace:FindFirstChild(loadstring(base64decode("Q3VycmVudFJvb20="))())
+		local room = workspace:FindFirstChild("CurrentRoom")
 		if room then
 			for _, sala in ipairs(room:GetChildren()) do
 				
 				
 				if _G.ESPTwisteds then
-					local monFolder = sala:FindFirstChild(loadstring(base64decode("TW9uc3RlcnM="))())
+					local monFolder = sala:FindFirstChild("Monsters")
 					if monFolder then
 						for _, monster in ipairs(monFolder:GetChildren()) do
 							pcall(function()
-								local rootPart = monster:FindFirstChild(loadstring(base64decode("SHVtYW5vaWRSb290UGFydA=="))()) 
-									or monster:FindFirstChildOfClass(loadstring(base64decode("TWVzaFBhcnQ="))()) 
-									or monster:FindFirstChildOfClass(loadstring(base64decode("UGFydA=="))())
+								local rootPart = monster:FindFirstChild("HumanoidRootPart") 
+									or monster:FindFirstChildOfClass("MeshPart") 
+									or monster:FindFirstChildOfClass("Part")
 								
 								if rootPart then
-									local nombreLimpio = string.gsub(monster.Name, loadstring(base64decode("TW9uc3Rlcg=="))(), loadstring(base64decode(""))())
-									nombreLimpio = string.gsub(nombreLimpio, loadstring(base64decode("Q2hhcmFjdGVy"))(), loadstring(base64decode(""))())
-									makeESP(rootPart, loadstring(base64decode("W1R3aXN0ZWRdIA=="))() .. nombreLimpio, Color3.fromRGB(255, 50, 50))
+									local nombreLimpio = string.gsub(monster.Name, "Monster", "")
+									nombreLimpio = string.gsub(nombreLimpio, "Character", "")
+									makeESP(rootPart, "[Twisted] " .. nombreLimpio, Color3.fromRGB(255, 50, 50))
 								end
 							end)
 						end
@@ -382,12 +380,12 @@ task.spawn(function()
 
 				
 				if _G.ESPItems then
-					local itemsFolder = sala:FindFirstChild(loadstring(base64decode("SXRlbXM="))())
+					local itemsFolder = sala:FindFirstChild("Items")
 					if itemsFolder then
 						for _, item in ipairs(itemsFolder:GetChildren()) do
 							pcall(function()
-								if item.Name == loadstring(base64decode("UmVzZWFyY2hDYXBzdWxl"))() then 
-									makeESP(item, loadstring(base64decode("8J+nqiBDYXBzdWxl"))(), Color3.fromRGB(82, 218, 255)) 
+								if item.Name == "ResearchCapsule" then 
+									makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
 								end
 							end)
 						end
@@ -396,12 +394,12 @@ task.spawn(function()
 				
 				
 				if _G.ESPGenerators then
-					local gensFolder = sala:FindFirstChild(loadstring(base64decode("R2VuZXJhdG9ycw=="))())
+					local gensFolder = sala:FindFirstChild("Generators")
 					if gensFolder then
 						for _, gen in ipairs(gensFolder:GetChildren()) do
 							pcall(function()
-								if gen.Name == loadstring(base64decode("R2VuZXJhdG9y"))() then 
-									makeESP(gen, loadstring(base64decode("4pqZ77iPIEdlbmVyYXRvcg=="))(), Color3.fromRGB(74, 222, 128)) 
+								if gen.Name == "Generator" then 
+									makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128)) 
 								end
 							end)
 						end
@@ -413,12 +411,12 @@ task.spawn(function()
 		
 		
 		if _G.ESPElevator then
-			local elevators = workspace:FindFirstChild(loadstring(base64decode("RWxldmF0b3Jz"))())
+			local elevators = workspace:FindFirstChild("Elevators")
 			if elevators then
 				for _, elev in ipairs(elevators:GetChildren()) do
 					pcall(function()
-						if elev.Name == loadstring(base64decode("RWxldmF0b3I="))() then 
-							makeESP(elev, loadstring(base64decode("IEVsZXZhdG9y"))(), Color3.fromRGB(230, 100, 220)) 
+						if elev.Name == "Elevator" then 
+							makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220)) 
 						end
 					end)
 				end
@@ -432,8 +430,8 @@ end)
 local S = { skillcheckOrigCB = nil }
 
 local function ApplyInstantSkillcheck(state)
-    local ReplicatedStorage = game:GetService(loadstring(base64decode("UmVwbGljYXRlZFN0b3JhZ2U="))())
-    local Remote = ReplicatedStorage:FindFirstChild(loadstring(base64decode("RXZlbnRz"))(), true):FindFirstChild(loadstring(base64decode("U2tpbGxjaGVja1VwZGF0ZQ=="))())
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local Remote = ReplicatedStorage:FindFirstChild("Events", true):FindFirstChild("SkillcheckUpdate")
     
    
 
@@ -441,59 +439,59 @@ local function ApplyInstantSkillcheck(state)
         
         if getcallbackvalue then
             pcall(function()
-                S.skillcheckOrigCB = getcallbackvalue(Remote, loadstring(base64decode("T25DbGllbnRJbnZva2U="))())
+                S.skillcheckOrigCB = getcallbackvalue(Remote, "OnClientInvoke")
             end)
         end
 
         Remote.OnClientInvoke = function(...)
             task.spawn(function()
                 pcall(function()
-                    local pGui = localPlayer:WaitForChild(loadstring(base64decode("UGxheWVyR3Vp"))())
+                    local pGui = localPlayer:WaitForChild("PlayerGui")
                     
                     
                     if _G.HideCircleMinigame then
                         
-                        local circleGui = pGui:FindFirstChild(loadstring(base64decode("Q2lyY2xlU2tpbGxDaGVja0d1aQ=="))())
+                        local circleGui = pGui:FindFirstChild("CircleSkillCheckGui")
                         if circleGui then
                             circleGui.Enabled = false
                             for _, obj in ipairs(circleGui:GetDescendants()) do
-                                if obj:IsA(loadstring(base64decode("R3VpT2JqZWN0"))()) then
+                                if obj:IsA("GuiObject") then
                                     pcall(function() obj.Visible = false end)
                                 end
                             end
                         end
                         
                         
-                        local skillFrame = pGui:FindFirstChild(loadstring(base64decode("U2tpbGxDaGVja0ZyYW1l"))(), true)
+                        local skillFrame = pGui:FindFirstChild("SkillCheckFrame", true)
                         if skillFrame then skillFrame.Visible = false end
                     end
 
                     
-                    local menu = pGui:FindFirstChild(loadstring(base64decode("TWVudQ=="))(), true)
+                    local menu = pGui:FindFirstChild("Menu", true)
                     if menu then
-                        local msg = menu:FindFirstChild(loadstring(base64decode("U2tpbGxDaGVja01lc3NhZ2U="))())
+                        local msg = menu:FindFirstChild("SkillCheckMessage")
                         if msg then
-                            msg.Text = loadstring(base64decode("R3JlYXQgSm9iIQ=="))()
+                            msg.Text = "Great Job!"
                             msg.Visible = true
                             msg.TextTransparency = 0
                             pcall(function()
-                                if msg:FindFirstChild(loadstring(base64decode("VUlHcmFkaWVudA=="))()) then msg.UIGradient.Enabled = false end
-                                if msg:FindFirstChild(loadstring(base64decode("VUlHcmFkaWVudFdpbg=="))()) then msg.UIGradientWin.Enabled = true end
+                                if msg:FindFirstChild("UIGradient") then msg.UIGradient.Enabled = false end
+                                if msg:FindFirstChild("UIGradientWin") then msg.UIGradientWin.Enabled = true end
                             end)
                         end
                     end
 
                     
                     pcall(function()
-                        local correct = pGui:FindFirstChild(loadstring(base64decode("Q29ycmVjdA=="))(), true) or pGui:FindFirstChildWhichIsA(loadstring(base64decode("U291bmQ="))())
-                        if correct and correct:IsA(loadstring(base64decode("U291bmQ="))()) then correct:Play() end
-                        local goldHit = pGui:FindFirstChild(loadstring(base64decode("R29sZEFyZWFIaXQ="))(), true)
-                        if goldHit and goldHit:IsA(loadstring(base64decode("U291bmQ="))()) then goldHit:Play() end
+                        local correct = pGui:FindFirstChild("Correct", true) or pGui:FindFirstChildWhichIsA("Sound")
+                        if correct and correct:IsA("Sound") then correct:Play() end
+                        local goldHit = pGui:FindFirstChild("GoldAreaHit", true)
+                        if goldHit and goldHit:IsA("Sound") then goldHit:Play() end
                     end)
                 end)
             end)
             
-            return loadstring(base64decode("c3VwZXJjb21wbGV0ZQ=="))()  
+            return "supercomplete"  
         end
 
         
@@ -513,7 +511,7 @@ end
 
 
 
-local RunService = game:GetService(loadstring(base64decode("UnVuU2VydmljZQ=="))())
+local RunService = game:GetService("RunService")
 
 local FlyState = {
     flying = false,
@@ -532,8 +530,8 @@ local function ToggleFly(state)
     local char = localPlayer.Character
     if not char then return end
     
-    local root = char:FindFirstChild(loadstring(base64decode("SHVtYW5vaWRSb290UGFydA=="))())
-    local hum = char:FindFirstChildWhichIsA(loadstring(base64decode("SHVtYW5vaWQ="))())
+    local root = char:FindFirstChild("HumanoidRootPart")
+    local hum = char:FindFirstChildWhichIsA("Humanoid")
     if not root or not hum then return end
 
     
@@ -542,15 +540,15 @@ local function ToggleFly(state)
     if FlyState.attachment then FlyState.attachment:Destroy() end
 
     if state then
-        FlyState.attachment = Instance.new(loadstring(base64decode("QXR0YWNobWVudA=="))(), root)
+        FlyState.attachment = Instance.new("Attachment", root)
         
-        FlyState.lv = Instance.new(loadstring(base64decode("TGluZWFyVmVsb2NpdHk="))(), root)
+        FlyState.lv = Instance.new("LinearVelocity", root)
         FlyState.lv.MaxForce = 9e10
         FlyState.lv.VelocityConstraintMode = Enum.VelocityConstraintMode.Vector
         FlyState.lv.VectorVelocity = Vector3.zero
         FlyState.lv.Attachment0 = FlyState.attachment
 
-        FlyState.av = Instance.new(loadstring(base64decode("QW5ndWxhclZlbG9jaXR5"))(), root)
+        FlyState.av = Instance.new("AngularVelocity", root)
         FlyState.av.MaxTorque = 9e10
         FlyState.av.AngularVelocity = Vector3.zero
         FlyState.av.Attachment0 = FlyState.attachment
@@ -603,13 +601,13 @@ local function ToggleNoclip(state)
                 
                 
                 for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA(loadstring(base64decode("QmFzZVBhcnQ="))()) or part:IsA(loadstring(base64decode("TWVzaFBhcnQ="))()) then
+                    if part:IsA("BasePart") or part:IsA("MeshPart") then
                         part.CanCollide = false
                     end
                 end
                 
                 
-                local root = char:FindFirstChild(loadstring(base64decode("SHVtYW5vaWRSb290UGFydA=="))())
+                local root = char:FindFirstChild("HumanoidRootPart")
                 if root then
                     root.CanCollide = false
                 end
@@ -623,12 +621,12 @@ local function ToggleNoclip(state)
         local char = localPlayer.Character
         if char then
             for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA(loadstring(base64decode("QmFzZVBhcnQ="))()) or part:IsA(loadstring(base64decode("TWVzaFBhcnQ="))()) then
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
                     part.CanCollide = true
                 end
             end
             
-            local hum = char:FindFirstChildWhichIsA(loadstring(base64decode("SHVtYW5vaWQ="))())
+            local hum = char:FindFirstChildWhichIsA("Humanoid")
             if hum then
                 hum.PlatformStand = false
                 task.wait(0.1)
@@ -642,56 +640,54 @@ end
 
 
 local Ventana = AstroUI.CreateWindow({
-	Title = loadstring(base64decode("QXN0cm8ncyBEcmVhbXdvcmxkIPCfmLQgfCBEYW5keSdzIFdvcmxk"))(),
+	Title = "Astro's Dreamworld 😴 | Dandy's World",
 	ToggleKey = Enum.KeyCode.V
 })
 
-local PlayerTab = Ventana:CreateTab(loadstring(base64decode("UGxheWVy"))())
-PlayerTab:CreateSection(loadstring(base64decode("TW92ZW1lbnQ="))())
+local PlayerTab = Ventana:CreateTab("Player")
+PlayerTab:CreateSection("Movement")
 
-PlayerTab:CreateToggle(loadstring(base64decode("Rmx5"))(), false, function(state)
+PlayerTab:CreateToggle("Fly", false, function(state)
     ToggleFly(state)
 end)
 
-PlayerTab:CreateSlider(loadstring(base64decode("Rmx5IFNwZWVk"))(), 20, 150, 70, function(value)
+PlayerTab:CreateSlider("Fly Speed", 20, 150, 70, function(value)
     FlyState.speed  = value
 end)
 
-PlayerTab:CreateToggle(loadstring(base64decode("Tm9jbGlw"))(), false, function(state)
+PlayerTab:CreateToggle("Noclip", false, function(state)
     ToggleNoclip(state)
 end)
 
-local VisualsTab = Ventana:CreateTab(loadstring(base64decode("VmlzdWFscw=="))())
-VisualsTab:CreateSection(loadstring(base64decode("QWxsIEVTUHM="))())
+local VisualsTab = Ventana:CreateTab("Visuals")
+VisualsTab:CreateSection("All ESPs")
 
-VisualsTab:CreateToggle(loadstring(base64decode("RVNQIFR3aXN0ZWRz"))(), false, function(state)
+VisualsTab:CreateToggle("ESP Twisteds", false, function(state)
 	_G.ESPTwisteds = state
 	if not state then clearESP() end
 end)
 
-VisualsTab:CreateToggle(loadstring(base64decode("RVNQIFJlc2VhcmNoIENhcHN1bGVz"))(), false, function(state)
+VisualsTab:CreateToggle("ESP Research Capsules", false, function(state)
 	_G.ESPItems = state
 	if not state then clearESP() end
 end)
 
-VisualsTab:CreateToggle(loadstring(base64decode("RVNQIEdlbmVyYXRvcnM="))(), false, function(state)
+VisualsTab:CreateToggle("ESP Generators", false, function(state)
 	_G.ESPGenerators = state
 	if not state then clearESP() end
 end)
 
-VisualsTab:CreateToggle(loadstring(base64decode("RVNQIEVsZXZhdG9y"))(), false, function(state)
+VisualsTab:CreateToggle("ESP Elevator", false, function(state)
 	_G.ESPElevator = state
 	if not state then clearESP() end
 end)
 
-local AutoTab = Ventana:CreateTab(loadstring(base64decode("QXV0b21hdGlvbg=="))())
-AutoTab:CreateSection(loadstring(base64decode("R2VuZXJhdG9y"))())
+local AutoTab = Ventana:CreateTab("Automation")
+AutoTab:CreateSection("Generator")
 
 
 
-local instantToggle = AutoTab:CreateToggle(loadstring(base64decode("SW5zdGFudCBTa2lsbGNoZWNr"))(), false, function(state)
+local instantToggle = AutoTab:CreateToggle("Instant Skillcheck", false, function(state)
     ApplyInstantSkillcheck(state)
 end)
-end
-lUyA0oX1(7mbst)
-end)(...)
+
