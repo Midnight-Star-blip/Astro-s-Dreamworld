@@ -596,9 +596,9 @@ local function ToggleNoclip(state)
     if charConn then charConn:Disconnect() charConn = nil end
 
     local function DestroyAntiNoclip()
-        
         for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj.Name == "NoClip_Collider" and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
+            if (obj.Name == "NoClip_Collider" or obj.Name == "NoClip") and 
+               (obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Part")) then
                 pcall(function() obj:Destroy() end)
             end
         end
@@ -606,7 +606,6 @@ local function ToggleNoclip(state)
 
     local function ApplyNoclip(char)
         pcall(function()
-            
             for _, part in ipairs(char:GetDescendants()) do
                 if part:IsA("BasePart") or part:IsA("MeshPart") then
                     part.CanCollide = false
@@ -623,8 +622,7 @@ local function ToggleNoclip(state)
     end
 
     if state then
-        
-        DestroyAntiNoclip()
+        DestroyAntiNoclip()  
 
         local char = localPlayer.Character
         if char then ApplyNoclip(char) end
@@ -633,13 +631,12 @@ local function ToggleNoclip(state)
             local char = localPlayer.Character
             if char then 
                 ApplyNoclip(char)
-                
-                DestroyAntiNoclip()
+                DestroyAntiNoclip()  
             end
         end)
 
         charConn = localPlayer.CharacterAdded:Connect(function(newChar)
-            task.wait(0.6)
+            task.wait(0.5)
             ApplyNoclip(newChar)
             DestroyAntiNoclip()
         end)
