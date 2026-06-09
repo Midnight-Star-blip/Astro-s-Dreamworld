@@ -302,47 +302,47 @@ function Tab:CreateKeybind(text, defaultKey, callback)
 	return {Get = function() return currentKey end}
 end
 
-
 local espTable = {}
-
 
 local function makeESP(obj, txt, col)
 	if not obj then return end
-	
 	
 	local p = obj:IsA("BasePart") and obj 
 		or obj:FindFirstChildOfClass("MeshPart") 
 		or obj:FindFirstChildOfClass("Part") 
 		or obj:FindFirstChild("HumanoidRootPart")
+	
 	if not p then return end
 	
+	local targetModel = obj:IsA("Model") and obj 
+		or obj:FindFirstAncestorOfClass("Model") 
+		or p
 	
-	local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or p
-	
-	
-	if targetModel:FindFirstChild("AstroHighlight") or p:FindFirstChild("AstroTag") then return end
+	if targetModel:FindFirstChild("AstroHighlight") or p:FindFirstChild("AstroTag") then 
+		return 
+	end
 	
 	
 	local hl = Instance.new("Highlight")
 	hl.Name = "AstroHighlight"
-	hl.FillColor = col             
-	hl.FillTransparency = 0.7      
-	hl.OutlineColor = col          
-	hl.OutlineTransparency = 0     
-	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop 
+	hl.FillColor = col
+	hl.FillTransparency = 0.7
+	hl.OutlineColor = col
+	hl.OutlineTransparency = 0
+	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 	hl.Adornee = targetModel
 	hl.Parent = targetModel
 	
 	
-	local bb = Instance.new("BillboardGui") 
+	local bb = Instance.new("BillboardGui")
 	bb.Name = "AstroTag"
 	bb.Size = UDim2.new(0, 200, 0, 50)
 	bb.AlwaysOnTop = true
-	bb.StudsOffset = Vector3.new(0, 4, 0) 
+	bb.StudsOffset = Vector3.new(0, 4, 0)
 	bb.Adornee = p
 	bb.Parent = p
 	
-	local l = Instance.new("TextLabel") 
+	local l = Instance.new("TextLabel")
 	l.Size = UDim2.new(1, 0, 1, 0)
 	l.BackgroundTransparency = 1
 	l.Text = txt
@@ -351,22 +351,20 @@ local function makeESP(obj, txt, col)
 	l.TextSize = 14
 	l.Parent = bb
 	
-	table.insert(espTable, hl) 
+	table.insert(espTable, hl)
 	table.insert(espTable, bb)
 end
 
-
-local function clearESP() 
-	for _, v in ipairs(espTable) do 
-		pcall(function() v:Destroy() end) 
-	end 
-	table.clear(espTable) 
+local function clearESP()
+	for _, v in ipairs(espTable) do
+		pcall(function() v:Destroy() end)
+	end
+	table.clear(espTable)
 end
 
 
 task.spawn(function()
 	while task.wait(0.75) do
-		
 		clearESP()
 		
 		local room = workspace:FindFirstChild("CurrentRoom")
@@ -393,17 +391,17 @@ task.spawn(function()
 							
 							
 							local hasBigAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
-												 monster.Name:find("Sprout") or monster.Name:find("Astro") or 
-												 monster.Name:find("Scraps") or monster.Name:find("Vee")
+												  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
+												  monster.Name:find("Scraps") or monster.Name:find("Vee")
 							
 							if hasBigAbility then
 								local remaining = 0
 								
 								
 								for _, v in ipairs(monster:GetDescendants()) do
-									if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+									if v:IsA("NumberValue") or v:IsA("IntValue") then
 										local val = v.Value
-										if val > 6 and val < 25 then   
+										if val > 6 and val < 35 then
 											remaining = val
 											break
 										end
@@ -411,13 +409,13 @@ task.spawn(function()
 								end
 								
 								
-								if remaining <= 0 then
+								if remaining <= 0.5 then
 									local chaser = monster:FindFirstChild("Chaser")
 									if chaser then
-										for _, v in ipairs(chaser:GetChildren()) do
+										for _, v in ipairs(chaser:GetDescendants()) do
 											if (v:IsA("NumberValue") or v:IsA("IntValue")) then
 												local val = v.Value
-												if val > 6 and val < 25 then
+												if val > 6 and val < 35 then
 													remaining = val
 													break
 												end
@@ -428,6 +426,8 @@ task.spawn(function()
 								
 								if remaining > 0.5 then
 									cooldownText = " [" .. math.ceil(remaining) .. "s]"
+								else
+									cooldownText = " [READY]"
 								end
 							end
 							
@@ -443,11 +443,12 @@ task.spawn(function()
 				if itemsFolder then
 					for _, item in ipairs(itemsFolder:GetChildren()) do
 						if item.Name == "ResearchCapsule" then 
-							makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
+							makeESP(item, " Capsule", Color3.fromRGB(82, 218, 255)) 
 						end
 					end
 				end
 			end
+			
 			
 			if _G.ESPAllItems then
 				local itemsFolder = sala:FindFirstChild("Items")
@@ -456,30 +457,20 @@ task.spawn(function()
 						pcall(function()
 							local nameLower = item.Name:lower()
 							
-							
 							if nameLower:find("medkit") then
 								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
-							
 							elseif nameLower:find("bandage") then
 								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 215, 0))
-							
-							
 							elseif nameLower:find("chocolate") or nameLower:find("choco") then
 								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
-							
-							
 							elseif nameLower:find("pop") then
 								if nameLower:find("bottle") or nameLower:find("bottleofpop") then
 									makeESP(item, "🥤 Bottle of Pop", Color3.fromRGB(100, 200, 255))
 								else
 									makeESP(item, "🥤 Pop", Color3.fromRGB(100, 200, 255))
 								end
-							
-							
 							elseif nameLower:find("tape") then
 								makeESP(item, "📼 Tape", Color3.fromRGB(180, 180, 180))
-							
-							
 							else
 								makeESP(item, " " .. item.Name, Color3.fromRGB(0, 255, 255))
 							end
@@ -501,18 +492,15 @@ task.spawn(function()
 							local isCompleted = false
 							local baseMachine = gen:FindFirstChild("BaseMachine") or gen
 							
-							
 							for _, obj in ipairs(baseMachine:GetDescendants()) do
 								if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
 									local c = obj.Color
-									
 									if c.G > 0.6 and c.R < 0.3 then
 										isCompleted = true
 										break
 									end
 								end
 							end
-							
 							
 							if not isCompleted then
 								local lightRef = gen:FindFirstChild("LightReference") or baseMachine:FindFirstChild("LightReference")
@@ -528,10 +516,6 @@ task.spawn(function()
 									end
 								end
 							end
-							
-							
-							
-							
 							
 							if not isCompleted then
 								makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
@@ -557,6 +541,9 @@ task.spawn(function()
 		
 	end
 end)
+
+
+
 
 local S = { skillcheckOrigCB = nil }
 
