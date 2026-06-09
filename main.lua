@@ -565,6 +565,7 @@ task.spawn(function()
 		end
 		
 				
+				
 		if _G.ESPElevator then
 			local elevators = workspace:FindFirstChild("Elevators")
 			if elevators then
@@ -573,11 +574,15 @@ task.spawn(function()
 						
 						
 						local door = elev:FindFirstChild("ElevatorDoor") 
-							
-							
+							or elev:FindFirstChild("DoorVisible")
+							or elev:FindFirstChild("DoorHitbox")
+							or elev:FindFirstChild("Door")
 						
 						if door then
 							makeESP(door, "Elevator", Color3.fromRGB(230, 100, 220))
+						else
+							
+							makeESP(elev, "Elevator", Color3.fromRGB(230, 100, 220))
 						end
 					end
 				end
