@@ -473,7 +473,7 @@ task.spawn(function()
 				if itemsFolder then
 					for _, item in ipairs(itemsFolder:GetChildren()) do
 						if item.Name == "ResearchCapsule" then 
-							makeESP(item, "Capsule", Color3.fromRGB(82, 218, 255)) 
+							makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
 						end
 					end
 				end
@@ -509,7 +509,7 @@ task.spawn(function()
 				end
 			end
 			
-	
+			
 			if _G.ESPGenerators then
 				local gensFolder = sala:FindFirstChild("Generators")
 				if gensFolder then
@@ -548,7 +548,7 @@ task.spawn(function()
 							end
 							
 							if not isCompleted then
-								makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
+								makeESP(gen, " Generator", Color3.fromRGB(74, 222, 128))
 							end
 						end)
 					end
@@ -570,6 +570,8 @@ task.spawn(function()
 	end
 end)
 
+	
+	
 
 
 			
