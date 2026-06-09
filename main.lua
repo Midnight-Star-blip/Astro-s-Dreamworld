@@ -390,34 +390,51 @@ task.spawn(function()
 							nombreLimpio = string.gsub(nombreLimpio, "Character", "")
 							
 							local cooldownText = ""
-							
+						
 							
 							local hasAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
 											  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
 											  monster.Name:find("Scraps") or monster.Name:find("Vee")
 							
 							if hasAbility then
-								local remainingCD = 0
+								local remaining = 0
 								
 								
-								remainingCD = monster:GetAttribute("AbilityCooldown") or 
-											  monster:GetAttribute("Cooldown") or 
-											  monster:GetAttribute("CurrentCooldown") or 0
+								remaining = monster:GetAttribute("AbilityCooldown") 
+								         or monster:GetAttribute("CurrentCooldown") 
+								         or monster:GetAttribute("CooldownTimer") 
+								         or monster:GetAttribute("Timer") 
+								         or 0
 								
 								
-								if remainingCD <= 0 then
+								if remaining <= 0.5 then
 									for _, v in ipairs(monster:GetDescendants()) do
-										if (v:IsA("NumberValue") or v:IsA("IntValue")) and 
-										   (v.Name:find("Cooldown") or v.Name:find("Ability") or v.Name == "Timer") then
-											remainingCD = v.Value
-											break
+										if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+											local n = v.Name:lower()
+											if n:find("cooldown") or n:find("ability") or n:find("timer") or n == "cd" then
+												remaining = v.Value
+												break
+											end
 										end
 									end
 								end
 								
 								
-								if remainingCD > 0.5 then
-									cooldownText = " [" .. math.ceil(remainingCD) .. "s]"
+								if remaining <= 0.5 then
+									local stats = monster:FindFirstChild("Stats")
+									if stats then
+										for _, v in ipairs(stats:GetDescendants()) do
+											if (v:IsA("NumberValue") or v:IsA("IntValue")) and 
+											   (v.Name:find("Cooldown") or v.Name:find("Timer")) then
+												remaining = v.Value
+												break
+											end
+										end
+									end
+								end
+								
+								if remaining > 0.5 then
+									cooldownText = " [" .. math.ceil(remaining) .. "s]"
 								end
 							end
 							
