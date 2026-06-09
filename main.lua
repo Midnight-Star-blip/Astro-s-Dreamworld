@@ -746,7 +746,7 @@ end
 
 local noclipLoop = nil
 local charConn = nil
-local characterParts = {}  
+local characterParts = {}  -- Cache de partes del personaje
 
 local function ToggleNoclip(state)
     _G.Noclip = state
@@ -760,7 +760,7 @@ local function ToggleNoclip(state)
         charConn = nil 
     end
 
-    
+    -- Limpiar cache
     characterParts = {}
 
     local function ApplyNoclip(char)
