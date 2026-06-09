@@ -499,7 +499,7 @@ task.spawn(function()
 								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
 							elseif nameLower:find("bandage") then
 								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 215, 0))
-							elseif nameLower:find("chocolate") or nameLower:find("choco") then
+							elseif nameLower:find("Chocolate Box") then
 								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
 							elseif nameLower:find("pop") then
 								if nameLower:find("bottle") or nameLower:find("bottleofpop") then
@@ -743,92 +743,74 @@ local function ToggleFly(state)
         hum:ChangeState(Enum.HumanoidStateType.GettingUp)
     end
 end
+
 local noclipLoop = nil
-local charConn = nil
 
 local function ToggleNoclip(state)
     _G.Noclip = state
-
-    if noclipLoop then noclipLoop:Disconnect() noclipLoop = nil end
-    if charConn then charConn:Disconnect() charConn = nil end
-
-    local function DestroyAntiNoclip()
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if (obj.Name == "NoClip_Collider" or 
-                obj.Name == "NoClip" or 
-                obj.Name == "InvisWall" or 
-                obj.Name == "Inviswall") and
-               (obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Part")) then
-                
-                pcall(function() obj.CanCollide = false end)
-                pcall(function() obj:Destroy() end)
-            end
-        end
+    
+    if noclipLoop then 
+        noclipLoop:Disconnect() 
+        noclipLoop = nil 
     end
 
-    local function ApplyNoclip(char)
-        pcall(function()
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    part.CanCollide = false
-                    part.Massless = true
-                end
-            end
-
-            local root = char:FindFirstChild("HumanoidRootPart")
-            if root then
-                root.CanCollide = false
-                root.Massless = true
-            end
-        end)
-    end
+    local char = localPlayer.Character
+    if not char then return end
 
     if state then
-        DestroyAntiNoclip()
+        
+        noclipLoop = RunService.Heartbeat:Connect(function()
+            pcall(function()
+                if not char or not char.Parent then return end
+                
+                local root = char:FindFirstChild("HumanoidRootPart")
+                if root then
+                    root.CanCollide = false
+                    root.Massless = true
+                end
 
-        local char = localPlayer.Character
-        if char then ApplyNoclip(char) end
-
-        noclipLoop = RunService.Stepped:Connect(function()
-            local char = localPlayer.Character
-            if char then
-                ApplyNoclip(char)
-                DestroyAntiNoclip()
-            end
+                for _, part in ipairs(char:GetDescendants()) do
+                    if (part:IsA("BasePart") or part:IsA("MeshPart")) and part ~= root then
+                        part.CanCollide = false
+                        part.Massless = true
+                    end
+                end
+            end)
         end)
 
-        charConn = localPlayer.CharacterAdded:Connect(function(newChar)
-            task.wait(0.5)
-            ApplyNoclip(newChar)
-            DestroyAntiNoclip()
-        end)
-
+        print("[Astro] Noclip Activado")
     else
-        local char = localPlayer.Character
-        if char then
+        
+        pcall(function()
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CanCollide = true
+                root.Massless = false
+                root.Velocity = Vector3.new(0, -20, 0)  -- Pequeño impulso hacia abajo
+            end
+
             for _, part in ipairs(char:GetDescendants()) do
                 if part:IsA("BasePart") or part:IsA("MeshPart") then
                     part.CanCollide = true
                     part.Massless = false
                 end
             end
+        end)
 
-            local root = char:FindFirstChild("HumanoidRootPart")
-            if root then
-                root.CanCollide = true
-                root.Massless = false
-                root.Velocity = Vector3.new(0, -40, 0)
-            end
-
-            local hum = char:FindFirstChildWhichIsA("Humanoid")
-            if hum then
-                hum.PlatformStand = false
-                task.wait(0.1)
-                hum:ChangeState(Enum.HumanoidStateType.Running)
-            end
+        local hum = char:FindFirstChildWhichIsA("Humanoid")
+        if hum then
+            hum.PlatformStand = false
+            task.wait(0.15)
+            hum:ChangeState(Enum.HumanoidStateType.Running)
+            hum:ChangeState(Enum.HumanoidStateType.GettingUp)
         end
+
+        
     end
 end
+
+
+
 
 local tpWalkLoop = nil
 local tpWalkSpeed = 0.7   
