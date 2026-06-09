@@ -745,62 +745,96 @@ local function ToggleFly(state)
 end
 
 local noclipLoop = nil
+local charConn = nil
+local characterParts = {}  
 
 local function ToggleNoclip(state)
     _G.Noclip = state
-    
+
     if noclipLoop then 
         noclipLoop:Disconnect() 
         noclipLoop = nil 
     end
+    if charConn then 
+        charConn:Disconnect() 
+        charConn = nil 
+    end
 
-    local char = localPlayer.Character
-    if not char then return end
+    
+    characterParts = {}
 
-    if state then
-        
-        noclipLoop = RunService.Stepped:Connect(function()
-            pcall(function()
-                if not char or not char.Parent then return end
-                
-                local root = char:FindFirstChild("HumanoidRootPart")
-                if root then
-                    root.CanCollide = false
-                end
-
-                for _, part in ipairs(char:GetDescendants()) do
-                    if (part:IsA("BasePart") or part:IsA("MeshPart")) then
-                        part.CanCollide = false
-                    end
-                end
-            end)
-        end)
-
-        
-    else
-        
+    local function ApplyNoclip(char)
         pcall(function()
-            local root = char:FindFirstChild("HumanoidRootPart")
-            if root then
-                root.CanCollide = true
-            end
-
+            characterParts = {}
             for _, part in ipairs(char:GetDescendants()) do
                 if part:IsA("BasePart") or part:IsA("MeshPart") then
-                    part.CanCollide = true
+                    characterParts[part] = true
+                    part.CanCollide = false
+                    part.Massless = true
                 end
             end
         end)
+    end
+
+    local function RestoreNoclip(char)
+        pcall(function()
+            for part, _ in pairs(characterParts) do
+                if part and part.Parent then
+                    part.CanCollide = true
+                    part.Massless = false
+                end
+            end
+            characterParts = {}
+        end)
+
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if root then
+            root.CanCollide = true
+            root.Massless = false
+            root.Velocity = Vector3.new(0, -30, 0)
+        end
 
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.2)
+            task.wait(0.15)
             hum:ChangeState(Enum.HumanoidStateType.Running)
-            task.wait(0.1)
             hum:ChangeState(Enum.HumanoidStateType.GettingUp)
         end
+    end
 
+    if state then
+        
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if (obj.Name == "NoClip_Collider" or obj.Name == "NoClip" or 
+                obj.Name == "InvisWall" or obj.Name == "Inviswall") and
+               (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
+                pcall(function() obj.CanCollide = false end)
+            end
+        end
+
+        local char = localPlayer.Character
+        if char then ApplyNoclip(char) end
+
+        
+        noclipLoop = RunService.Heartbeat:Connect(function()
+            local char = localPlayer.Character
+            if char and char.Parent then
+                ApplyNoclip(char)
+            end
+        end)
+
+        charConn = localPlayer.CharacterAdded:Connect(function(newChar)
+            task.wait(0.3)
+            ApplyNoclip(newChar)
+        end)
+
+        
+    else
+        local char = localPlayer.Character
+        if char then
+            RestoreNoclip(char)
+        end
         
     end
 end
