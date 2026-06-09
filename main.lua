@@ -364,7 +364,7 @@ end
 
 
 task.spawn(function()
-	while task.wait(0.8) do   
+	while task.wait(0.75) do
 		
 		clearESP()
 		
@@ -377,14 +377,18 @@ task.spawn(function()
 			if _G.ESPTwisteds then
 				local monFolder = sala:FindFirstChild("Monsters")
 				if monFolder then
-					for _, parte in ipairs(monFolder:GetDescendants()) do
-						if parte:IsA("BasePart") then
-							local carpetaMadre = parte:FindFirstAncestorOfClass("Folder")
-							if carpetaMadre and carpetaMadre.Name ~= "Monsters" then
-								local nombreTwisted = string.gsub(carpetaMadre.Name, "Monster", "")
-								makeESP(parte, "[Twisted] " .. nombreTwisted, Color3.fromRGB(255, 50, 50))
+					for _, monster in ipairs(monFolder:GetChildren()) do
+						pcall(function()
+							local root = monster:FindFirstChild("HumanoidRootPart") 
+								or monster:FindFirstChildOfClass("MeshPart")
+								or monster:FindFirstChildOfClass("Part")
+							
+							if root then
+								local nombreLimpio = string.gsub(monster.Name, "Monster", "")
+								nombreLimpio = string.gsub(nombreLimpio, "Character", "")
+								makeESP(root, "[Twisted] " .. nombreLimpio, Color3.fromRGB(255, 50, 50))
 							end
-						end
+						end)
 					end
 				end
 			end
@@ -415,11 +419,11 @@ task.spawn(function()
 							local baseMachine = gen:FindFirstChild("BaseMachine") or gen
 							
 							
-							local lightParts = {baseMachine:FindFirstChild("Light"), gen:FindFirstChild("Light"), gen:FindFirstChild("LightReference")}
+							local targets = {gen, baseMachine, gen:FindFirstChild("LightReference")}
 							
-							for _, lightObj in ipairs(lightParts) do
-								if lightObj then
-									for _, obj in ipairs(lightObj:GetDescendants()) do
+							for _, target in ipairs(targets) do
+								if target then
+									for _, obj in ipairs(target:GetDescendants()) do
 										if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
 											local c = obj.Color
 											if c.G > 0.5 and c.R < 0.45 then
@@ -429,19 +433,6 @@ task.spawn(function()
 										end
 									end
 									if isCompleted then break end
-								end
-							end
-							
-							
-							if not isCompleted then
-								for _, obj in ipairs(baseMachine:GetDescendants()) do
-									if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
-										local c = obj.Color
-										if c.G > 0.5 and c.R < 0.45 then
-											isCompleted = true
-											break
-										end
-									end
 								end
 							end
 							
