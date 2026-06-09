@@ -406,7 +406,7 @@ task.spawn(function()
 			end
 			
 			
-			if _G.ESPGenerators then
+				if _G.ESPGenerators then
 				local gensFolder = sala:FindFirstChild("Generators")
 				if gensFolder then
 					for _, gen in ipairs(gensFolder:GetChildren()) do
@@ -419,22 +419,36 @@ task.spawn(function()
 							local baseMachine = gen:FindFirstChild("BaseMachine") or gen
 							
 							
-							local targets = {gen, baseMachine, gen:FindFirstChild("LightReference")}
+							for _, obj in ipairs(baseMachine:GetDescendants()) do
+								if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
+									local c = obj.Color
+									
+									if c.G > 0.6 and c.R < 0.3 then
+										isCompleted = true
+										break
+									end
+								end
+							end
 							
-							for _, target in ipairs(targets) do
-								if target then
-									for _, obj in ipairs(target:GetDescendants()) do
+							
+							if not isCompleted then
+								local lightRef = gen:FindFirstChild("LightReference") or baseMachine:FindFirstChild("LightReference")
+								if lightRef then
+									for _, obj in ipairs(lightRef:GetDescendants()) do
 										if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
 											local c = obj.Color
-											if c.G > 0.5 and c.R < 0.45 then
+											if c.G > 0.6 and c.R < 0.3 then
 												isCompleted = true
 												break
 											end
 										end
 									end
-									if isCompleted then break end
 								end
 							end
+							
+							
+							print("Generator:", gen:GetFullName(), " | Completed:", isCompleted)
+							
 							
 							if not isCompleted then
 								makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
