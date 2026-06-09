@@ -304,6 +304,66 @@ end
 
 local espTable = {}
 
+-- ==================== COUNTDOWN MANUAL POR ENTIDAD ====================
+local cooldownTimers = {}  -- monster -> remaining time
+
+local function GetCooldown(monster)
+	local monsterName = monster.Name
+	
+	-- Si ya tenemos timer activo, devolverlo
+	if cooldownTimers[monster] and cooldownTimers[monster] > 0 then
+		return cooldownTimers[monster]
+	end
+	
+	-- Buscar cooldown inicial
+	for _, v in ipairs(monster:GetDescendants()) do
+		if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+			local valName = v.Name:lower()
+			local val = v.Value
+			
+			-- Ignorar PatrolSpeed y valores irrelevantes
+			if valName:find("patrol") or valName:find("speed") or valName:find("walk") then
+				continue
+			end
+			
+			if val >= 8 and val <= 18 then
+				cooldownTimers[monster] = val
+				return val
+			end
+		end
+	end
+	
+	-- Búsqueda en Chaser
+	local chaser = monster:FindFirstChild("Chaser") or monster:FindFirstChild("AI")
+	if chaser then
+		for _, v in ipairs(chaser:GetDescendants()) do
+			if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+				local val = v.Value
+				if val >= 8 and val <= 18 then
+					cooldownTimers[monster] = val
+					return val
+				end
+			end
+		end
+	end
+	
+	return 0
+end
+
+-- Actualizar countdown manual
+task.spawn(function()
+	while true do
+		task.wait(0.1)
+		for monster, timeLeft in pairs(cooldownTimers) do
+			if monster and monster.Parent then
+				cooldownTimers[monster] = math.max(0, timeLeft - 0.1)
+			else
+				cooldownTimers[monster] = nil
+			end
+		end
+	end
+end)
+
 local function makeESP(obj, txt, col)
 	if not obj then return end
 	
@@ -322,7 +382,6 @@ local function makeESP(obj, txt, col)
 		return 
 	end
 	
-	
 	local hl = Instance.new("Highlight")
 	hl.Name = "AstroHighlight"
 	hl.FillColor = col
@@ -332,7 +391,6 @@ local function makeESP(obj, txt, col)
 	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
 	hl.Adornee = targetModel
 	hl.Parent = targetModel
-	
 	
 	local bb = Instance.new("BillboardGui")
 	bb.Name = "AstroTag"
@@ -362,42 +420,6 @@ local function clearESP()
 	table.clear(espTable)
 end
 
-
-local function GetCooldown(monster)
-	for _, v in ipairs(monster:GetDescendants()) do
-		if (v:IsA("NumberValue") or v:IsA("IntValue")) then
-			local val = v.Value
-			local valName = v.Name:lower()
-			
-			
-			if valName:find("patrol") or valName:find("speed") or valName:find("walk") then
-				continue
-			end
-			
-			if val >= 8 and val <= 18 then
-				return val
-			end
-		end
-	end
-	
-	
-	local chaser = monster:FindFirstChild("Chaser") or monster:FindFirstChild("AI")
-	if chaser then
-		for _, v in ipairs(chaser:GetDescendants()) do
-			if (v:IsA("NumberValue") or v:IsA("IntValue")) then
-				local val = v.Value
-				if val >= 8 and val <= 18 then
-					return val
-				end
-			end
-		end
-	end
-	
-	return 0
-end
-	
-	
-	
 
 task.spawn(function()
 	while task.wait(0.4) do
@@ -429,7 +451,7 @@ task.spawn(function()
 												  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
 												  monster.Name:find("Scraps") or monster.Name:find("Vee")
 							
-						 if hasBigAbility then
+							if hasBigAbility then
 								local remaining = GetCooldown(monster)
 								
 								if remaining > 0.5 then
@@ -438,9 +460,121 @@ task.spawn(function()
 									cooldownText = " [READY]"
 								end
 							end
+							
+							makeESP(root, "[Twisted] " .. nombreLimpio .. cooldownText, Color3.fromRGB(255, 50, 50))
+						end)
 					end
 				end
 			end
+			
+			
+			if _G.ESPResearch then
+				local itemsFolder = sala:FindFirstChild("Items")
+				if itemsFolder then
+					for _, item in ipairs(itemsFolder:GetChildren()) do
+						if item.Name == "ResearchCapsule" then 
+							makeESP(item, "Capsule", Color3.fromRGB(82, 218, 255)) 
+						end
+					end
+				end
+			end
+			
+			
+			if _G.ESPAllItems then
+				local itemsFolder = sala:FindFirstChild("Items")
+				if itemsFolder then
+					for _, item in ipairs(itemsFolder:GetChildren()) do
+						pcall(function()
+							local nameLower = item.Name:lower()
+							
+							if nameLower:find("medkit") then
+								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
+							elseif nameLower:find("bandage") then
+								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 215, 0))
+							elseif nameLower:find("chocolate") or nameLower:find("choco") then
+								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
+							elseif nameLower:find("pop") then
+								if nameLower:find("bottle") or nameLower:find("bottleofpop") then
+									makeESP(item, "🥤 Bottle of Pop", Color3.fromRGB(100, 200, 255))
+								else
+									makeESP(item, "🥤 Pop", Color3.fromRGB(100, 200, 255))
+								end
+							elseif nameLower:find("tape") then
+								makeESP(item, "📼 Tape", Color3.fromRGB(180, 180, 180))
+							else
+								makeESP(item, " " .. item.Name, Color3.fromRGB(0, 255, 255))
+							end
+						end)
+					end
+				end
+			end
+			
+	
+			if _G.ESPGenerators then
+				local gensFolder = sala:FindFirstChild("Generators")
+				if gensFolder then
+					for _, gen in ipairs(gensFolder:GetChildren()) do
+						pcall(function()
+							if gen.Name ~= "Generator" and not gen:FindFirstChild("BaseMachine") then 
+								return 
+							end
+							
+							local isCompleted = false
+							local baseMachine = gen:FindFirstChild("BaseMachine") or gen
+							
+							for _, obj in ipairs(baseMachine:GetDescendants()) do
+								if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
+									local c = obj.Color
+									if c.G > 0.6 and c.R < 0.3 then
+										isCompleted = true
+										break
+									end
+								end
+							end
+							
+							if not isCompleted then
+								local lightRef = gen:FindFirstChild("LightReference") or baseMachine:FindFirstChild("LightReference")
+								if lightRef then
+									for _, obj in ipairs(lightRef:GetDescendants()) do
+										if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
+											local c = obj.Color
+											if c.G > 0.6 and c.R < 0.3 then
+												isCompleted = true
+												break
+											end
+										end
+									end
+								end
+							end
+							
+							if not isCompleted then
+								makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
+							end
+						end)
+					end
+				end
+			end
+		end
+		
+		
+		if _G.ESPElevator then
+			local elevators = workspace:FindFirstChild("Elevators")
+			if elevators then
+				for _, elev in ipairs(elevators:GetChildren()) do
+					if elev.Name == "Elevator" then 
+						makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220)) 
+					end
+				end
+			end
+		end
+	end
+end)
+
+
+	
+	
+
+
 			
 			
 			if _G.ESPResearch then
