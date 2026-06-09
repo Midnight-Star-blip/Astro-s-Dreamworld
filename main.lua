@@ -397,23 +397,27 @@ task.spawn(function()
 											  monster.Name:find("Scraps") or monster.Name:find("Vee")
 							
 							if hasAbility then
-								local cd = monster:GetAttribute("AbilityCooldown") or 
-										   monster:GetAttribute("Cooldown") or 0
+								local remainingCD = 0
 								
 								
-								if cd <= 0 then
+								remainingCD = monster:GetAttribute("AbilityCooldown") or 
+											  monster:GetAttribute("Cooldown") or 
+											  monster:GetAttribute("CurrentCooldown") or 0
+								
+								
+								if remainingCD <= 0 then
 									for _, v in ipairs(monster:GetDescendants()) do
-										if v:IsA("NumberValue") or v:IsA("IntValue") then
-											if v.Name:find("Cooldown") or v.Name:find("Ability") then
-												cd = v.Value
-												break
-											end
+										if (v:IsA("NumberValue") or v:IsA("IntValue")) and 
+										   (v.Name:find("Cooldown") or v.Name:find("Ability") or v.Name == "Timer") then
+											remainingCD = v.Value
+											break
 										end
 									end
 								end
 								
-								if cd > 0 then
-									cooldownText = " [" .. math.ceil(cd) .. "s]"
+								
+								if remainingCD > 0.5 then
+									cooldownText = " [" .. math.ceil(remainingCD) .. "s]"
 								end
 							end
 							
