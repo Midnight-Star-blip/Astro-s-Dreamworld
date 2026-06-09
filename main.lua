@@ -922,7 +922,12 @@ VisualsTab:CreateToggle("ESP Twisteds", false, function(state)
 end)
 
 VisualsTab:CreateToggle("ESP Research Capsules", false, function(state)
-	_G.ESPItems = state
+	_G.ESPResearch = state
+	if not state then clearESP() end
+end)
+
+VisualsTab:CreateToggle("ESP All Items", false, function(state)
+	_G.ESPAllItems = state
 	if not state then clearESP() end
 end)
 
