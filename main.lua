@@ -364,33 +364,22 @@ end
 
 
 local function GetCooldown(monster)
-	local nameLower = monster.Name:lower()
+	local monsterName = monster.Name:lower()
 	
-
 	for _, v in ipairs(monster:GetDescendants()) do
-		if v:IsA("NumberValue") or v:IsA("IntValue") then
+		if (v:IsA("NumberValue") or v:IsA("IntValue")) and v.Value >= 8 and v.Value <= 18 then
+			
 			local valName = v.Name:lower()
-			local val = v.Value
 			
 			
-			if valName:find("patrol") or valName:find("speed") or valName:find("walk") then
+			if valName:find("patrol") or valName:find("speed") or valName:find("walk") 
+			   or valName:find("move") or valName:find("chase") or valName:find("range") then
 				continue
 			end
 			
 			
-			if valName:find("cool") or valName:find("timer") or valName:find("ability") 
-			   or valName:find("cd") or valName:find("delay") or valName:find("recharge") then
-				if val >= 8 and val <= 18 then
-					print(`[DEBUG] Cooldown REAL encontrado en {monster.Name}: {v.Name} = {val}`)
-					return val
-				end
-			end
-			
-			
-			if val >= 8 and val <= 18 then
-				print(`[DEBUG] Valor en rango encontrado en {monster.Name}: {v.Name} = {val}`)
-				return val
-			end
+			print(`[DEBUG] Cooldown REAL encontrado en {monster.Name}: {v.Name} = {v.Value}`)
+			return v.Value
 		end
 	end
 	
@@ -398,12 +387,9 @@ local function GetCooldown(monster)
 	local chaser = monster:FindFirstChild("Chaser") or monster:FindFirstChild("AI")
 	if chaser then
 		for _, v in ipairs(chaser:GetDescendants()) do
-			if v:IsA("NumberValue") or v:IsA("IntValue") then
-				local val = v.Value
-				if val >= 8 and val <= 18 then
-					print(`[DEBUG] Cooldown en Chaser de {monster.Name}: {v.Name} = {val}`)
-					return val
-				end
+			if (v:IsA("NumberValue") or v:IsA("IntValue")) and v.Value >= 8 and v.Value <= 18 then
+				print(`[DEBUG] Cooldown encontrado en Chaser de {monster.Name}: {v.Name} = {v.Value}`)
+				return v.Value
 			end
 		end
 	end
