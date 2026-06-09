@@ -571,13 +571,11 @@ task.spawn(function()
 			local elevators = workspace:FindFirstChild("Elevators")
 			if elevators then
 				for _, elev in ipairs(elevators:GetChildren()) do
-					if elev.Name == "Elevator" then 
+					if elev.Name == "ElevatorDoor" then 
 						
 						
 						local door = elev:FindFirstChild("ElevatorDoor") 
-							or elev:FindFirstChild("DoorVisible")
-							or elev:FindFirstChild("DoorHitbox")
-							or elev:FindFirstChild("Door")
+							
 						
 						
 						if door then
