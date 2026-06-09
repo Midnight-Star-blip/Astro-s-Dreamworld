@@ -390,7 +390,7 @@ task.spawn(function()
 							nombreLimpio = string.gsub(nombreLimpio, "Character", "")
 							
 							local cooldownText = ""
-						
+							
 							
 							local hasAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
 											  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
@@ -400,18 +400,12 @@ task.spawn(function()
 								local remaining = 0
 								
 								
-								remaining = monster:GetAttribute("AbilityCooldown") 
-								         or monster:GetAttribute("CurrentCooldown") 
-								         or monster:GetAttribute("CooldownTimer") 
-								         or monster:GetAttribute("Timer") 
-								         or 0
-								
-								
-								if remaining <= 0.5 then
-									for _, v in ipairs(monster:GetDescendants()) do
-										if (v:IsA("NumberValue") or v:IsA("IntValue")) then
-											local n = v.Name:lower()
-											if n:find("cooldown") or n:find("ability") or n:find("timer") or n == "cd" then
+								for _, v in ipairs(monster:GetDescendants()) do
+									if v:IsA("NumberValue") or v:IsA("IntValue") then
+										local n = v.Name:lower()
+										if n:find("cooldown") or n:find("timer") or n:find("ability") or 
+										   n:find("chase") or v.Name == "HitCooldown" then
+											if v.Value > 0.5 and v.Value < 30 then  
 												remaining = v.Value
 												break
 											end
@@ -420,15 +414,12 @@ task.spawn(function()
 								end
 								
 								
-								if remaining <= 0.5 then
-									local stats = monster:FindFirstChild("Stats")
-									if stats then
-										for _, v in ipairs(stats:GetDescendants()) do
-											if (v:IsA("NumberValue") or v:IsA("IntValue")) and 
-											   (v.Name:find("Cooldown") or v.Name:find("Timer")) then
-												remaining = v.Value
-												break
-											end
+								local chaser = monster:FindFirstChild("Chaser")
+								if chaser and remaining <= 0 then
+									for _, v in ipairs(chaser:GetChildren()) do
+										if (v:IsA("NumberValue") or v:IsA("IntValue")) and v.Value > 0.5 and v.Value < 30 then
+											remaining = v.Value
+											break
 										end
 									end
 								end
