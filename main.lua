@@ -401,14 +401,11 @@ task.spawn(function()
 								
 								
 								for _, v in ipairs(monster:GetDescendants()) do
-									if v:IsA("NumberValue") or v:IsA("IntValue") then
-										local n = v.Name:lower()
-										if n:find("cooldown") or n:find("timer") or n:find("ability") or 
-										   n:find("chase") or v.Name == "HitCooldown" then
-											if v.Value > 0.5 and v.Value < 30 then  
-												remaining = v.Value
-												break
-											end
+									if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+										local val = v.Value
+										if val > 0.5 and val < 25 then  
+											remaining = val
+											break
 										end
 									end
 								end
@@ -417,9 +414,12 @@ task.spawn(function()
 								local chaser = monster:FindFirstChild("Chaser")
 								if chaser and remaining <= 0 then
 									for _, v in ipairs(chaser:GetChildren()) do
-										if (v:IsA("NumberValue") or v:IsA("IntValue")) and v.Value > 0.5 and v.Value < 30 then
-											remaining = v.Value
-											break
+										if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+											local val = v.Value
+											if val > 0.5 and val < 25 then
+												remaining = val
+												break
+											end
 										end
 									end
 								end
