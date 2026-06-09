@@ -403,11 +403,7 @@ task.spawn(function()
 								for _, v in ipairs(monster:GetDescendants()) do
 									if (v:IsA("NumberValue") or v:IsA("IntValue")) then
 										local val = v.Value
-										local name = v.Name:lower()
-										
-										
-										if (name:find("cooldown") or name:find("ability") or name:find("timer")) and 
-										   val > 5 and val < 30 then
+										if val > 6 and val < 25 then   
 											remaining = val
 											break
 										end
@@ -421,7 +417,7 @@ task.spawn(function()
 										for _, v in ipairs(chaser:GetChildren()) do
 											if (v:IsA("NumberValue") or v:IsA("IntValue")) then
 												local val = v.Value
-												if val > 5 and val < 30 then
+												if val > 6 and val < 25 then
 													remaining = val
 													break
 												end
@@ -440,6 +436,115 @@ task.spawn(function()
 					end
 				end
 			end
+			
+			
+						
+			if _G.ESPResearch then
+				local itemsFolder = sala:FindFirstChild("Items")
+				if itemsFolder then
+					for _, item in ipairs(itemsFolder:GetChildren()) do
+						if item.Name == "ResearchCapsule" then 
+							makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
+						end
+					end
+				end
+			end
+			
+			
+						if _G.ESPAllItems then
+				local itemsFolder = sala:FindFirstChild("Items")
+				if itemsFolder then
+					for _, item in ipairs(itemsFolder:GetChildren()) do
+						pcall(function()
+							local nameLower = item.Name:lower()
+							
+							
+							if nameLower:find("medkit") then
+								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
+							
+							elseif nameLower:find("bandage") then
+								makeESP(item, "🩼 Bandage", Color3.fromRGB(255, 215, 0))
+							
+						
+							elseif nameLower:find("chocolate") or nameLower:find("choco") then
+								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
+							
+							
+							elseif nameLower:find("pop") then
+								if nameLower:find("bottle") or nameLower:find("bottleofpop") then
+									makeESP(item, "🥤 Bottle of Pop", Color3.fromRGB(100, 200, 255))
+								else
+									makeESP(item, "🍭 Pop", Color3.fromRGB(100, 200, 255))
+								end
+							
+							
+							elseif nameLower:find("tape") then
+								makeESP(item, "📼 Tape", Color3.fromRGB(180, 180, 180))
+							
+							
+							else
+								makeESP(item, "📦 " .. item.Name, Color3.fromRGB(0, 255, 255))
+							end
+						end)
+					end
+				end
+			end
+			
+			
+			if _G.ESPGenerators then
+				local gensFolder = sala:FindFirstChild("Generators")
+				if gensFolder then
+					for _, gen in ipairs(gensFolder:GetChildren()) do
+						pcall(function()
+							if gen.Name ~= "Generator" and not gen:FindFirstChild("BaseMachine") then 
+								return 
+							end
+							
+							local isCompleted = false
+							local baseMachine = gen:FindFirstChild("BaseMachine") or gen
+							
+							
+							for _, obj in ipairs(baseMachine:GetDescendants()) do
+								if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
+									local c = obj.Color
+									
+									if c.G > 0.6 and c.R < 0.3 then
+										isCompleted = true
+										break
+									end
+								end
+							end
+							
+							
+							if not isCompleted then
+								local lightRef = gen:FindFirstChild("LightReference") or baseMachine:FindFirstChild("LightReference")
+								if lightRef then
+									for _, obj in ipairs(lightRef:GetDescendants()) do
+										if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
+											local c = obj.Color
+											if c.G > 0.6 and c.R < 0.3 then
+												isCompleted = true
+												break
+											end
+										end
+									end
+								end
+							end
+							
+							
+							print("Generator:", gen:GetFullName(), " | Completed:", isCompleted)
+							
+							
+							if not isCompleted then
+								makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
+							end
+						end)
+					end
+				end
+			end
+			
+		end
+		
 			
 			
 			if _G.ESPResearch then
