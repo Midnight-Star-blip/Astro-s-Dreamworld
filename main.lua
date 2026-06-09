@@ -759,20 +759,18 @@ local function ToggleNoclip(state)
 
     if state then
         
-        noclipLoop = RunService.Heartbeat:Connect(function()
+        noclipLoop = RunService.Stepped:Connect(function()
             pcall(function()
                 if not char or not char.Parent then return end
                 
                 local root = char:FindFirstChild("HumanoidRootPart")
                 if root then
                     root.CanCollide = false
-                    root.Massless = true
                 end
 
                 for _, part in ipairs(char:GetDescendants()) do
                     if (part:IsA("BasePart") or part:IsA("MeshPart")) then
                         part.CanCollide = false
-                        part.Massless = true
                     end
                 end
             end)
@@ -785,15 +783,11 @@ local function ToggleNoclip(state)
             local root = char:FindFirstChild("HumanoidRootPart")
             if root then
                 root.CanCollide = true
-                root.Massless = false
-                root.Velocity = Vector3.new(0, -50, 0)   
-                root.AssemblyLinearVelocity = Vector3.new(0, -50, 0)
             end
 
             for _, part in ipairs(char:GetDescendants()) do
                 if part:IsA("BasePart") or part:IsA("MeshPart") then
                     part.CanCollide = true
-                    part.Massless = false
                 end
             end
         end)
@@ -801,17 +795,15 @@ local function ToggleNoclip(state)
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.1)
+            task.wait(0.2)
             hum:ChangeState(Enum.HumanoidStateType.Running)
             task.wait(0.1)
             hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-            hum:ChangeState(Enum.HumanoidStateType.Landed)
         end
 
         
     end
 end
-
 
 
 
