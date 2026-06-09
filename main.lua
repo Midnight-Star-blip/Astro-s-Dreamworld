@@ -770,7 +770,7 @@ local function ToggleNoclip(state)
                 end
 
                 for _, part in ipairs(char:GetDescendants()) do
-                    if (part:IsA("BasePart") or part:IsA("MeshPart")) and part ~= root then
+                    if (part:IsA("BasePart") or part:IsA("MeshPart")) then
                         part.CanCollide = false
                         part.Massless = true
                     end
@@ -778,7 +778,7 @@ local function ToggleNoclip(state)
             end)
         end)
 
-        print("[Astro] Noclip Activado")
+        
     else
         
         pcall(function()
@@ -786,7 +786,8 @@ local function ToggleNoclip(state)
             if root then
                 root.CanCollide = true
                 root.Massless = false
-                root.Velocity = Vector3.new(0, -20, 0)  -- Pequeño impulso hacia abajo
+                root.Velocity = Vector3.new(0, -50, 0)   
+                root.AssemblyLinearVelocity = Vector3.new(0, -50, 0)
             end
 
             for _, part in ipairs(char:GetDescendants()) do
@@ -800,9 +801,11 @@ local function ToggleNoclip(state)
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.15)
+            task.wait(0.1)
             hum:ChangeState(Enum.HumanoidStateType.Running)
+            task.wait(0.1)
             hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+            hum:ChangeState(Enum.HumanoidStateType.Landed)
         end
 
         
