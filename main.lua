@@ -413,21 +413,25 @@ task.spawn(function()
 						pcall(function()
 							local nameLower = item.Name:lower()
 							
-							-- === ITEMS ESPECIALES CON FORMATO BONITO ===
+							-- === ITEMS ESPECIALES / HEALING (Dorado) ===
 							if nameLower:find("medkit") then
 								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
 							
 							elseif nameLower:find("bandage") then
-								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 180, 0))
+								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 215, 0))
 							
-							elseif nameLower:find("chocolate") then
-								makeESP(item, " Chocolate", Color3.fromRGB(139, 69, 19))
+							-- === CHOCOLATE BOX ===
+							elseif nameLower:find("chocolate") or nameLower:find("choco") then
+								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
 							
-							elseif nameLower:find("gumball") then
-								makeESP(item, " Gumball", Color3.fromRGB(255, 50, 150))
 							
 							elseif nameLower:find("pop") then
-								makeESP(item, "🥤 Pop", Color3.fromRGB(100, 200, 255))
+								if nameLower:find("bottle") or nameLower:find("bottleofpop") then
+									makeESP(item, "🥤 Bottle of Pop", Color3.fromRGB(100, 200, 255))
+								else
+									makeESP(item, "🥤 Pop", Color3.fromRGB(100, 200, 255))
+								end
+							
 							
 							elseif nameLower:find("tape") then
 								makeESP(item, "📼 Tape", Color3.fromRGB(180, 180, 180))
