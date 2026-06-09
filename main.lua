@@ -429,7 +429,7 @@ task.spawn(function()
 												  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
 												  monster.Name:find("Scraps") or monster.Name:find("Vee")
 							
-							if hasBigAbility then
+						 if hasBigAbility then
 								local remaining = GetCooldown(monster)
 								
 								if remaining > 0.5 then
@@ -438,9 +438,6 @@ task.spawn(function()
 									cooldownText = " [READY]"
 								end
 							end
-							
-							makeESP(root, "[Twisted] " .. nombreLimpio .. cooldownText, Color3.fromRGB(255, 50, 50))
-						end)
 					end
 				end
 			end
