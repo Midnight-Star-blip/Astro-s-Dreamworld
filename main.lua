@@ -449,7 +449,7 @@ task.spawn(function()
 				end
 			end
 			
-						if _G.ESPAllItems then
+			if _G.ESPAllItems then
 				local itemsFolder = sala:FindFirstChild("Items")
 				if itemsFolder then
 					for _, item in ipairs(itemsFolder:GetChildren()) do
@@ -489,7 +489,7 @@ task.spawn(function()
 			end
 			
 			
-				if _G.ESPGenerators then
+			if _G.ESPGenerators then
 				local gensFolder = sala:FindFirstChild("Generators")
 				if gensFolder then
 					for _, gen in ipairs(gensFolder:GetChildren()) do
