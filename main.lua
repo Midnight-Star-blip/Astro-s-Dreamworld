@@ -452,7 +452,7 @@ task.spawn(function()
 				if itemsFolder then
 					for _, item in ipairs(itemsFolder:GetChildren()) do
 						if item.Name == "ResearchCapsule" then 
-							makeESP(item, " Capsule", Color3.fromRGB(82, 218, 255)) 
+							makeESP(item, "Capsule", Color3.fromRGB(82, 218, 255)) 
 						end
 					end
 				end
@@ -470,7 +470,7 @@ task.spawn(function()
 								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
 							elseif nameLower:find("bandage") then
 								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 215, 0))
-							elseif nameLower:find("chocolate") or nameLower:find("choco") then
+							elseif nameLower:find("ChocolateBox")  then
 								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
 							elseif nameLower:find("pop") then
 								if nameLower:find("bottle") or nameLower:find("bottleofpop") then
