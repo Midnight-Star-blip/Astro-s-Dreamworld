@@ -304,24 +304,21 @@ end
 
 local espTable = {}
 
--- ==================== COUNTDOWN MANUAL POR ENTIDAD ====================
-local cooldownTimers = {}  -- monster -> remaining time
+
+local cooldownTimers = {}  
 
 local function GetCooldown(monster)
-	local monsterName = monster.Name
-	
-	-- Si ya tenemos timer activo, devolverlo
 	if cooldownTimers[monster] and cooldownTimers[monster] > 0 then
 		return cooldownTimers[monster]
 	end
 	
-	-- Buscar cooldown inicial
+	
 	for _, v in ipairs(monster:GetDescendants()) do
 		if (v:IsA("NumberValue") or v:IsA("IntValue")) then
 			local valName = v.Name:lower()
 			local val = v.Value
 			
-			-- Ignorar PatrolSpeed y valores irrelevantes
+			
 			if valName:find("patrol") or valName:find("speed") or valName:find("walk") then
 				continue
 			end
@@ -333,7 +330,7 @@ local function GetCooldown(monster)
 		end
 	end
 	
-	-- Búsqueda en Chaser
+	
 	local chaser = monster:FindFirstChild("Chaser") or monster:FindFirstChild("AI")
 	if chaser then
 		for _, v in ipairs(chaser:GetDescendants()) do
@@ -350,7 +347,7 @@ local function GetCooldown(monster)
 	return 0
 end
 
--- Actualizar countdown manual
+
 task.spawn(function()
 	while true do
 		task.wait(0.1)
@@ -429,8 +426,6 @@ task.spawn(function()
 		if not room then continue end
 		
 		for _, sala in ipairs(room:GetChildren()) do
-			
-			
 			if _G.ESPTwisteds then
 				local monFolder = sala:FindFirstChild("Monsters")
 				if monFolder then
@@ -453,7 +448,6 @@ task.spawn(function()
 							
 							if hasBigAbility then
 								local remaining = GetCooldown(monster)
-								
 								if remaining > 0.5 then
 									cooldownText = " [" .. math.ceil(remaining) .. "s]"
 								else
