@@ -8,7 +8,8 @@ local localPlayer = Players.LocalPlayer
 
 
 _G.ESPTwisteds = false
-_G.ESPItems = false
+_G.ESPResearch = false     
+_G.ESPAllItems = false
 _G.ESPGenerators = false
 _G.ESPElevator = false
 _G.AutoSkillcheck = false
@@ -394,13 +395,52 @@ task.spawn(function()
 			end
 			
 			
-			if _G.ESPItems then
+			if _G.ESPResearch then
 				local itemsFolder = sala:FindFirstChild("Items")
 				if itemsFolder then
 					for _, item in ipairs(itemsFolder:GetChildren()) do
 						if item.Name == "ResearchCapsule" then 
 							makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
 						end
+					end
+				end
+			end
+			
+			if _G.ESPAllItems then
+				local itemsFolder = sala:FindFirstChild("Items")
+				if itemsFolder then
+					for _, item in ipairs(itemsFolder:GetChildren()) do
+						pcall(function()
+							local name = item.Name:lower()
+							
+							
+							if name:find("medkit") then
+								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))     
+							
+							elseif name:find("bandage") then
+								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 180, 0))
+							
+							elseif name:find("chocolate") then
+								makeESP(item, " Chocolate", Color3.fromRGB(139, 69, 19))
+							
+							
+							elseif name:find("gumball") then
+								makeESP(item, " Gumball", Color3.fromRGB(255, 50, 150))
+							
+							
+							elseif name:find("pop") then
+								makeESP(item, "🥤 Pop", Color3.fromRGB(100, 200, 255))
+							
+							
+							elseif name:find("tape") then
+								makeESP(item, "📼 Tape", Color3.fromRGB(180, 180, 180))
+							
+							
+							else
+								
+								makeESP(item, "📦 " .. item.Name, Color3.fromRGB(0, 255, 255))
+							end
+						end)
 					end
 				end
 			end
@@ -447,7 +487,7 @@ task.spawn(function()
 							end
 							
 							
-							print("Generator:", gen:GetFullName(), " | Completed:", isCompleted)
+							
 							
 							
 							if not isCompleted then
