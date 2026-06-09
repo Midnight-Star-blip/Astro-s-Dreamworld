@@ -572,12 +572,12 @@ task.spawn(function()
 					if elev.Name == "Elevator" then 
 						
 						
-						local door = elev:FindFirstChild("DoorVisible") 
-							or elev:FindFirstChild("DoorHitbox")
-							or elev:FindFirstChild("Door")
+						local door = elev:FindFirstChild("ElevatorDoor") 
+							
+							
 						
 						if door then
-							makeESP(door, "Door", Color3.fromRGB(230, 100, 220))
+							makeESP(door, "Elevator", Color3.fromRGB(230, 100, 220))
 						end
 					end
 				end
