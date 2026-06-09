@@ -406,39 +406,35 @@ task.spawn(function()
 				end
 			end
 			
-			if _G.ESPAllItems then
+						if _G.ESPAllItems then
 				local itemsFolder = sala:FindFirstChild("Items")
 				if itemsFolder then
 					for _, item in ipairs(itemsFolder:GetChildren()) do
 						pcall(function()
-							local name = item.Name:lower()
+							local nameLower = item.Name:lower()
 							
+							-- === ITEMS ESPECIALES CON FORMATO BONITO ===
+							if nameLower:find("medkit") then
+								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
 							
-							if name:find("medkit") then
-								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))     
-							
-							elseif name:find("bandage") then
+							elseif nameLower:find("bandage") then
 								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 180, 0))
 							
-							elseif name:find("chocolate") then
+							elseif nameLower:find("chocolate") then
 								makeESP(item, " Chocolate", Color3.fromRGB(139, 69, 19))
 							
-							
-							elseif name:find("gumball") then
+							elseif nameLower:find("gumball") then
 								makeESP(item, " Gumball", Color3.fromRGB(255, 50, 150))
 							
-							
-							elseif name:find("pop") then
+							elseif nameLower:find("pop") then
 								makeESP(item, "🥤 Pop", Color3.fromRGB(100, 200, 255))
 							
-							
-							elseif name:find("tape") then
+							elseif nameLower:find("tape") then
 								makeESP(item, "📼 Tape", Color3.fromRGB(180, 180, 180))
 							
 							
 							else
-								
-								makeESP(item, "📦 " .. item.Name, Color3.fromRGB(0, 255, 255))
+								makeESP(item, " " .. item.Name, Color3.fromRGB(0, 255, 255))
 							end
 						end)
 					end
