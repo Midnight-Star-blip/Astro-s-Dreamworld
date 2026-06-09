@@ -363,6 +363,38 @@ local function clearESP()
 end
 
 
+local function GetCooldown(monster)
+	for _, v in ipairs(monster:GetDescendants()) do
+		if v:IsA("NumberValue") or v:IsA("IntValue") then
+			local val = v.Value
+			if val >= 8 and val <= 18 then
+				local valName = v.Name:lower()
+				if valName:find("cool") or valName:find("timer") or valName:find("ability") or valName:find("cd") then
+					return val
+				end
+				return val  
+			end
+		end
+	end
+	
+	
+	local chaser = monster:FindFirstChild("Chaser") or monster:FindFirstChild("AI")
+	if chaser then
+		for _, v in ipairs(chaser:GetDescendants()) do
+			if v:IsA("NumberValue") or v:IsA("IntValue") then
+				local val = v.Value
+				if val >= 8 and val <= 18 then
+					return val
+				end
+			end
+		end
+	end
+	
+	return 0
+end
+
+
+
 task.spawn(function()
 	while task.wait(0.75) do
 		clearESP()
@@ -389,40 +421,12 @@ task.spawn(function()
 							
 							local cooldownText = ""
 							
-							
 							local hasBigAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
 												  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
 												  monster.Name:find("Scraps") or monster.Name:find("Vee")
 							
 							if hasBigAbility then
-								local remaining = 0
-								
-								
-								for _, v in ipairs(monster:GetDescendants()) do
-									if v:IsA("NumberValue") or v:IsA("IntValue") then
-										local val = v.Value
-										if val > 6 and val < 35 then
-											remaining = val
-											break
-										end
-									end
-								end
-								
-								
-								if remaining <= 0.5 then
-									local chaser = monster:FindFirstChild("Chaser")
-									if chaser then
-										for _, v in ipairs(chaser:GetDescendants()) do
-											if (v:IsA("NumberValue") or v:IsA("IntValue")) then
-												local val = v.Value
-												if val > 6 and val < 35 then
-													remaining = val
-													break
-												end
-											end
-										end
-									end
-								end
+								local remaining = GetCooldown(monster)
 								
 								if remaining > 0.5 then
 									cooldownText = " [" .. math.ceil(remaining) .. "s]"
