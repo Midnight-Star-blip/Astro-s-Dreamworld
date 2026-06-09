@@ -364,106 +364,95 @@ end
 
 
 task.spawn(function()
-	while task.wait(0.7) do  
+	while task.wait(0.8) do   
 		
 		clearESP()
 		
 		local room = workspace:FindFirstChild("CurrentRoom")
-		if room then
+		if not room then continue end
+		
+		for _, sala in ipairs(room:GetChildren()) do
 			
-			for _, sala in ipairs(room:GetChildren()) do
-				
-				
-				if _G.ESPTwisteds then
-					local monFolder = sala:FindFirstChild("Monsters")
-					if monFolder then
-						for _, parte in ipairs(monFolder:GetDescendants()) do
-							if parte:IsA("BasePart") then
-								local carpetaMadre = parte:FindFirstAncestorOfClass("Folder")
-								if carpetaMadre and carpetaMadre.Name ~= "Monsters" then
-									local nombreTwisted = string.gsub(carpetaMadre.Name, "Monster", "")
-									makeESP(parte, "[Twisted] " .. nombreTwisted, Color3.fromRGB(255, 50, 50))
-								end
+			
+			if _G.ESPTwisteds then
+				local monFolder = sala:FindFirstChild("Monsters")
+				if monFolder then
+					for _, parte in ipairs(monFolder:GetDescendants()) do
+						if parte:IsA("BasePart") then
+							local carpetaMadre = parte:FindFirstAncestorOfClass("Folder")
+							if carpetaMadre and carpetaMadre.Name ~= "Monsters" then
+								local nombreTwisted = string.gsub(carpetaMadre.Name, "Monster", "")
+								makeESP(parte, "[Twisted] " .. nombreTwisted, Color3.fromRGB(255, 50, 50))
 							end
 						end
 					end
 				end
-				
-				
-				if _G.ESPItems then
-					local itemsFolder = sala:FindFirstChild("Items")
-					if itemsFolder then
-						for _, item in ipairs(itemsFolder:GetChildren()) do
-							if item.Name == "ResearchCapsule" then 
-								makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
-							end
+			end
+			
+			
+			if _G.ESPItems then
+				local itemsFolder = sala:FindFirstChild("Items")
+				if itemsFolder then
+					for _, item in ipairs(itemsFolder:GetChildren()) do
+						if item.Name == "ResearchCapsule" then 
+							makeESP(item, "🧪 Capsule", Color3.fromRGB(82, 218, 255)) 
 						end
 					end
 				end
-				
-				
-								
-								
-								
-				if _G.ESPGenerators then
-					local gensFolder = sala:FindFirstChild("Generators")
-					if gensFolder then
-						for _, gen in ipairs(gensFolder:GetChildren()) do
-							pcall(function()
-								
-								if gen.Name ~= "Generator" and not gen:FindFirstChild("BaseMachine") then 
-									return 
-								end
-								
-								local isCompleted = false
-								
-								
-								local baseMachine = gen:FindFirstChild("BaseMachine") or gen
-								
-								
-								local lightPart = baseMachine:FindFirstChild("Light")
-								if lightPart and lightPart:IsA("MeshPart") and lightPart.Material == Enum.Material.Neon then
-									local c = lightPart.Color
-									if c.G > 0.45 and c.R < 0.45 then  
-										isCompleted = true
-									end
-								end
-								
-								
-								if not isCompleted then
-									for _, obj in ipairs(baseMachine:GetDescendants()) do
-										if obj:IsA("MeshPart") or obj:IsA("Part") then
-											if obj.Material == Enum.Material.Neon then
-												local c = obj.Color
-												if c.G > 0.5 and c.R < 0.4 then
-													isCompleted = true
-													break
-												end
+			end
+			
+			
+			if _G.ESPGenerators then
+				local gensFolder = sala:FindFirstChild("Generators")
+				if gensFolder then
+					for _, gen in ipairs(gensFolder:GetChildren()) do
+						pcall(function()
+							if gen.Name ~= "Generator" and not gen:FindFirstChild("BaseMachine") then 
+								return 
+							end
+							
+							local isCompleted = false
+							local baseMachine = gen:FindFirstChild("BaseMachine") or gen
+							
+							
+							local lightParts = {baseMachine:FindFirstChild("Light"), gen:FindFirstChild("Light"), gen:FindFirstChild("LightReference")}
+							
+							for _, lightObj in ipairs(lightParts) do
+								if lightObj then
+									for _, obj in ipairs(lightObj:GetDescendants()) do
+										if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
+											local c = obj.Color
+											if c.G > 0.5 and c.R < 0.45 then
+												isCompleted = true
+												break
 											end
 										end
 									end
+									if isCompleted then break end
 								end
-								
-								
-								if not isCompleted then
-									if baseMachine:FindFirstChild("IchorSpout") or baseMachine:FindFirstChild("FakeValve") then
-										local spout = baseMachine:FindFirstChild("IchorSpout") or baseMachine:FindFirstChild("FakeValve")
-										if spout and spout.Transparency < 0.6 then
+							end
+							
+							
+							if not isCompleted then
+								for _, obj in ipairs(baseMachine:GetDescendants()) do
+									if (obj:IsA("MeshPart") or obj:IsA("Part")) and obj.Material == Enum.Material.Neon then
+										local c = obj.Color
+										if c.G > 0.5 and c.R < 0.45 then
 											isCompleted = true
+											break
 										end
 									end
 								end
-								
-								
-								if not isCompleted then
-									makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
-								end
-							end)
-						end
+							end
+							
+							if not isCompleted then
+								makeESP(gen, "⚙️ Generator", Color3.fromRGB(74, 222, 128))
+							end
+						end)
 					end
 				end
-				
 			end
+			
 		end
 		
 		
@@ -480,7 +469,6 @@ task.spawn(function()
 		
 	end
 end)
-
 
 local S = { skillcheckOrigCB = nil }
 
