@@ -384,11 +384,40 @@ task.spawn(function()
 								or monster:FindFirstChildOfClass("MeshPart")
 								or monster:FindFirstChildOfClass("Part")
 							
-							if root then
-								local nombreLimpio = string.gsub(monster.Name, "Monster", "")
-								nombreLimpio = string.gsub(nombreLimpio, "Character", "")
-								makeESP(root, "[Twisted] " .. nombreLimpio, Color3.fromRGB(255, 50, 50))
+							if not root then return end
+							
+							local nombreLimpio = string.gsub(monster.Name, "Monster", "")
+							nombreLimpio = string.gsub(nombreLimpio, "Character", "")
+							
+							local cooldownText = ""
+							
+							
+							local hasAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
+											  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
+											  monster.Name:find("Scraps") or monster.Name:find("Vee")
+							
+							if hasAbility then
+								local cd = monster:GetAttribute("AbilityCooldown") or 
+										   monster:GetAttribute("Cooldown") or 0
+								
+								
+								if cd <= 0 then
+									for _, v in ipairs(monster:GetDescendants()) do
+										if v:IsA("NumberValue") or v:IsA("IntValue") then
+											if v.Name:find("Cooldown") or v.Name:find("Ability") then
+												cd = v.Value
+												break
+											end
+										end
+									end
+								end
+								
+								if cd > 0 then
+									cooldownText = " [" .. math.ceil(cd) .. "s]"
+								end
 							end
+							
+							makeESP(root, "[Twisted] " .. nombreLimpio .. cooldownText, Color3.fromRGB(255, 50, 50))
 						end)
 					end
 				end
@@ -413,14 +442,14 @@ task.spawn(function()
 						pcall(function()
 							local nameLower = item.Name:lower()
 							
-							-- === ITEMS ESPECIALES / HEALING (Dorado) ===
+							
 							if nameLower:find("medkit") then
 								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
 							
 							elseif nameLower:find("bandage") then
 								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 215, 0))
 							
-							-- === CHOCOLATE BOX ===
+							
 							elseif nameLower:find("chocolate") or nameLower:find("choco") then
 								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
 							
