@@ -499,7 +499,7 @@ task.spawn(function()
 								makeESP(item, "🩹 Medkit", Color3.fromRGB(255, 215, 0))
 							elseif nameLower:find("bandage") then
 								makeESP(item, "🩹 Bandage", Color3.fromRGB(255, 215, 0))
-							elseif nameLower:find("Chocolate Box") then
+							elseif nameLower:find("chocolate box") then
 								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
 							elseif nameLower:find("pop") then
 								if nameLower:find("bottle") or nameLower:find("bottleofpop") then
@@ -570,7 +570,18 @@ task.spawn(function()
 			if elevators then
 				for _, elev in ipairs(elevators:GetChildren()) do
 					if elev.Name == "Elevator" then 
-						makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220)) 
+						
+					
+						local door = elev:FindFirstChild("DoorVisible") 
+							or elev:FindFirstChild("DoorHitbox")
+							or elev:FindFirstChild("Door")
+						
+						if door then
+							makeESP(door, " Elevator", Color3.fromRGB(230, 100, 220))
+						else
+							
+							makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220))
+						end
 					end
 				end
 			end
@@ -746,7 +757,7 @@ end
 
 local noclipLoop = nil
 local charConn = nil
-local characterParts = {}  -- Cache de partes del personaje
+local characterParts = {}  
 
 local function ToggleNoclip(state)
     _G.Noclip = state
@@ -760,7 +771,7 @@ local function ToggleNoclip(state)
         charConn = nil 
     end
 
-    -- Limpiar cache
+    
     characterParts = {}
 
     local function ApplyNoclip(char)
