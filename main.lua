@@ -364,22 +364,19 @@ end
 
 
 local function GetCooldown(monster)
-	local monsterName = monster.Name:lower()
-	
 	for _, v in ipairs(monster:GetDescendants()) do
-		if (v:IsA("NumberValue") or v:IsA("IntValue")) and v.Value >= 8 and v.Value <= 18 then
-			
+		if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+			local val = v.Value
 			local valName = v.Name:lower()
 			
 			
-			if valName:find("patrol") or valName:find("speed") or valName:find("walk") 
-			   or valName:find("move") or valName:find("chase") or valName:find("range") then
+			if valName:find("patrol") or valName:find("speed") or valName:find("walk") then
 				continue
 			end
 			
-			
-			print(`[DEBUG] Cooldown REAL encontrado en {monster.Name}: {v.Name} = {v.Value}`)
-			return v.Value
+			if val >= 8 and val <= 18 then
+				return val
+			end
 		end
 	end
 	
@@ -387,9 +384,11 @@ local function GetCooldown(monster)
 	local chaser = monster:FindFirstChild("Chaser") or monster:FindFirstChild("AI")
 	if chaser then
 		for _, v in ipairs(chaser:GetDescendants()) do
-			if (v:IsA("NumberValue") or v:IsA("IntValue")) and v.Value >= 8 and v.Value <= 18 then
-				print(`[DEBUG] Cooldown encontrado en Chaser de {monster.Name}: {v.Name} = {v.Value}`)
-				return v.Value
+			if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+				local val = v.Value
+				if val >= 8 and val <= 18 then
+					return val
+				end
 			end
 		end
 	end
@@ -401,7 +400,7 @@ end
 	
 
 task.spawn(function()
-	while task.wait(0.75) do
+	while task.wait(0.4) do
 		clearESP()
 		
 		local room = workspace:FindFirstChild("CurrentRoom")
