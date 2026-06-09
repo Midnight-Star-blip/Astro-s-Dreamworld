@@ -411,11 +411,25 @@ local function makeESP(obj, txt, col)
 end
 
 local function clearESP()
+	
 	for _, v in ipairs(espTable) do
-		pcall(function() v:Destroy() end)
+		pcall(function()
+			if v and v.Parent then
+				v:Destroy()
+			end
+		end)
 	end
 	table.clear(espTable)
+
+ pcall(function()
+		for _, obj in ipairs(workspace:GetDescendants()) do
+			if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" then
+				obj:Destroy()
+			end
+		end
+	end)
 end
+
 
 
 task.spawn(function()
