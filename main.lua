@@ -392,18 +392,22 @@ task.spawn(function()
 							local cooldownText = ""
 							
 							
-							local hasAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
-											  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
-											  monster.Name:find("Scraps") or monster.Name:find("Vee")
+							local hasBigAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
+												 monster.Name:find("Sprout") or monster.Name:find("Astro") or 
+												 monster.Name:find("Scraps") or monster.Name:find("Vee")
 							
-							if hasAbility then
+							if hasBigAbility then
 								local remaining = 0
 								
 								
 								for _, v in ipairs(monster:GetDescendants()) do
 									if (v:IsA("NumberValue") or v:IsA("IntValue")) then
 										local val = v.Value
-										if val > 0.5 and val < 25 then  
+										local name = v.Name:lower()
+										
+										
+										if (name:find("cooldown") or name:find("ability") or name:find("timer")) and 
+										   val > 5 and val < 30 then
 											remaining = val
 											break
 										end
@@ -411,14 +415,16 @@ task.spawn(function()
 								end
 								
 								
-								local chaser = monster:FindFirstChild("Chaser")
-								if chaser and remaining <= 0 then
-									for _, v in ipairs(chaser:GetChildren()) do
-										if (v:IsA("NumberValue") or v:IsA("IntValue")) then
-											local val = v.Value
-											if val > 0.5 and val < 25 then
-												remaining = val
-												break
+								if remaining <= 0 then
+									local chaser = monster:FindFirstChild("Chaser")
+									if chaser then
+										for _, v in ipairs(chaser:GetChildren()) do
+											if (v:IsA("NumberValue") or v:IsA("IntValue")) then
+												local val = v.Value
+												if val > 5 and val < 30 then
+													remaining = val
+													break
+												end
 											end
 										end
 									end
