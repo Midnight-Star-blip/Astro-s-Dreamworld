@@ -578,10 +578,7 @@ task.spawn(function()
 						
 						if door then
 							makeESP(door, " Elevator", Color3.fromRGB(230, 100, 220))
-						else
-							
-							makeESP(elev, " Elevator", Color3.fromRGB(230, 100, 220))
-						end
+						
 					end
 				end
 			end
