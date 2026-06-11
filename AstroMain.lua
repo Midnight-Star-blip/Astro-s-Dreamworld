@@ -498,7 +498,7 @@ task.spawn(function()
 							elseif nameLower == "chocolatebox" or nameLower:find("chocolate box") then
 								makeESP(item, "🍫 Chocolate Box", Color3.fromRGB(139, 69, 19))
 							elseif nameLower:find("chocolate") or nameLower:find("choco") then
-								makeESP(item, "🍫 Chocolate", Color3.fromRGB(139, 69, 19))
+								makeESP(item, "Chocolate", Color3.fromRGB(139, 69, 19))
 
 							elseif nameLower:find("pop") then
 								if nameLower:find("bottle") or nameLower:find("bottleofpop") then
@@ -1023,6 +1023,8 @@ EnvironTab:CreateSection("Environment")
 EnvironTab:CreateToggle("Fullbright", false, function(state)
     ToggleFullbright(state)
 end)
+
+
 
 
 	
