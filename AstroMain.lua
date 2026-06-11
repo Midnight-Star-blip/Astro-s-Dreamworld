@@ -1,5 +1,6 @@
 -- Astro's Dreamworld | Shu shu thief! --
-local Players = game:GetService("Players")
+
+  local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -7,6 +8,17 @@ local RunService = game:GetService("RunService")
 local localPlayer = Players.LocalPlayer
 
 
+
+
+
+for _, v in ipairs(getconnections or {}) do pcall(function() v:Disconnect() end) end 
+
+local connectionsToKill = {"noclipLoop", "charConn", "roomConn", "flyLoop", "tpWalkLoop", "lightingConn"}
+for _, name in ipairs(connectionsToKill) do
+    pcall(function()
+        if _G[name] then _G[name]:Disconnect() end
+    end)
+end
 
 
 if espTable then
@@ -17,26 +29,32 @@ end
 espTable = {}
 
 
-for _, conn in ipairs({noclipLoop, charConn, roomConn, flyLoop, tpWalkLoop, lightingConn}) do
-    pcall(function() if conn then conn:Disconnect() end end)
-end
-
-
-pcall(function()
-    local oldGui = game:GetService("CoreGui"):FindFirstChild("AstroUILibrary")
-    if oldGui then oldGui:Destroy() end
-end)
-
-
 pcall(function()
     for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" then
+        if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" or string.find(obj.Name, "Astro") then
             obj:Destroy()
         end
     end
 end)
 
-print("Limpieza completada.")
+
+pcall(function()
+    local core = game:GetService("CoreGui")
+    for _, gui in ipairs(core:GetChildren()) do
+        if gui.Name:find("Astro") or gui.Name == "AstroUILibrary" then
+            gui:Destroy()
+        end
+    end
+end)
+
+
+task.delay(0.5, function()
+    clearESP()
+end)
+
+
+
+
 
 
 ESPUglyTwisteds = false
@@ -1092,3 +1110,4 @@ EnvironTab:CreateToggle("Fullbright", false, function(state)
     ToggleFullbright(state)
 end)
 
+ 
