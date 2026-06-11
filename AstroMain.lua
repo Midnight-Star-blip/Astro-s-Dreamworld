@@ -1,11 +1,43 @@
 -- Astro's Dreamworld | Shu shu thief! --
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")  
 local localPlayer = Players.LocalPlayer
+
+
+
+
+if espTable then
+    for _, v in ipairs(espTable) do
+        pcall(function() v:Destroy() end)
+    end
+end
+espTable = {}
+
+
+for _, conn in ipairs({noclipLoop, charConn, roomConn, flyLoop, tpWalkLoop, lightingConn}) do
+    pcall(function() if conn then conn:Disconnect() end end)
+end
+
+
+pcall(function()
+    local oldGui = game:GetService("CoreGui"):FindFirstChild("AstroUILibrary")
+    if oldGui then oldGui:Destroy() end
+end)
+
+
+pcall(function()
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" then
+            obj:Destroy()
+        end
+    end
+end)
+
+print("Limpieza completada.")
+
 
 ESPUglyTwisteds = false
 ESPResearch = false     
