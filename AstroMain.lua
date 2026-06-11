@@ -1,5 +1,6 @@
 -- Astro's Dreamworld | Shu shu thief! --
 
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -606,7 +607,7 @@ task.spawn(function()
 							end
 							
 							if not isCompleted then
-								makeESP(gen, "Generator", Color3.fromRGB(74, 222, 128))
+								makeESP(gen, "Generator", Color3.fromRGB(180, 60, 255))
 							end
 						end)
 					end
