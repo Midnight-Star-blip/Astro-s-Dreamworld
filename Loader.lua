@@ -6,40 +6,27 @@ local GoobLovesYou = "AstroPart"
 
 local function AstroSecretFunction(part)
     local TishaLovesSprout = AstroTheBestDud .. DandyCantMakeThis .. BoxtenAndCosmoForever .. PebblesIsCute .. GoobLovesYou .. part .. ".lua"
+    print("Intentando cargar: " .. TishaLovesSprout)  
     return game:HttpGet(TishaLovesSprout)
 end
 
-local CosmoAndBoxten = {}
-CosmoAndBoxten["Astro"] = game
-CosmoAndBoxten["Dandy"] = CosmoAndBoxten["Astro"].HttpGet
-CosmoAndBoxten["Vee"] = loadstring
-CosmoAndBoxten["Scraps"] = pcall
-
 local function GoobIsBest(part)
-    local SproutIsAdorable = AstroSecretFunction(part)
-    if SproutIsAdorable and #SproutIsAdorable > 500 then
-        local GigiLovesYou = CosmoAndBoxten["Vee"](SproutIsAdorable)
-        if GigiLovesYou then
-            CosmoAndBoxten["Scraps"](GigiLovesYou)
-            return true
-        end
+    local success, code = pcall(AstroSecretFunction, part)
+    if success and code and #code > 500 then
+        loadstring(code)()
+        return true
     end
     return false
 end
 
-local RodgerTheDetective = 0
-local fullCode = ""
-
-for AstroLoop = 1, 3 do
-    RodgerTheDetective = RodgerTheDetective + 1
-    if GoobIsBest(tostring(AstroLoop)) then
-        -- part loaded  yayy
+for i = 1, 3 do
+    print("Loading :D " .. i)
+    if GoobIsBest(tostring(i)) then
+        print("✅  " .. i .. " Loaded yay!")
+    else
+        warn("❌ Error " .. i)
     end
-    task.wait(0.2)
+    task.wait(0.5)
 end
 
-if RodgerTheDetective >= 2 then
-    print("Astro the best dud :> Loaded successfully!")
-else
-    warn("Dandy can't make this... Astro failed to load :(")
-end
+print("Astro the best dud :> Proceso terminado")
