@@ -1,4 +1,5 @@
 -- Astro's Dreamworld | Shu shu thief! --
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -11,7 +12,7 @@ local localPlayer = Players.LocalPlayer
 
 
 
-if espTable then
+if type(espTable) == "table" then
     for _, v in ipairs(espTable) do
         pcall(function() v:Destroy() end)
     end
@@ -19,32 +20,42 @@ end
 espTable = {}
 
 
-pcall(function() if noclipLoop then noclipLoop:Disconnect() end end)
-pcall(function() if charConn then charConn:Disconnect() end end)
-pcall(function() if roomConn then roomConn:Disconnect() end end)
-pcall(function() if flyLoop then flyLoop:Disconnect() end end)
-pcall(function() if tpWalkLoop then tpWalkLoop:Disconnect() end end)
-pcall(function() if lightingConn then lightingConn:Disconnect() end end)
-
-
-pcall(function()
-    local coreGui = game:GetService("CoreGui")
-    for _, gui in ipairs(coreGui:GetChildren()) do
-        if gui.Name:find("Astro") or gui.Name == "AstroUILibrary" then
-            gui:Destroy()
-        end
-    end
-end)
+local loops = {noclipLoop, charConn, roomConn, flyLoop, tpWalkLoop, lightingConn}
+for _, loop in ipairs(loops) do
+    pcall(function() if loop then loop:Disconnect() end end)
+end
 
 
 pcall(function()
     for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" then
+        if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" or 
+           string.find(obj.Name:lower(), "astro") then
             obj:Destroy()
         end
     end
 end)
 
+
+pcall(function()
+    local core = game:GetService("CoreGui")
+    for _, g in ipairs(core:GetChildren()) do
+        if g.Name:find("Astro") or g.Name == "AstroUILibrary" then
+            g:Destroy()
+        end
+    end
+end)
+
+
+task.delay(0.8, function()
+    clearESP()
+    pcall(function()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" then
+                obj:Destroy()
+            end
+        end
+    end)
+end)
 
 
 
