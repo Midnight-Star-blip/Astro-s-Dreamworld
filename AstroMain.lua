@@ -1,6 +1,5 @@
 -- Astro's Dreamworld | Shu shu thief! --
-
-  local Players = game:GetService("Players")
+local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -11,15 +10,6 @@ local localPlayer = Players.LocalPlayer
 
 
 
-for _, v in ipairs(getconnections or {}) do pcall(function() v:Disconnect() end) end 
-
-local connectionsToKill = {"noclipLoop", "charConn", "roomConn", "flyLoop", "tpWalkLoop", "lightingConn"}
-for _, name in ipairs(connectionsToKill) do
-    pcall(function()
-        if _G[name] then _G[name]:Disconnect() end
-    end)
-end
-
 
 if espTable then
     for _, v in ipairs(espTable) do
@@ -29,18 +19,17 @@ end
 espTable = {}
 
 
-pcall(function()
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" or string.find(obj.Name, "Astro") then
-            obj:Destroy()
-        end
-    end
-end)
+pcall(function() if noclipLoop then noclipLoop:Disconnect() end end)
+pcall(function() if charConn then charConn:Disconnect() end end)
+pcall(function() if roomConn then roomConn:Disconnect() end end)
+pcall(function() if flyLoop then flyLoop:Disconnect() end end)
+pcall(function() if tpWalkLoop then tpWalkLoop:Disconnect() end end)
+pcall(function() if lightingConn then lightingConn:Disconnect() end end)
 
 
 pcall(function()
-    local core = game:GetService("CoreGui")
-    for _, gui in ipairs(core:GetChildren()) do
+    local coreGui = game:GetService("CoreGui")
+    for _, gui in ipairs(coreGui:GetChildren()) do
         if gui.Name:find("Astro") or gui.Name == "AstroUILibrary" then
             gui:Destroy()
         end
@@ -48,9 +37,14 @@ pcall(function()
 end)
 
 
-task.delay(0.5, function()
-    clearESP()
+pcall(function()
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj.Name == "AstroHighlight" or obj.Name == "AstroTag" then
+            obj:Destroy()
+        end
+    end
 end)
+
 
 
 
@@ -1110,4 +1104,3 @@ EnvironTab:CreateToggle("Fullbright", false, function(state)
     ToggleFullbright(state)
 end)
 
- 
