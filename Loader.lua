@@ -6,7 +6,7 @@ local GoobLovesYou = "AstroPart"
 
 local function AstroSecretFunction(part)
     local TishaLovesSprout = AstroTheBestDud .. DandyCantMakeThis .. BoxtenAndCosmoForever .. PebblesIsCute .. GoobLovesYou .. part .. ".lua"
-    print("Intentando cargar: " .. TishaLovesSprout)  
+    print("Loading :D " .. TishaLovesSprout)
     return game:HttpGet(TishaLovesSprout)
 end
 
@@ -14,19 +14,23 @@ local function GoobIsBest(part)
     local success, code = pcall(AstroSecretFunction, part)
     if success and code and #code > 500 then
         loadstring(code)()
+        print("✅ " .. part .. " Loaded yay!")
         return true
+    else
+        warn("❌ Error :c " .. part)
+        return false
     end
-    return false
 end
 
-for i = 1, 3 do
+print("Astro Loading...")
+
+for i = 1, 4 do
     print("Loading :D " .. i)
     if GoobIsBest(tostring(i)) then
-        print("✅  " .. i .. " Loaded yay!")
+        task.wait(0.6)
     else
-        warn("❌ Error " .. i)
+        task.wait(0.8)
     end
-    task.wait(0.5)
 end
 
-print("Astro the best dud :> Proceso terminado")
+print("Astro the best dud :> ")
