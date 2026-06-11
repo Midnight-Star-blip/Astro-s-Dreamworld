@@ -378,12 +378,12 @@ local function makeESP(obj, txt, col, distance)
 
     local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or p
 
-    -- Evitar duplicados
+    
     if targetModel:FindFirstChild("AstroHighlight") or p:FindFirstChild("AstroTag") then 
         return 
     end
 
-    -- Highlight
+    
     local hl = Instance.new("Highlight")
     hl.Name = "AstroHighlight"
     hl.FillColor = col
@@ -394,7 +394,7 @@ local function makeESP(obj, txt, col, distance)
     hl.Adornee = targetModel
     hl.Parent = targetModel
 
-    -- Billboard
+    
     local bb = Instance.new("BillboardGui")
     bb.Name = "AstroTag"
     bb.Size = UDim2.new(0, 220, 0, 60)
@@ -744,13 +744,16 @@ end
 
 local noclipLoop = nil
 local charConn = nil
+local roomConn = nil
 local characterParts = {}
 
 local function ToggleNoclip(state)
     Noclip = state
 
+    
     if noclipLoop then noclipLoop:Disconnect() noclipLoop = nil end
     if charConn then charConn:Disconnect() charConn = nil end
+    if roomConn then roomConn:Disconnect() roomConn = nil end
 
     characterParts = {}
 
@@ -815,9 +818,12 @@ local function ToggleNoclip(state)
 
     if state then
         DestroyAntiNoclip()
+
+        
         local char = localPlayer.Character
         if char then ApplyNoclip(char) end
 
+    
         noclipLoop = RunService.Heartbeat:Connect(function()
             local char = localPlayer.Character
             if char and char.Parent then
@@ -826,12 +832,25 @@ local function ToggleNoclip(state)
             end
         end)
 
+        
         charConn = localPlayer.CharacterAdded:Connect(function(newChar)
-            task.wait(0.4)
+            task.wait(0.6) 
             ApplyNoclip(newChar)
             DestroyAntiNoclip()
         end)
+
+        
+        roomConn = workspace.ChildAdded:Connect(function(child)
+            if child.Name == "CurrentRoom" then
+                task.wait(1.2)
+                DestroyAntiNoclip()
+                local char = localPlayer.Character
+                if char then ApplyNoclip(char) end
+            end
+        end)
+
     else
+        
         local char = localPlayer.Character
         if char then RestoreNoclip(char) end
     end
