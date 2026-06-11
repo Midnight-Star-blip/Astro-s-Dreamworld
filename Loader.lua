@@ -22,4 +22,4 @@ else
     
 end
 
-print("Astro the best dud :> Proceso terminado")
+print("Astro the best dud :>")
