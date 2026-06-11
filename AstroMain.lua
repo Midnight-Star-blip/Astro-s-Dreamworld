@@ -1,4 +1,5 @@
 -- Astro's Dreamworld | Shu shu thief! --
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -363,110 +364,123 @@ function Tab:CreateKeybind(text, defaultKey, callback)
 
 	return {Get = function() return currentKey end}
 end
-
 local espTable = {}
 
-local function makeESP(obj, txt, col)
-	if not obj then return end
-	
-	local p = obj:IsA("BasePart") and obj 
-		or obj:FindFirstChildOfClass("MeshPart") 
-		or obj:FindFirstChildOfClass("Part") 
-		or obj:FindFirstChild("HumanoidRootPart")
-	
-	if not p then return end
-	
-	local targetModel = obj:IsA("Model") and obj 
-		or obj:FindFirstAncestorOfClass("Model") 
-		or p
-	
-	if targetModel:FindFirstChild("AstroHighlight") or p:FindFirstChild("AstroTag") then 
-		return 
-	end
-	
-	local hl = Instance.new("Highlight")
-	hl.Name = "AstroHighlight"
-	hl.FillColor = col
-	hl.FillTransparency = 0.7
-	hl.OutlineColor = col
-	hl.OutlineTransparency = 0
-	hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-	hl.Adornee = targetModel
-	hl.Parent = targetModel
-	
-	local bb = Instance.new("BillboardGui")
-	bb.Name = "AstroTag"
-	bb.Size = UDim2.new(0, 200, 0, 50)
-	bb.AlwaysOnTop = true
-	bb.StudsOffset = Vector3.new(0, 4, 0)
-	bb.Adornee = p
-	bb.Parent = p
-	
-	local l = Instance.new("TextLabel")
-	l.Size = UDim2.new(1, 0, 1, 0)
-	l.BackgroundTransparency = 1
-	l.Text = txt
-	l.TextColor3 = col
-	l.Font = Enum.Font.GothamBold
-	l.TextSize = 14
-	l.Parent = bb
-	
-	table.insert(espTable, hl)
-	table.insert(espTable, bb)
+local function makeESP(obj, txt, col, distance)
+    if not obj then return end
+    
+    local p = obj:IsA("BasePart") and obj 
+        or obj:FindFirstChildOfClass("MeshPart") 
+        or obj:FindFirstChildOfClass("Part") 
+        or obj:FindFirstChild("HumanoidRootPart")
+    
+    if not p then return end
+
+    local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or p
+
+    -- Evitar duplicados
+    if targetModel:FindFirstChild("AstroHighlight") or p:FindFirstChild("AstroTag") then 
+        return 
+    end
+
+    -- Highlight
+    local hl = Instance.new("Highlight")
+    hl.Name = "AstroHighlight"
+    hl.FillColor = col
+    hl.FillTransparency = 0.65
+    hl.OutlineColor = col
+    hl.OutlineTransparency = 0
+    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    hl.Adornee = targetModel
+    hl.Parent = targetModel
+
+    -- Billboard
+    local bb = Instance.new("BillboardGui")
+    bb.Name = "AstroTag"
+    bb.Size = UDim2.new(0, 220, 0, 60)
+    bb.AlwaysOnTop = true
+    bb.StudsOffset = Vector3.new(0, 4, 0)
+    bb.Adornee = p
+    bb.Parent = p
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = txt
+    textLabel.TextColor3 = col
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.TextSize = 14
+    textLabel.TextStrokeTransparency = 0.7
+    textLabel.Parent = bb
+
+    table.insert(espTable, hl)
+    table.insert(espTable, bb)
 end
 
 local function clearESP()
-	for _, v in ipairs(espTable) do
-		pcall(function() v:Destroy() end)
-	end
-	table.clear(espTable)
+    for _, v in ipairs(espTable) do
+        pcall(function() v:Destroy() end)
+    end
+    table.clear(espTable)
 end
 
-
+-- ==================== LOOP PRINCIPAL ESP ====================
 task.spawn(function()
-	while task.wait(0.4) do
-		clearESP()
-		
-		local room = workspace:FindFirstChild("CurrentRoom")
-		if not room then continue end
-		
-		for _, sala in ipairs(room:GetChildren()) do
-			
-			
-			if ESPUglyTwisteds then
-				local monFolder = sala:FindFirstChild("Monsters")
-				if monFolder then
-					for _, monster in ipairs(monFolder:GetChildren()) do
-						pcall(function()
-							local root = monster:FindFirstChild("HumanoidRootPart") 
-								or monster:FindFirstChildOfClass("MeshPart")
-								or monster:FindFirstChildOfClass("Part")
-							
-							if not root then return end
-							
-							local nombreLimpio = string.gsub(monster.Name, "Monster", "")
-							nombreLimpio = string.gsub(nombreLimpio, "Character", "")
-							
-							local cooldownText = ""
-							
-							local hasBigAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
-												  monster.Name:find("Sprout") or monster.Name:find("Astro") or 
-												  monster.Name:find("Scraps") or monster.Name:find("Vee")
-							
-							if hasBigAbility then
-								local remaining = API.run.getCooldown(monster)
-								if remaining > 0.5 then
-									cooldownText = " [" .. math.ceil(remaining) .. "s]"
-								else
-									cooldownText = " [READY]"
-								end
-							end
-							
-							makeESP(root, "[Twisted] " .. nombreLimpio .. cooldownText, Color3.fromRGB(255, 50, 50))
-						end)
-					end
-				end
-			end
+    while task.wait(0.35) do
+        clearESP()
+        
+        local room = workspace:FindFirstChild("CurrentRoom")
+        if not room then continue end
+
+        for _, sala in ipairs(room:GetChildren()) do
+
+            -- === TWISTEDS (con cooldown) ===
+            if ESPUglyTwisteds then
+                local monFolder = sala:FindFirstChild("Monsters")
+                if monFolder then
+                    for _, monster in ipairs(monFolder:GetChildren()) do
+                        pcall(function()
+                            local root = monster:FindFirstChild("HumanoidRootPart") 
+                                or monster:FindFirstChildOfClass("MeshPart")
+                                or monster:FindFirstChildOfClass("Part")
+                            if not root then return end
+
+                            local nombre = string.gsub(monster.Name, "Monster", "")
+                            nombre = string.gsub(nombre, "Character", "")
+
+                            local cooldownText = ""
+                            local hasBigAbility = monster.Name:find("Goob") or monster.Name:find("Gigi") or 
+                                                monster.Name:find("Sprout") or monster.Name:find("Astro") or 
+                                                monster.Name:find("Scraps") or monster.Name:find("Vee")
+
+                            if hasBigAbility then
+                                local remaining = API.run.getCooldown(monster)
+                                if remaining and remaining > 0.5 then
+                                    cooldownText = " [" .. math.ceil(remaining) .. "s]"
+                                elseif remaining and remaining <= 0.5 then
+                                    cooldownText = " [READY]"
+                                end
+                            end
+
+                            makeESP(root, "[Twisted] " .. nombre .. cooldownText, Color3.fromRGB(255, 60, 60))
+                        end)
+                    end
+                end
+            end
+
+            
+            if ESPPlayers then  
+                for _, plr in ipairs(Players:GetPlayers()) do
+                    if plr ~= localPlayer and plr.Character then
+                        local root = plr.Character:FindFirstChild("HumanoidRootPart")
+                        if root then
+                            local distance = math.floor((localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and 
+                                (localPlayer.Character.HumanoidRootPart.Position - root.Position).Magnitude) or 0)
+                            makeESP(root, plr.Name .. " [" .. distance .. "m]", Color3.fromRGB(0, 255, 100))
+                        end
+                    end
+                end
+            end
 			
 			
 			if ESPResearch then
@@ -984,6 +998,11 @@ VisualsTab:CreateSection("All ESPs")
 VisualsTab:CreateToggle("ESP Twisteds", false, function(state)
 	ESPUglyTwisteds = state
 	if not state then clearESP() end
+end)
+
+VisualsTab:CreateToggle("ESP Players", false, function(state)
+    ESPPlayers = state
+    if not state then clearESP() end
 end)
 
 VisualsTab:CreateToggle("ESP Research Capsules", false, function(state)
