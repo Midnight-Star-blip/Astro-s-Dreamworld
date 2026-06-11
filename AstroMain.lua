@@ -1,11 +1,11 @@
 -- Astro's Dreamworld | Shu shu thief! --
-local nZRQsd = {"wYsiSruWkJxS6pZvT";"KfVGQVW1rzCCKIxM";"jSwoiuQ9BtqfyGY";"DBXXL4rdPKb1zvvh";"AOv59JAJzuq323KQ";"cFq"}
-local pa5DUJTP = function(...)
+local Qq4T2f = {"f5xIy0Hzb";"KMwj";"teZBC2PDgptdq";"UmkOwC";"pbOEkTFHU5PS2Sm6";"yXkHBtq1";"4gBLEFWWGiDs";"iCViZj6gd";"qVvm6vK";"QGJ8Rg9aiC6ILsO"}
+local xrbBVSWn = function(...)
 local Players = game:GetService(loadstring(base64decode("UGxheWVycw=="))())
 local TweenService = game:GetService(loadstring(base64decode("VHdlZW5TZXJ2aWNl"))())
 local UserInputService = game:GetService(loadstring(base64decode("VXNlcklucHV0U2VydmljZQ=="))())
-local VirtualInputManager = game:GetService(loadstring(base64decode("VmlydHVhbElucHV0TWFuYWdlcg=="))())
 local ReplicatedStorage = game:GetService(loadstring(base64decode("UmVwbGljYXRlZFN0b3JhZ2U="))())
+local RunService = game:GetService(loadstring(base64decode("UnVuU2VydmljZQ=="))())  
 local localPlayer = Players.LocalPlayer
 
 ESPUglyTwisteds = false
@@ -71,10 +71,10 @@ function API.run.getCooldown(monster)
     if not monster then return 0 end
     for _, v in ipairs(monster:GetDescendants()) do
         if (v:IsA(loadstring(base64decode("TnVtYmVyVmFsdWU="))()) or v:IsA(loadstring(base64decode("SW50VmFsdWU="))())) then
-            local tCVD2QAT = v.Value
+            local 3MEiPNT5 = v.Value
             local name = v.Name:lower()
-            if tCVD2QAT >= 8 and tCVD2QAT <= 18 and not name:find(loadstring(base64decode("cGF0cm9s"))()) and not name:find(loadstring(base64decode("c3BlZWQ="))()) then
-                return tCVD2QAT
+            if 3MEiPNT5 >= 8 and 3MEiPNT5 <= 18 and not name:find(loadstring(base64decode("cGF0cm9s"))()) and not name:find(loadstring(base64decode("c3BlZWQ="))()) then
+                return 3MEiPNT5
             end
         end
     end
@@ -294,8 +294,8 @@ function Tab:CreateSlider(text, minValue, maxValue, defaultValue, callback)
 	local bar = create(loadstring(base64decode("RnJhbWU="))(), {Position = UDim2.fromOffset(12, 40), Size = UDim2.new(1, -24, 0, 8), BackgroundColor3 = Color3.fromRGB(72, 78, 92), BorderSizePixel = 0, ZIndex = 5, Parent = frame}, {corner(4), stroke(Color3.fromRGB(255, 255, 255), 1, 0.86)})
 	local fill = create(loadstring(base64decode("RnJhbWU="))(), {Size = UDim2.fromScale((value - minValue) / (maxValue - minValue), 1), BackgroundColor3 = theme.Accent, BorderSizePixel = 0, ZIndex = 6, Parent = bar}, {corner(4), gradient(0, {ColorSequenceKeypoint.new(0, Color3.fromRGB(82, 218, 255)), ColorSequenceKeypoint.new(1, theme.ButtonTop)})})
 	local dragging = false
-	local function setFromX(DvhcTMdb)
-		local alpha = math.clamp((DvhcTMdb - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+	local function setFromX(3aVgbBDD)
+		local alpha = math.clamp((3aVgbBDD - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
 		value = math.floor(minValue + ((maxValue - minValue) * alpha))
 		label.Text = text .. loadstring(base64decode("OiA="))() .. tostring(value) fill.Size = UDim2.fromScale(alpha, 1) if callback then callback(value) end
 	end
@@ -319,23 +319,23 @@ function Tab:CreateKeybind(text, defaultKey, callback)
 		local btn = create(loadstring(base64decode("VGV4dEJ1dHRvbg=="))(), {Size = UDim2.fromOffset(55, 55), Position = UDim2.new(0.8, 0, 0.3, 0), BackgroundColor3 = theme.Accent, Text = string.sub(text, 1, 3), TextColor3 = theme.Text, Font = Enum.Font.GothamBold, TextSize = 14, ZIndex = 10, Parent = self.Window.ScreenGui}, {corner(27), stroke(theme.SoftStroke, 2, 0.2)})
 		local mD, mS, mP = false, nil, nil
 		
-		btn.InputBegan:Connect(function(y5QhwMrG) 
-			if y5QhwMrG.UserInputType == Enum.UserInputType.Touch then 
+		btn.InputBegan:Connect(function(i) 
+			if i.UserInputType == Enum.UserInputType.Touch then 
 				mD = true 
-				mS = y5QhwMrG.Position 
+				mS = i.Position 
 				mP = btn.Position 
 			end 
 		end)
 		
-		UserInputService.InputChanged:Connect(function(y5QhwMrG) 
-			if mD and y5QhwMrG.UserInputType == Enum.UserInputType.Touch then 
-				local d = y5QhwMrG.Position - mS 
+		UserInputService.InputChanged:Connect(function(i) 
+			if mD and i.UserInputType == Enum.UserInputType.Touch then 
+				local d = i.Position - mS 
 				btn.Position = UDim2.new(mP.X.Scale, mP.X.Offset + d.X, mP.Y.Scale, mP.Y.Offset + d.Y) 
 			end 
 		end)
 		
-		UserInputService.InputEnded:Connect(function(y5QhwMrG) 
-			if y5QhwMrG.UserInputType == Enum.UserInputType.Touch then 
+		UserInputService.InputEnded:Connect(function(i) 
+			if i.UserInputType == Enum.UserInputType.Touch then 
 				mD = false 
 			end 
 		end)
@@ -351,14 +351,14 @@ function Tab:CreateKeybind(text, defaultKey, callback)
 		end 
 	end)
 
-	UserInputService.InputBegan:Connect(function(y5QhwMrG, p)
+	UserInputService.InputBegan:Connect(function(i, p)
 		if p then return end
-		if listening and y5QhwMrG.UserInputType == Enum.UserInputType.Keyboard then
-			currentKey = y5QhwMrG.KeyCode ~= Enum.KeyCode.Escape and y5QhwMrG.KeyCode or nil
+		if listening and i.UserInputType == Enum.UserInputType.Keyboard then
+			currentKey = i.KeyCode ~= Enum.KeyCode.Escape and i.KeyCode or nil
 			bindButton.Text = currentKey and currentKey.Name or loadstring(base64decode("Tm9uZQ=="))() 
 			listening = false 
 			bindButton.BackgroundColor3 = theme.Accent
-		elseif currentKey and y5QhwMrG.KeyCode == currentKey then 
+		elseif currentKey and i.KeyCode == currentKey then 
 			callback() 
 		end
 	end)
@@ -668,7 +668,7 @@ local FlyState = {
 }
 
 local flyLoop = nil
-local noclipLoop = nil
+
 
 local function ToggleFly(state)
     Fly = state
@@ -831,7 +831,7 @@ local tpWalkLoop = nil
 local tpWalkSpeed = 0.7   
 
 local function ToggleTPWalk(state)
-    _G.TPWalk = state
+    TPWalk = state
 
     if tpWalkLoop then
         tpWalkLoop:Disconnect()
@@ -1025,4 +1025,4 @@ EnvironTab:CreateToggle(loadstring(base64decode("RnVsbGJyaWdodA=="))(), false, f
     ToggleFullbright(state)
 end)
 end
-YgcAhM3i(X1EPw)
+dysqScPw(RD5cS)
