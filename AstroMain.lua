@@ -10,8 +10,6 @@ local localPlayer = Players.LocalPlayer
 
 
 
-
-
 if type(espTable) == "table" then
     for _, v in ipairs(espTable) do
         pcall(function() v:Destroy() end)
@@ -489,7 +487,7 @@ task.spawn(function()
 
         for _, sala in ipairs(room:GetChildren()) do
 
-            -- === TWISTEDS (con cooldown) ===
+            
             if ESPUglyTwisteds then
                 local monFolder = sala:FindFirstChild("Monsters")
                 if monFolder then
