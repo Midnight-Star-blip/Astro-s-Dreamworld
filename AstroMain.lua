@@ -1,5 +1,4 @@
 -- Astro's Dreamworld | Shu shu thief! --
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -731,22 +730,29 @@ end
 
 local noclipLoop = nil
 local charConn = nil
-local characterParts = {}  
+local characterParts = {}
 
 local function ToggleNoclip(state)
     Noclip = state
 
-    if noclipLoop then 
-        noclipLoop:Disconnect() 
-        noclipLoop = nil 
-    end
-    if charConn then 
-        charConn:Disconnect() 
-        charConn = nil 
-    end
+    if noclipLoop then noclipLoop:Disconnect() noclipLoop = nil end
+    if charConn then charConn:Disconnect() charConn = nil end
 
-    
     characterParts = {}
+
+    local function DestroyAntiNoclip()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if (obj.Name == "NoClip_Collider" or obj.Name == "NoClip" or 
+                obj.Name == "InvisWall" or obj.Name == "Inviswall" or 
+                string.find(obj.Name:lower(), "noclip")) and
+               (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
+                pcall(function()
+                    obj.CanCollide = false
+                    obj.Transparency = 1
+                end)
+            end
+        end
+    end
 
     local function ApplyNoclip(char)
         pcall(function()
@@ -757,6 +763,11 @@ local function ToggleNoclip(state)
                     part.CanCollide = false
                     part.Massless = true
                 end
+            end
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                root.CanCollide = false
+                root.Massless = true
             end
         end)
     end
@@ -776,54 +787,41 @@ local function ToggleNoclip(state)
         if root then
             root.CanCollide = true
             root.Massless = false
-            root.Velocity = Vector3.new(0, -30, 0)
+            root.Velocity = Vector3.new(0, -40, 0)
         end
 
         local hum = char:FindFirstChildWhichIsA("Humanoid")
         if hum then
             hum.PlatformStand = false
-            task.wait(0.15)
+            task.wait(0.1)
             hum:ChangeState(Enum.HumanoidStateType.Running)
             hum:ChangeState(Enum.HumanoidStateType.GettingUp)
         end
     end
 
     if state then
-        
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if (obj.Name == "NoClip_Collider" or obj.Name == "NoClip" or 
-                obj.Name == "InvisWall" or obj.Name == "Inviswall") and
-               (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
-                pcall(function() obj.CanCollide = false end)
-            end
-        end
-
+        DestroyAntiNoclip()
         local char = localPlayer.Character
         if char then ApplyNoclip(char) end
 
-        
         noclipLoop = RunService.Heartbeat:Connect(function()
             local char = localPlayer.Character
             if char and char.Parent then
                 ApplyNoclip(char)
+                DestroyAntiNoclip()
             end
         end)
 
         charConn = localPlayer.CharacterAdded:Connect(function(newChar)
-            task.wait(0.3)
+            task.wait(0.4)
             ApplyNoclip(newChar)
+            DestroyAntiNoclip()
         end)
-
-        
     else
         local char = localPlayer.Character
-        if char then
-            RestoreNoclip(char)
-        end
-        
+        if char then RestoreNoclip(char) end
     end
 end
-
 
 
 local tpWalkLoop = nil
@@ -1024,9 +1022,3 @@ EnvironTab:CreateToggle("Fullbright", false, function(state)
     ToggleFullbright(state)
 end)
 
-
-
-
-	
-	
-     
