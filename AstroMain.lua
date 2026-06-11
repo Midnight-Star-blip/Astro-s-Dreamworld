@@ -479,7 +479,7 @@ local function clearESP()
     table.clear(espTable)
 end
 
--- ==================== LOOP PRINCIPAL ESP ====================
+
 task.spawn(function()
     while task.wait(0.35) do
         clearESP()
